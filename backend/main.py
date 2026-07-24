@@ -6,16 +6,16 @@ from supabase import create_client, Client
 
 app = FastAPI()
 
-# 1. Configuração do CORS
+# 1. Configuração do CORS (Libera acesso para o seu frontend na Vercel)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Libera o acesso para Vercel e outros
+    allow_origins=["*"],  # Libera todas as origens
     allow_credentials=True,
     allow_methods=["*"],  # Libera POST, GET, OPTIONS, etc.
     allow_headers=["*"],
 )
 
-# 2. Conexão com o Supabase
+# 2. Conexão com o Supabase através das Variáveis de Ambiente
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
@@ -24,21 +24,28 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# 3. Modelo dos dados
+# 3. Modelo dos dados recebidos no Login
 class LoginData(BaseModel):
     email: str
     password: str
 
-# 4. Rota principal
+# 4. Rota principal de verificação da API
 @app.get("/")
 def read_root():
     return {"status": "API online e rodando!"}
 
-# 5. Rota de Login (POST) CORRIGIDA
+# 5. Tratamento de Preflight (OPTIONS) para evitar bloqueio de CORS no navegador
+@app.options("/login")
+@app.options("/login/")
+async def options_login():
+    return {}
+
+# 6. Rota de Login (POST) ajustada para as versões recentes do Supabase
 @app.post("/login")
+@app.post("/login/")
 async def login(data: LoginData):
     try:
-        # Forma correta e compatível com a biblioteca do Supabase Python:
+        # Autentica no Supabase passando o dicionário dentro de credentials
         response = supabase.auth.sign_in_with_password(
             credentials={
                 "email": data.email,
@@ -52,6 +59,5 @@ async def login(data: LoginData):
             "session": response.session
         }
     except Exception as e:
-        # Exibe o erro real no log do Render e para a resposta HTTP
-        print(f"Erro no login: {str(e)}")
+        print(f"Erro ao autenticar: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
