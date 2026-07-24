@@ -6,16 +6,16 @@ from supabase import create_client, Client
 
 app = FastAPI()
 
-# 1. Configuração do CORS (Libera acesso para o seu frontend na Vercel)
+# 1. Configuração do CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Libera todas as origens
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Libera POST, GET, OPTIONS, etc.
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 2. Conexão com o Supabase através das Variáveis de Ambiente
+# 2. Conexão com Supabase
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
@@ -24,35 +24,35 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# 3. Modelo dos dados recebidos no Login
+# 3. Modelo de dados
 class LoginData(BaseModel):
     email: str
     password: str
 
-# 4. Rota principal de verificação da API
 @app.get("/")
 def read_root():
     return {"status": "API online e rodando!"}
 
-# 5. Tratamento de Preflight (OPTIONS) para evitar bloqueio de CORS no navegador
+# 4. Tratamento de OPTIONS para /api/auth/login
+@app.options("/api/auth/login")
+@app.options("/api/auth/login/")
 @app.options("/login")
-@app.options("/login/")
 async def options_login():
     return {}
 
-# 6. Rota de Login (POST) ajustada para as versões recentes do Supabase
+# 5. Rota de Login aceitando /api/auth/login e /login
+@app.post("/api/auth/login")
+@app.post("/api/auth/login/")
 @app.post("/login")
 @app.post("/login/")
 async def login(data: LoginData):
     try:
-        # Autentica no Supabase passando o dicionário dentro de credentials
         response = supabase.auth.sign_in_with_password(
             credentials={
                 "email": data.email,
                 "password": data.password
             }
         )
-        
         return {
             "message": "Login realizado com sucesso!",
             "user": response.user,
