@@ -6,16 +6,16 @@ from supabase import create_client, Client
 
 app = FastAPI()
 
-# 1. Configuração do CORS (deve vir logo após a criação do 'app')
+# 1. Configuração do CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Libera o acesso para a Vercel e outros domínios
+    allow_origins=["*"],  # Libera o acesso para Vercel e outros
     allow_credentials=True,
     allow_methods=["*"],  # Libera POST, GET, OPTIONS, etc.
     allow_headers=["*"],
 )
 
-# 2. Conexão com o Supabase usando as variáveis de ambiente
+# 2. Conexão com o Supabase
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
@@ -24,25 +24,27 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# 3. Modelo dos dados que chegam no Login
+# 3. Modelo dos dados
 class LoginData(BaseModel):
     email: str
     password: str
 
-# 4. Rota principal para testar se a API está no ar
+# 4. Rota principal
 @app.get("/")
 def read_root():
     return {"status": "API online e rodando!"}
 
-# 5. Rota de Login (POST)
+# 5. Rota de Login (POST) CORRIGIDA
 @app.post("/login")
 async def login(data: LoginData):
     try:
-        # Autentica o usuário no Supabase
-        response = supabase.auth.sign_in_with_password({
-            "email": data.email,
-            "password": data.password
-        })
+        # Forma correta e compatível com a biblioteca do Supabase Python:
+        response = supabase.auth.sign_in_with_password(
+            credentials={
+                "email": data.email,
+                "password": data.password
+            }
+        )
         
         return {
             "message": "Login realizado com sucesso!",
@@ -50,4 +52,6 @@ async def login(data: LoginData):
             "session": response.session
         }
     except Exception as e:
+        # Exibe o erro real no log do Render e para a resposta HTTP
+        print(f"Erro no login: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
