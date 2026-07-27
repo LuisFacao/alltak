@@ -52,6 +52,33 @@ class PostData(BaseModel):
     title: str
     content: str
     author: str
+    tag: str = "Geral"
+    urgent: bool = False
+
+
+class EventData(BaseModel):
+    date: str
+    title: str
+    color: str
+
+
+class FeedbackData(BaseModel):
+    user_email: str
+    category: str
+    message: str
+    rating: int
+
+
+class DirectFeedbackData(BaseModel):
+    recipient: str
+    message: str
+
+
+class PayslipData(BaseModel):
+    recipient: str
+    ref: str
+    file_name: str
+    file_data: str
 
 
 @app.get("/")
@@ -178,6 +205,130 @@ async def list_posts():
 @app.post("/api/posts")
 async def create_post(data: PostData):
     res = supabase_admin.table("posts").insert(
-        {"title": data.title, "content": data.content, "author": data.author}
+        {
+            "title": data.title,
+            "content": data.content,
+            "author": data.author,
+            "tag": data.tag,
+            "urgent": data.urgent,
+        }
     ).execute()
     return res.data[0] if res.data else {}
+
+
+@app.delete("/api/posts/{post_id}")
+async def delete_post(post_id: str):
+    supabase_admin.table("posts").delete().eq("id", post_id).execute()
+    return {"status": "deleted"}
+
+
+# ---------------------------------------------------------------------------
+# AGENDA (EVENTS)
+# ---------------------------------------------------------------------------
+@app.get("/api/events")
+async def list_events():
+    res = (
+        supabase_admin.table("events")
+        .select("*")
+        .order("date")
+        .execute()
+    )
+    return res.data
+
+
+@app.post("/api/events")
+async def create_event(data: EventData):
+    res = supabase_admin.table("events").insert(
+        {"date": data.date, "title": data.title, "color": data.color}
+    ).execute()
+    return res.data[0] if res.data else {}
+
+
+@app.delete("/api/events/{event_id}")
+async def delete_event(event_id: str):
+    supabase_admin.table("events").delete().eq("id", event_id).execute()
+    return {"status": "deleted"}
+
+
+# ---------------------------------------------------------------------------
+# FEEDBACK (GERAL / SUGESTÕES)
+# ---------------------------------------------------------------------------
+@app.get("/api/feedback")
+async def list_feedback():
+    res = (
+        supabase_admin.table("feedbacks")
+        .select("*")
+        .order("created_at", desc=True)
+        .execute()
+    )
+    return res.data
+
+
+@app.post("/api/feedback")
+async def create_feedback(data: FeedbackData):
+    res = supabase_admin.table("feedbacks").insert(
+        {
+            "user_email": data.user_email,
+            "category": data.category,
+            "message": data.message,
+            "rating": data.rating,
+        }
+    ).execute()
+    return res.data[0] if res.data else {}
+
+
+@app.delete("/api/feedback/{feedback_id}")
+async def delete_feedback(feedback_id: str):
+    supabase_admin.table("feedbacks").delete().eq("id", feedback_id).execute()
+    return {"status": "deleted"}
+
+
+# ---------------------------------------------------------------------------
+# FEEDBACK DIRECIONADO (ADMIN -> FUNCIONÁRIO)
+# ---------------------------------------------------------------------------
+@app.get("/api/direct-feedbacks")
+async def list_direct_feedbacks(recipient: Optional[str] = None):
+    query = supabase_admin.table("direct_feedbacks").select("*").order("created_at", desc=True)
+    if recipient:
+        query = query.eq("recipient", recipient)
+    res = query.execute()
+    return res.data
+
+
+@app.post("/api/direct-feedbacks")
+async def create_direct_feedback(data: DirectFeedbackData):
+    res = supabase_admin.table("direct_feedbacks").insert(
+        {"recipient": data.recipient, "message": data.message}
+    ).execute()
+    return res.data[0] if res.data else {}
+
+
+# ---------------------------------------------------------------------------
+# HOLERITES (PAYSLIPS)
+# ---------------------------------------------------------------------------
+@app.get("/api/payslips")
+async def list_payslips(recipient: Optional[str] = None):
+    query = supabase_admin.table("payslips").select("*").order("created_at", desc=True)
+    if recipient:
+        query = query.eq("recipient", recipient)
+    res = query.execute()
+    return res.data
+
+
+@app.post("/api/payslips")
+async def create_payslip(data: PayslipData):
+    res = supabase_admin.table("payslips").insert(
+        {
+            "recipient": data.recipient,
+            "ref": data.ref,
+            "file_name": data.file_name,
+            "file_data": data.file_data,
+        }
+    ).execute()
+    return res.data[0] if res.data else {}
+
+
+@app.delete("/api/payslips/{payslip_id}")
+async def delete_payslip(payslip_id: str):
+    supabase_admin.table("payslips").delete().eq("id", payslip_id).execute()
+    return {"status": "deleted"}
