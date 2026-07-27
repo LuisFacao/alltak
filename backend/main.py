@@ -17,9 +17,6 @@ app.add_middleware(
 )
 
 # 2. Conexão com Supabase
-# SUPABASE_URL      -> Project Settings > API > Project URL
-# SUPABASE_KEY      -> Project Settings > API > anon public key
-# SUPABASE_SERVICE_KEY -> Project Settings > API > service_role key (SECRETA! nunca exponha no front-end)
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_KEY")
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
@@ -29,10 +26,10 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY or not SUPABASE_SERVICE_KEY:
         "As variáveis SUPABASE_URL, SUPABASE_KEY e SUPABASE_SERVICE_KEY precisam estar configuradas!"
     )
 
-# Cliente público: usado só para validar login (respeita as regras normais do Supabase Auth)
+# Cliente público: usado só para validar login
 supabase_public: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-# Cliente admin: usado para criar/listar/apagar usuários e ler a tabela profiles sem restrição de RLS
+# Cliente admin: acesso completo sem restrição de RLS
 supabase_admin: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 
@@ -52,6 +49,8 @@ class PostData(BaseModel):
     title: str
     content: str
     author: str
+    tag: Optional[str] = "RH"
+    urgent: Optional[bool] = False
 
 
 @app.get("/")
@@ -129,7 +128,7 @@ async def create_user(data: UserData):
             {
                 "email": data.email,
                 "password": data.password,
-                "email_confirm": True,  # dispensa a confirmação por e-mail
+                "email_confirm": True,
             }
         )
     except Exception as e:
@@ -166,18 +165,39 @@ async def delete_user(user_id: str):
 # ---------------------------------------------------------------------------
 @app.get("/api/posts")
 async def list_posts():
-    res = (
-        supabase_admin.table("posts")
-        .select("*")
-        .order("created_at", desc=True)
-        .execute()
-    )
-    return res.data
+    try:
+        res = (
+            supabase_admin.table("posts")
+            .select("*")
+            .order("created_at", desc=True)
+            .execute()
+        )
+        return res.data
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.post("/api/posts")
 async def create_post(data: PostData):
-    res = supabase_admin.table("posts").insert(
-        {"title": data.title, "content": data.content, "author": data.author}
-    ).execute()
-    return res.data[0] if res.data else {}
+    try:
+        res = supabase_admin.table("posts").insert(
+            {
+                "title": data.title,
+                "content": data.content,
+                "author": data.author,
+                "tag": data.tag,
+                "urgent": data.urgent,
+            }
+        ).execute()
+        return res.data[0] if res.data else {}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.delete("/api/posts/{post_id}")
+async def delete_post(post_id: str):
+    try:
+        supabase_admin.table("posts").delete().eq("id", post_id).execute()
+        return {"status": "deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
