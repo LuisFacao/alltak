@@ -307,7 +307,7 @@
   <header class="topbar app-protected" id="app-header">
     <div class="brand">
       <div class="badge">
-        <img src="logo_4.jpg" alt="Logo Alltak" class="brand-logo-img">
+        <img src="logo.jpg" alt="Logo Alltak" class="brand-logo-img">
       </div>
       <span>Alltak</span>
     </div>
@@ -678,8 +678,6 @@
 const API_URL = 'https://alltak.onrender.com/api';
 
 // Integração real com o backend (Supabase via FastAPI).
-// Dados de login, usuários e comunicados agora são compartilhados entre
-// todos os dispositivos, em vez de ficarem presos no localStorage local.
 const Database = {
     async login(email, password) {
         const res = await fetch(`${API_URL}/auth/login`, {
@@ -688,15 +686,13 @@ const Database = {
             body: JSON.stringify({ email, password })
         });
         if (!res.ok) throw new Error('Credenciais inválidas');
-        return await res.json(); // { token, user: { id, email, role } }
+        return await res.json();
     },
     async getUsersRaw() {
         const res = await fetch(`${API_URL}/users`);
         if (!res.ok) throw new Error('Erro ao buscar usuários');
-        return await res.json(); // array de profiles [{ id, email, role, initial }, ...]
+        return await res.json();
     },
-    // Mantém o formato { email: {password, role, initial} } que o restante do app espera,
-    // mas sem senha (ela não é mais comparada no navegador — o backend valida via Supabase Auth).
     async getUsers() {
         const list = await this.getUsersRaw();
         const map = {};
@@ -725,7 +721,7 @@ const Database = {
     async getPosts() {
         const res = await fetch(`${API_URL}/posts`);
         if (!res.ok) throw new Error('Erro ao buscar comunicados');
-        return await res.json(); // [{ id, title, content, author, created_at }, ...]
+        return await res.json();
     },
     async createPost(title, content, author) {
         const res = await fetch(`${API_URL}/posts`, {
@@ -775,9 +771,8 @@ async function handleLogin() {
     const errorEl = document.getElementById('login-error-msg');
 
     try {
-        // A senha é validada pelo backend/Supabase Auth, nunca comparada aqui no navegador.
         const { token, user } = await Database.login(emailInp, passInp);
-        await initDatabase(); // atualiza VALID_USERS para o resto do app (dropdowns etc.)
+        await initDatabase();
 
         if (errorEl) errorEl.style.display = 'none';
         localStorage.setItem('alltak_token', token);
@@ -1339,7 +1334,6 @@ function handleNotificationClick() {
   localStorage.removeItem('alltak_new_notification'); checkNotificationState(); go('mural');
 }
 
-// Configuração interativa das estrelas de avaliação
 document.querySelectorAll('#stars-container svg').forEach(star => {
     star.addEventListener('click', function() {
         selectedRating = parseInt(this.getAttribute('data-star'));
@@ -1350,14 +1344,12 @@ document.querySelectorAll('#stars-container svg').forEach(star => {
     });
 });
 
-// Busca dinâmica no mural
 document.getElementById('search-input')?.addEventListener('input', function() {
     const currentActiveChip = document.querySelector('#mural-filters .chip.on');
     const activeTag = currentActiveChip ? currentActiveChip.getAttribute('data-filter') : 'Todos';
     renderMural(activeTag, this.value);
 });
 
-// Filtros em tempo real por Categoria no Mural
 document.querySelectorAll('#mural-filters .chip').forEach(chip => {
     chip.addEventListener('click', function() {
         document.querySelectorAll('#mural-filters .chip').forEach(c => c.classList.remove('on'));
