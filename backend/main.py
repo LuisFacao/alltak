@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -6,9 +7,7 @@ from supabase import create_client, Client
 
 app = FastAPI()
 
-# ---------------------------------------------------------------------------
-# CONFIGURAÇÃO DE CORS (Permite que o Vercel acesse a API no Render)
-# ---------------------------------------------------------------------------
+# 1. CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,148 +16,168 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------------------------------------------------------------------------
-# CONEXÃO COM O SUPABASE
-# ---------------------------------------------------------------------------
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-# Prioriza a Service Role Key para poder cadastrar usuários sem confirmação
-SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_KEY", "")
+# 2. Conexão com Supabase
+# SUPABASE_URL      -> Project Settings > API > Project URL
+# SUPABASE_KEY      -> Project Settings > API > anon public key
+# SUPABASE_SERVICE_KEY -> Project Settings > API > service_role key (SECRETA! nunca exponha no front-end)
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 
-supabase_admin: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+if not SUPABASE_URL or not SUPABASE_ANON_KEY or not SUPABASE_SERVICE_KEY:
+    raise ValueError(
+        "As variáveis SUPABASE_URL, SUPABASE_KEY e SUPABASE_SERVICE_KEY precisam estar configuradas!"
+    )
+
+# Cliente público: usado só para validar login (respeita as regras normais do Supabase Auth)
+supabase_public: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+# Cliente admin: usado para criar/listar/apagar usuários e ler a tabela profiles sem restrição de RLS
+supabase_admin: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 
-# ---------------------------------------------------------------------------
-# MODELOS DE DADOS (Pydantic)
-# ---------------------------------------------------------------------------
-class UserCreate(BaseModel):
+# 3. Modelos de dados
+class LoginData(BaseModel):
     email: str
     password: str
-    role: str = "user"
-    initial: str = "U"
 
-class PostCreate(BaseModel):
+
+class UserData(BaseModel):
+    email: str
+    password: Optional[str] = None
+    role: str = "user"
+
+
+class PostData(BaseModel):
     title: str
     content: str
     author: str
-    tag: str = "RH"
-    urgent: bool = False
 
-class FeedbackCreate(BaseModel):
-    user_email: str
-    message: str
-    category: str = "Geral"
+
+@app.get("/")
+def read_root():
+    return {"status": "API online e rodando!"}
 
 
 # ---------------------------------------------------------------------------
-# ROTAS DE USUÁRIOS E PERFIS
+# LOGIN
 # ---------------------------------------------------------------------------
+@app.options("/api/auth/login")
+async def options_login():
+    return {}
 
-async def _process_user_registration(user: UserCreate):
+
+@app.post("/api/auth/login")
+async def login(data: LoginData):
     try:
-        # 1. Cria a conta no Supabase Auth
-        auth_res = supabase_admin.auth.admin.create_user({
-            "email": user.email,
-            "password": user.password,
-            "email_confirm": True
-        })
-        user_id = auth_res.user.id
+        auth_res = supabase_public.auth.sign_in_with_password(
+            {"email": data.email, "password": data.password}
+        )
+    except Exception:
+        raise HTTPException(status_code=401, detail="E-mail ou senha inválidos")
 
-        # 2. Salva/Atualiza os dados na tabela profiles
-        profile_data = {
+    if not auth_res.user or not auth_res.session:
+        raise HTTPException(status_code=401, detail="E-mail ou senha inválidos")
+
+    user_id = auth_res.user.id
+
+    profile = (
+        supabase_admin.table("profiles")
+        .select("id, email, role, initial")
+        .eq("id", user_id)
+        .single()
+        .execute()
+    )
+
+    if not profile.data:
+        raise HTTPException(
+            status_code=404,
+            detail="Login válido, mas não existe um registro em 'profiles' para este usuário.",
+        )
+
+    return {
+        "token": auth_res.session.access_token,
+        "user": {
             "id": user_id,
-            "email": user.email,
-            "role": user.role,
-            "initial": user.initial
-        }
-        supabase_admin.table("profiles").upsert(profile_data).execute()
-
-        return {"status": "success", "user_id": user_id, "email": user.email}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+            "email": profile.data.get("email", data.email),
+            "role": profile.data.get("role", "user"),
+            "initial": profile.data.get("initial"),
+        },
+    }
 
 
-# Rota POST para /api/users (Corrige o erro 405 Method Not Allowed)
-@app.post("/api/users")
-async def register_user_endpoint(user: UserCreate):
-    return await _process_user_registration(user)
-
-
-# Rota POST alternativa /api/register
-@app.post("/api/register")
-async def register_user_alias(user: UserCreate):
-    return await _process_user_registration(user)
-
-
-# Rota GET para listar usuários
+# ---------------------------------------------------------------------------
+# USUÁRIOS
+# ---------------------------------------------------------------------------
 @app.get("/api/users")
-async def get_users():
+async def list_users():
+    res = (
+        supabase_admin.table("profiles")
+        .select("id, email, role, initial")
+        .execute()
+    )
+    return res.data
+
+
+@app.post("/api/users")
+async def create_user(data: UserData):
+    if not data.password:
+        raise HTTPException(status_code=400, detail="Senha é obrigatória para criar usuário")
+
     try:
-        response = supabase_admin.table("profiles").select("*").execute()
-        return response.data
+        created = supabase_admin.auth.admin.create_user(
+            {
+                "email": data.email,
+                "password": data.password,
+                "email_confirm": True,  # dispensa a confirmação por e-mail
+            }
+        )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+    new_id = created.user.id
+    initial = data.email[:2].upper()
+
+    supabase_admin.table("profiles").insert(
+        {
+            "id": new_id,
+            "email": data.email,
+            "role": data.role,
+            "initial": initial,
+        }
+    ).execute()
+
+    return {"id": new_id, "email": data.email, "role": data.role, "initial": initial}
+
+
+@app.delete("/api/users/{user_id}")
+async def delete_user(user_id: str):
+    try:
+        supabase_admin.auth.admin.delete_user(user_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    supabase_admin.table("profiles").delete().eq("id", user_id).execute()
+    return {"status": "deleted"}
+
 
 # ---------------------------------------------------------------------------
-# ROTAS DE COMUNICADOS (POSTS)
+# POSTS / COMUNICADOS
 # ---------------------------------------------------------------------------
-
 @app.get("/api/posts")
-async def get_posts():
-    try:
-        response = supabase_admin.table("posts").select("*").order("created_at", desc=True).execute()
-        return response.data
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+async def list_posts():
+    res = (
+        supabase_admin.table("posts")
+        .select("*")
+        .order("created_at", desc=True)
+        .execute()
+    )
+    return res.data
 
 
 @app.post("/api/posts")
-async def create_post(post: PostCreate):
-    try:
-        data = {
-            "title": post.title,
-            "content": post.content,
-            "author": post.author,
-            "tag": post.tag,
-            "urgent": post.urgent
-        }
-        response = supabase_admin.table("posts").insert(data).execute()
-        return response.data
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.delete("/api/posts/{post_id}")
-async def delete_post(post_id: str):
-    try:
-        supabase_admin.table("posts").delete().eq("id", post_id).execute()
-        return {"status": "success", "message": f"Post {post_id} deletado"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-# ---------------------------------------------------------------------------
-# ROTAS DE FEEDBACKS / SUGESTÕES
-# ---------------------------------------------------------------------------
-
-@app.get("/api/feedbacks")
-async def get_feedbacks():
-    try:
-        response = supabase_admin.table("feedbacks").select("*").order("created_at", desc=True).execute()
-        return response.data
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.post("/api/feedbacks")
-async def create_feedback(feedback: FeedbackCreate):
-    try:
-        data = {
-            "user_email": feedback.user_email,
-            "message": feedback.message,
-            "category": feedback.category
-        }
-        response = supabase_admin.table("feedbacks").insert(data).execute()
-        return response.data
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+async def create_post(data: PostData):
+    res = supabase_admin.table("posts").insert(
+        {"title": data.title, "content": data.content, "author": data.author}
+    ).execute()
+    return res.data[0] if res.data else {}
