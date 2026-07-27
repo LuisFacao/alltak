@@ -21,7 +21,7 @@ app.add_middleware(
 # CONEXÃO COM O SUPABASE
 # ---------------------------------------------------------------------------
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-# Pega a Service Role Key se existir, senão usa a KEY padrão
+# Prioriza a Service Role Key para poder cadastrar usuários sem confirmação
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_KEY", "")
 
 supabase_admin: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -53,11 +53,9 @@ class FeedbackCreate(BaseModel):
 # ROTAS DE USUÁRIOS E PERFIS
 # ---------------------------------------------------------------------------
 
-# Cadastrar Novo Usuário
-@app.post("/api/register")
-async def register_user(user: UserCreate):
+async def _process_user_registration(user: UserCreate):
     try:
-        # 1. Cria a conta de autenticação no Supabase
+        # 1. Cria a conta no Supabase Auth
         auth_res = supabase_admin.auth.admin.create_user({
             "email": user.email,
             "password": user.password,
@@ -65,7 +63,7 @@ async def register_user(user: UserCreate):
         })
         user_id = auth_res.user.id
 
-        # 2. Salva o perfil na tabela public.profiles
+        # 2. Salva/Atualiza os dados na tabela profiles
         profile_data = {
             "id": user_id,
             "email": user.email,
@@ -78,7 +76,20 @@ async def register_user(user: UserCreate):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-# Listar todos os usuários/perfis
+
+# Rota POST para /api/users (Corrige o erro 405 Method Not Allowed)
+@app.post("/api/users")
+async def register_user_endpoint(user: UserCreate):
+    return await _process_user_registration(user)
+
+
+# Rota POST alternativa /api/register
+@app.post("/api/register")
+async def register_user_alias(user: UserCreate):
+    return await _process_user_registration(user)
+
+
+# Rota GET para listar usuários
 @app.get("/api/users")
 async def get_users():
     try:
@@ -100,6 +111,7 @@ async def get_posts():
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @app.post("/api/posts")
 async def create_post(post: PostCreate):
     try:
@@ -114,6 +126,7 @@ async def create_post(post: PostCreate):
         return response.data
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 
 @app.delete("/api/posts/{post_id}")
 async def delete_post(post_id: str):
@@ -135,6 +148,7 @@ async def get_feedbacks():
         return response.data
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 
 @app.post("/api/feedbacks")
 async def create_feedback(feedback: FeedbackCreate):
