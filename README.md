@@ -1,19 +1,19 @@
-# 📱 Intranet Alltak — Documentação do Sistema
+# 📱 Projeto Alltak
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com/)
 
-Este repositório contém o código-fonte completo da **Intranet Alltak**, uma plataforma web e mobile (PWA/App Nativo) desenvolvida para centralizar a comunicação interna, distribuição de informativos, agenda corporativa, canal de sugestões/feedback e disponibilização de holerites para os colaboradores.
+Este repositório contém o código-fonte completo da **Intranet Alltak**, uma plataforma web e mobile (App via Appilix) desenvolvida para centralizar a comunicação interna: mural de comunicados, agenda corporativa, canal de feedback e disponibilização de holerites para os colaboradores.
 
 ---
 
 ## 📋 Sumário
 - [🛠️ Tecnologias Utilizadas](#️-tecnologias-utilizadas)
-- [📂 Estrutura e Explicativo do Código](#-estrutura-e-explicativo-do-código)
-  - [🐍 Backend (`main.py`)](#-backend-mainpy---fastapi--supabase)
-  - [💻 Frontend (`index.html`)](#-frontend-indexhtml---spa--vanilla-js)
+- [📂 Estrutura de Pastas](#-estrutura-de-pastas)
+- [🐍 Backend (`back/main.py`)](#-backend-backmainpy---fastapi--supabase)
+- [💻 Frontend (`front/`)](#-frontend-front---spa--vanilla-js)
 - [🎨 Funcionalidades do Aplicativo](#-funcionalidades-do-aplicativo)
 - [🚀 Como Executar o Projeto Localmente](#-como-executar-o-projeto-localmente)
 - [📌 Publicação e Deploy](#-publicação-e-deploy)
@@ -22,66 +22,71 @@ Este repositório contém o código-fonte completo da **Intranet Alltak**, uma p
 
 ## 🛠️ Tecnologias Utilizadas
 
-A arquitetura da solução foi projetada com foco em alta performance, simplicidade e escalabilidade:
+### 1. Frontend (Interface do Usuário) — pasta `front/`
+* **HTML5 & CSS3**: interface do tipo SPA, com telas (`sections`) alternadas via JavaScript, tipografia com `Space Mono` e paleta de cores da marca Alltak (`style.css`).
+* **JavaScript Vanilla (ES6+)**: sem frameworks — usa `fetch`/`async-await` para consumir a API, alterna telas com a função `go(id)` e mantém os dados atualizados via *auto-refresh* (`startAutoRefresh`).
+* **Single Page Application (SPA)**: todas as telas (login, home, mural, calendário, feedback, holerites, admin) vivem no mesmo `index.html`.
 
-### 1. Frontend (Interface do Usuário)
-* **HTML5 & CSS3 Avançado**: Interface *Mobile-First*, responsiva, utilizando CSS Grid, Flexbox, variáveis nativas CSS (`var(--...)`) e tipografia moderna (*Inter*, *Anton* e *Space Mono*).
-* **JavaScript Vanilla (ES6+)**: Sem frameworks pesados no client-side. Utiliza requisições assíncronas com `fetch` / `async/await`, gerenciamento de estado via `localStorage` e mecanismo de *Polling* para atualizações em tempo real.
-* **Single Page Application (SPA)**: Navegação fluida entre telas sem necessidade de recarregamento da página.
+### 2. Appilix (Transformação para App Mobile)
+* **Plataforma Appilix**: empacota a aplicação web (`front/`) e a converte em um **aplicativo móvel** para Android/iOS, permitindo instalação na tela inicial dos colaboradores e navegação em modo *fullscreen*, sem precisar programar nada nativo.
 
-### 2. Applix (Transformação para App Mobile)
-* **Plataforma Applix**: Utilizada para empacotar a aplicação web responsiva e convertê-la em um **aplicativo móvel nativo / PWA** para iOS e Android, permitindo instalação na tela inicial dos colaboradores, modo *fullscreen* e barra de navegação responsiva.
-
-### 3. Backend (API RESTful)
-* **Python 3.10+**: Linguagem principal do ecossistema do servidor.
-* **FastAPI**: Framework web assíncrono de altíssima performance para construção da API REST.
-* **Pydantic**: Validação estrita de esquemas de dados de entrada e saída (`BaseModel`).
-* **Uvicorn**: Servidor ASGI leve e rápido.
-* **CORS Middleware**: Habilitado para permitir requisições cross-origin com o aplicativo mobile.
+### 3. Backend (API RESTful) — pasta `back/`
+* **Python 3.13**: linguagem principal do servidor.
+* **FastAPI**: framework assíncrono usado para construir a API REST (`main.py`).
+* **Pydantic**: validação estrita dos dados de entrada (`BaseModel`) em cada rota.
+* **Uvicorn**: servidor ASGI que executa a aplicação em produção.
+* **CORS Middleware**: liberado (`allow_origins=["*"]`) para permitir que o app/site consuma a API sem bloqueios do navegador.
 
 ### 4. Banco de Dados & Autenticação
-* **Supabase (PostgreSQL BaaS)**: Plataforma de Backend-as-a-Service responsável pelo banco de dados relacional e controle de autenticação de usuários.
-* **Supabase Auth**: Gerenciamento seguro de sessões e tokens JWT.
-* **Duplo Cliente Supabase**:
-  * **Cliente Público (`SUPABASE_KEY` / Anon Key)**: Utilizado para validação de logins normais de usuários.
-  * **Cliente Admin (`SUPABASE_SERVICE_KEY` / Service Role Key)**: Utilizado exclusivamente no backend para operações administrativas (criação/deleção de contas na Auth API e consultas diretas sem restrições de RLS na tabela `profiles`).
+* **Supabase (PostgreSQL BaaS)**: banco de dados relacional + autenticação de usuários.
+* **Supabase Auth**: gerenciamento de login e sessões (`sign_in_with_password`).
+* **Duplo cliente Supabase**, ambos criados em `main.py`:
+  * **Cliente público** (`supabase_public`, via `SUPABASE_KEY`): usado só para validar login.
+  * **Cliente admin** (`supabase_admin`, via `SUPABASE_SERVICE_KEY`): usado para todas as operações administrativas (criar/apagar usuário, ler/gravar em `profiles`, `posts`, `events`, `feedbacks`, `direct_feedbacks`, `payslips`), sem restrição de RLS.
 
 ### 5. Hospedagem & Deploy
-* **Render.com**: O Backend FastAPI e os arquivos estáticos estão hospedados no Render (`https://alltak.onrender.com/api`), contando com deploy contínuo via GitHub, certificados HTTPS/SSL nativos e gestão de variáveis de ambiente.
+* **Render.com**: hospeda o backend FastAPI (`https://alltak.onrender.com`), com deploy contínuo a partir do GitHub, HTTPS/SSL nativo e variáveis de ambiente configuráveis no painel.
 
 ---
 
-## 📂 Estrutura e Explicativo do Código
+## 📂 Estrutura de Pastas
+
+```
+├── back/                      # Backend — API FastAPI
+│   ├── main.py                 # Rotas da API e integração com o Supabase
+│   └── requirements.txt        # Dependências Python do backend
+│
+└── front/                     # Frontend — aplicação web (SPA)
+    ├── index.html               # Estrutura e telas da aplicação
+    ├── style.css                 # Estilos visuais
+    ├── script.js                  # Funções auxiliares de comunicação com a API
+    └── logo.jpg                   # Logotipo da Alltak
+```
+
+> ⚠️ O arquivo `main_cpython-313.pyc` é bytecode compilado do Python (gerado automaticamente) e **não deve ser versionado** — adicione `__pycache__/` e `*.pyc` ao `.gitignore`.
+> ⚠️ O arquivo de dependências está com o nome `requirementes.txt` (erro de digitação). Renomeie para **`requirements.txt`** antes do deploy, pois é esse o nome que o Render espera.
 
 ---
 
-### 🐍 Backend: `main.py` (FastAPI + Supabase)
+## 🐍 Backend: `back/main.py` (FastAPI + Supabase)
 
-#### 1. Conexão e Inicialização dos Clientes Supabase
-Neste trecho, o servidor valida as variáveis de ambiente necessárias e inicializa as duas instâncias de conexão com permissões distintas.
-
+### 1. Conexão e inicialização dos clientes Supabase
 ```python
-# Carregamento das variáveis de ambiente
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_KEY")
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 
 if not SUPABASE_URL or not SUPABASE_ANON_KEY or not SUPABASE_SERVICE_KEY:
-    raise ValueError("As variáveis SUPABASE_URL, SUPABASE_KEY e SUPABASE_SERVICE_KEY precisam estar configuradas!")
+    raise ValueError(
+        "As variáveis SUPABASE_URL, SUPABASE_KEY e SUPABASE_SERVICE_KEY precisam estar configuradas!"
+    )
 
-# Cliente público: validação de login respeitando as regras padrão de RLS
 supabase_public: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-# Cliente admin: privilégios totais para criar/deletar usuários e consultar a tabela profiles
 supabase_admin: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 ```
-> **Explicação**: Isola as operações comuns de autenticação das operações administrativas críticas que necessitam de bypass de permissões (Service Role).
+> **Explicação**: separa as operações comuns de login (cliente público, respeitando RLS) das operações administrativas críticas (cliente admin, com bypass total de permissões). Se alguma variável de ambiente estiver faltando, a API nem sobe.
 
----
-
-#### 2. Modelagem de Dados com Pydantic
-Definição dos contratos de dados esperados nas requisições HTTP POST/PUT.
-
+### 2. Modelagem de dados com Pydantic
 ```python
 class LoginData(BaseModel):
     email: str
@@ -105,13 +110,9 @@ class PayslipData(BaseModel):
     file_name: str
     file_data: str
 ```
-> **Explicação**: Garante a validação automática dos tipos de dados enviados antes da execução das queries no banco de dados.
+> **Explicação**: cada classe define o formato esperado do corpo das requisições. O FastAPI valida automaticamente os tipos e retorna erro `422` se algo vier fora do padrão.
 
----
-
-#### 3. Endpoint de Autenticação (`/api/auth/login`)
-Efetua o acesso do usuário no Supabase Auth e retorna seu perfil de acesso (`admin` ou `funcionario`).
-
+### 3. Endpoint de autenticação (`/api/auth/login`)
 ```python
 @app.post("/api/auth/login")
 async def login(data: LoginData):
@@ -124,7 +125,6 @@ async def login(data: LoginData):
 
     user_id = auth_res.user.id
 
-    # Busca permissões e metadados no banco
     profile = (
         supabase_admin.table("profiles")
         .select("id, email, role, initial")
@@ -143,46 +143,30 @@ async def login(data: LoginData):
         },
     }
 ```
-> **Explicação**: Autentica as credenciais na Auth API do Supabase e lê a tabela `profiles` para determinar quais funcionalidades o usuário poderá acessar no aplicativo.
+> **Explicação**: autentica as credenciais na Auth API do Supabase e busca o perfil na tabela `profiles` (papel `admin`/`user` e iniciais) para o frontend liberar as telas certas.
 
----
-
-#### 4. Cadastro de Usuários pelo Administrador (`/api/users`)
-Permite criar novas contas de colaboradores diretamente pelo painel administrativo.
-
+### 4. Cadastro de usuários pelo admin (`/api/users`)
 ```python
 @app.post("/api/users")
 async def create_user(data: UserData):
-    # Cria o usuário na Auth API sem necessidade de confirmação por e-mail
+    if not data.password:
+        raise HTTPException(status_code=400, detail="Senha é obrigatória para criar usuário")
+
     created = supabase_admin.auth.admin.create_user(
-        {
-            "email": data.email,
-            "password": data.password,
-            "email_confirm": True,
-        }
+        {"email": data.email, "password": data.password, "email_confirm": True}
     )
     new_id = created.user.id
     initial = data.email[:2].upper()
 
-    # Vincula o perfil na tabela 'profiles'
     supabase_admin.table("profiles").insert(
-        {
-            "id": new_id,
-            "email": data.email,
-            "role": data.role,
-            "initial": initial,
-        }
+        {"id": new_id, "email": data.email, "role": data.role, "initial": initial}
     ).execute()
 
     return {"id": new_id, "email": data.email, "role": data.role, "initial": initial}
 ```
-> **Explicação**: Cria o registro de autenticação e popula os metadados do perfil em uma única transação lógica no backend.
+> **Explicação**: cria o usuário direto na Auth API (já com e-mail confirmado, sem depender de link de confirmação) e, em seguida, grava o perfil correspondente na tabela `profiles`.
 
----
-
-#### 5. Módulo de Holerites (`/api/payslips`)
-Responsável pelo envio e recuperação dos contracheques codificados em Base64.
-
+### 5. Módulo de holerites (`/api/payslips`)
 ```python
 @app.get("/api/payslips")
 async def list_payslips(recipient: Optional[str] = None):
@@ -192,136 +176,109 @@ async def list_payslips(recipient: Optional[str] = None):
     res = query.execute()
     return res.data
 ```
-> **Explicação**: Filtra os holerites por e-mail do colaborador logado, garantindo a privacidade dos dados financeiros.
+> **Explicação**: filtra os holerites pelo e-mail (`recipient`) do colaborador logado, garantindo que cada um veja apenas os seus próprios documentos.
+
+### 6. Demais módulos da API
+Seguindo o mesmo padrão (`GET`, `POST`, `DELETE`), o `main.py` também expõe:
+| Rota | Função |
+|---|---|
+| `/api/posts` | Comunicados do mural (criar, listar, excluir) |
+| `/api/events` | Agenda/calendário de eventos da empresa |
+| `/api/feedback` | Canal de feedback geral (sugestões e avaliações) |
+| `/api/direct-feedbacks` | Feedback direcionado do admin/RH para um colaborador específico |
 
 ---
 
-### 💻 Frontend: `index.html` (SPA + Vanilla JS)
+## 💻 Frontend: `front/` (SPA + Vanilla JS)
 
-#### 1. Camada de Integração de Dados (`Database Object`)
-Objeto utilitário responsável pela comunicação HTTP com a API no Render.
-
+### 1. Camada de integração com a API (`front/script.js`)
 ```javascript
-const API_URL = 'https://alltak.onrender.com/api';
+const API_URL = "https://alltak.onrender.com";
 
-const Database = {
-    async login(email, password) {
-        const res = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        if (!res.ok) throw new Error('Credenciais inválidas');
-        return await res.json();
-    },
-    async getPosts() {
-        const res = await fetch(`${API_URL}/posts`);
-        return await res.json();
-    },
-    async getPayslips(recipient) {
-        const url = recipient ? `${API_URL}/payslips?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/payslips`;
-        const res = await fetch(url);
-        return await res.json();
-    }
-};
-```
-> **Explicação**: Abstrai as chamadas assíncronas `fetch`, mantendo a lógica de interface separada da camada de rede.
+async function login(email, password) {
+  try {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
----
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "Erro ao realizar login");
 
-#### 2. Mecanismo de Atualização Automática (*Polling / Auto-Refresh*)
-Mantém a aplicação atualizada verificando novos dados periodicamente em segundo plano.
-
-```javascript
-let autoRefreshTimer = null;
-const AUTO_REFRESH_MS = 6000; // Consulta novidades a cada 6 segundos
-
-async function autoRefreshData() {
-  const email = localStorage.getItem('alltak_user_email');
-  const role = localStorage.getItem('alltak_role');
-  if (!email || localStorage.getItem('alltak_logged') !== 'true') return;
-
-  const prevPostIds = new Set(postsData.map(p => p.id));
-  await loadSharedData(email, role);
-
-  // Exibe badge de notificação caso chegue um novo comunicado
-  const hasNewPost = postsData.some(p => !prevPostIds.has(p.id));
-  if (hasNewPost) {
-    localStorage.setItem('alltak_new_notification', 'true');
-    checkNotificationState();
+    return data;
+  } catch (error) {
+    console.error("Erro no login:", error.message);
+    alert(error.message);
   }
-
-  refreshAllViews();
-}
-
-function startAutoRefresh() {
-  stopAutoRefresh();
-  autoRefreshTimer = setInterval(autoRefreshData, AUTO_REFRESH_MS);
 }
 ```
-> **Explicação**: Garante que comunicados urgentes ou holerites apareçam na tela do colaborador em tempo real, sem necessidade de atualizar a página.
+> **Explicação**: abstrai as chamadas `fetch`, tratando o corpo da resposta e exibindo alertas amigáveis em caso de erro (senha incorreta, e-mail inválido etc.). O mesmo padrão se repete em `getUsers()` e `createUser()`.
 
----
+### 2. Navegação entre telas — SPA (`front/index.html`)
+O `index.html` concentra todas as telas do app em `<section class="screen" id="...">`, alternadas via JavaScript:
 
-#### 3. Controle de Permissões na Interface (`applyRoleUI`)
-Adequa a navegação e a visibilidade dos elementos com base no perfil do usuário.
+| Seção (`id`) | Função |
+|---|---|
+| `#acesso` | Tela de login (e-mail corporativo + senha) |
+| `#home` | Início, com comunicado em destaque e atalhos rápidos |
+| `#mural` | Lista de comunicados, com filtro por tag e busca |
+| `#institucional` | Documentos e materiais institucionais |
+| `#calendario` | Calendário mensal de eventos |
+| `#feedback` | Formulário de feedback + feedbacks diretos recebidos |
+| `#holerites` | Holerites do colaborador logado |
+| `#admin` | Painel administrativo (comunicados, agenda, feedback, usuários, holerites, métricas) |
 
+```javascript
+function go(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+```
+> **Explicação**: em vez de recarregar a página, a função `go(id)` simplesmente esconde a tela atual e exibe a tela de destino — é isso que dá a sensação de app nativo.
+
+### 3. Controle de permissões na interface (`applyRoleUI`)
 ```javascript
 function applyRoleUI(role) {
-    const isAdmin = role === 'admin';
-    document.querySelectorAll('.admin-only-nav').forEach(el => el.style.display = isAdmin ? 'flex' : 'none');
-
-    const pill = document.getElementById('role-pill');
-    if(pill) pill.style.display = isAdmin ? 'inline-flex' : 'none';
-
-    if(isAdmin) {
-        renderAdminPosts();
-        renderAdminEvents();
-        renderAdminFeedback();
-        renderAdminMetrics();
-        populateRecipientDropdown();
-        populatePayslipRecipientDropdown();
-        renderAdminPayslips();
-    }
+  const isAdmin = role === 'admin';
+  document.getElementById('role-pill').style.display = isAdmin ? 'inline-flex' : 'none';
+  // exibe/esconde abas e botões exclusivos do admin
 }
 ```
-> **Explicação**: Oculta botões e abas administrativas para colaboradores padrão e inicializa os módulos de gestão para administradores.
+> **Explicação**: com base no `role` retornado pelo login (`admin` ou `user`), a interface libera ou oculta o Painel Admin e suas funcionalidades — sem isso, um colaborador comum não veria essas opções.
+
+### 4. Estilo visual (`front/style.css`)
+Define a identidade visual da Alltak: cores da marca, tipografia (`Space Mono` para elementos técnicos), o grid do calendário, os cards do mural, as abas do painel admin e a barra de navegação inferior (`bottomnav`) que simula um app mobile nativo.
 
 ---
 
 ## 🎨 Funcionalidades do Aplicativo
 
-* 🔐 **Login Seguro**: Autenticação com e-mail corporativo e senha.
-* 🏠 **Dashboard Principal**: Destaque para avisos urgentes, atalhos rápidos e comunicados recentes.
-* 📢 **Mural de Comunicados**: Categorização por tags (`RH`, `TI`, `Financeiro`, `Eventos`) e busca em tempo real.
-* 📅 **Agenda Institucional**: Calendário corporativo com marcadores visuais por tipo de evento.
-* 🏢 **Institucional**: Missão, Visão, Valores e área de download de documentos e políticas em PDF.
-* 💬 **Canal de Feedback**: Envio de sugestões com avaliação por estrelas (1 a 5) e suporte a resposta/feedback direto individual.
-* 📄 **Holerites Privados**: Consulta e download individual dos demonstrativos de pagamento.
-* ⚙️ **Painel Administrativo Completo**:
-  * Publicação e exclusão de comunicados e eventos na agenda.
-  * Gerenciamento de feedbacks recebidos.
-  * Cadastro e remoção de contas de usuários.
-  * Envio individual ou upload em massa de holerites (com vínculo automático pelo nome do arquivo).
-  * Dashboard de métricas e acessos do sistema.
+* 🔐 **Login Seguro**: autenticação com e-mail corporativo e senha via Supabase Auth.
+* 🏠 **Home**: comunicado em destaque e atalhos rápidos.
+* 📢 **Mural de Comunicados**: filtro por tag e busca por título.
+* 📅 **Agenda Institucional**: calendário mensal com eventos coloridos por categoria.
+* 🏢 **Institucional**: documentos e materiais da empresa.
+* 💬 **Canal de Feedback**: avaliação por estrelas + feedback direcionado (admin → colaborador).
+* 📄 **Holerites Privados**: consulta individual dos holerites por colaborador.
+* ⚙️ **Painel Administrativo**: publicação/exclusão de comunicados e eventos, gestão de usuários, envio individual ou em lote de holerites e métricas gerais.
 
 ---
 
 ## 🚀 Como Executar o Projeto Localmente
 
 ### Pré-requisitos
-* **Python 3.10+** instalado
+* **Python 3.10+**
 * Projeto ativo no **Supabase**
 
-### 1. Configuração do Backend
+### 1. Backend (`back/`)
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/intranet-alltak.git
-cd intranet-alltak/backend
+git clone https://github.com/seu-usuario/projeto-alltak.git
+cd projeto-alltak/back
 
 # Crie e ative o ambiente virtual
 python -m venv venv
-
 # Windows:
 venv\Scripts\activate
 # Linux/macOS:
@@ -339,17 +296,21 @@ export SUPABASE_SERVICE_KEY="sua-chave-service-role-secreta"
 uvicorn main:app --reload
 ```
 
-### 2. Configuração do Frontend
-1. Abra o arquivo `index.html` diretamente em seu navegador web.
-2. Para apontar para seu backend local durante os testes, edite a constante `API_URL` no início do arquivo:
+### 2. Frontend (`front/`)
+1. Abra `front/index.html` diretamente no navegador, ou sirva a pasta com `npx serve front`.
+2. Para apontar para o backend local durante os testes, edite a constante no início de `front/script.js`:
    ```javascript
-   const API_URL = 'http://127.0.0.1:8000/api';
+   const API_URL = "http://127.0.0.1:8000";
    ```
 
 ---
 
 ## 📌 Publicação e Deploy
 
-* **Backend**: Hospedado no **Render.com**, executando o comando `uvicorn main:app --host 0.0.0.0 --port $PORT`.
-* **Frontend**: Servido estaticamente na mesma infraestrutura ou via provedor de hospedagem estática.
-* **App Mobile**: A URL de produção gerada no Render foi vinculada ao **Applix** para empacotamento em PWA e aplicativo nativo instalável para iOS e Android.
+* **Backend**: hospedado no **Render.com**, definindo o *Root Directory* como `back/` e o comando de start `uvicorn main:app --host 0.0.0.0 --port $PORT`.
+* **Frontend**: publique a pasta `front/` em um serviço de hospedagem estática (Render Static Site, Netlify, Vercel ou GitHub Pages).
+* **App Mobile**: a URL pública do `front/` é cadastrada no **Appilix**, que empacota o site em um app instalável (Android/iOS) com ícone, nome e splash screen personalizados.
+
+---
+
+<p align="center">Desenvolvido para uso interno da <strong>Alltak</strong>.</p>
