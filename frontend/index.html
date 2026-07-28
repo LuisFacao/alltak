@@ -911,6 +911,87 @@ async function initDatabase() {
     VALID_USERS = await Database.getUsers();
 }
 
+// ---------------------------------------------------------------------------
+// ATUALIZAÇÃO AUTOMÁTICA (polling)
+// Em vez de esperar o usuário dar F5, o app busca os dados no backend
+// periodicamente e re-renderiza as telas sozinho. Assim, quando um admin
+// publica um comunicado, feedback direcionado ou holerite novo, os outros
+// usuários recebem sem precisar recarregar a página.
+// ---------------------------------------------------------------------------
+let autoRefreshTimer = null;
+const AUTO_REFRESH_MS = 15000; // busca novidades a cada 15s
+
+function refreshAllViews() {
+  const role = localStorage.getItem('alltak_role');
+  const email = localStorage.getItem('alltak_user_email');
+
+  renderFeaturedAnnouncement();
+  renderHomeFeed();
+  renderMural();
+  buildCalendar();
+
+  if (email) {
+    renderDirectFeedbackForUser(email);
+    renderUserPayslips(email);
+  }
+
+  if (role === 'admin') {
+    renderAdminPosts();
+    renderAdminEvents();
+    renderAdminFeedback();
+    renderAdminMetrics();
+    renderAdminPayslips();
+  }
+}
+
+async function autoRefreshData() {
+  const email = localStorage.getItem('alltak_user_email');
+  const role = localStorage.getItem('alltak_role');
+  if (!email || localStorage.getItem('alltak_logged') !== 'true') return;
+
+  // Guarda o que já existia antes de buscar, pra saber se chegou algo novo.
+  const prevPostIds = new Set(postsData.map(p => p.id));
+  const prevPayslipIds = new Set(payslipsData.map(p => p.id));
+  const prevDirectIds = new Set(directFeedbacksData.map(d => d.id));
+
+  try {
+    await loadSharedData(email, role);
+  } catch (err) {
+    console.error('Erro na atualização automática:', err);
+    return;
+  }
+
+  const hasNewPost = postsData.some(p => !prevPostIds.has(p.id));
+  const hasNewPayslip = role !== 'admin' && payslipsData.some(p => p.recipient === email && !prevPayslipIds.has(p.id));
+  const hasNewDirect = role !== 'admin' && directFeedbacksData.some(d => d.recipient === email && !prevDirectIds.has(d.id));
+
+  if (hasNewPost || hasNewPayslip || hasNewDirect) {
+    localStorage.setItem('alltak_new_notification', 'true');
+    checkNotificationState();
+  }
+
+  refreshAllViews();
+}
+
+function handleVisibilityRefresh() {
+  if (document.visibilityState === 'visible' && localStorage.getItem('alltak_logged') === 'true') {
+    autoRefreshData();
+  }
+}
+
+function startAutoRefresh() {
+  stopAutoRefresh();
+  autoRefreshTimer = setInterval(autoRefreshData, AUTO_REFRESH_MS);
+  document.addEventListener('visibilitychange', handleVisibilityRefresh);
+  window.addEventListener('focus', handleVisibilityRefresh);
+}
+
+function stopAutoRefresh() {
+  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
+  document.removeEventListener('visibilitychange', handleVisibilityRefresh);
+  window.removeEventListener('focus', handleVisibilityRefresh);
+}
+
 // Comunicados, agenda, feedbacks e holerites agora vivem no Supabase (via API),
 // não mais no localStorage — por isso não há mais funções de "saveXToStorage" aqui.
 
@@ -941,6 +1022,7 @@ async function handleLogin() {
         document.getElementById('acesso').classList.remove('active');
         renderFeaturedAnnouncement(); renderHomeFeed(); renderMural(); buildCalendar();
         go('home');
+        startAutoRefresh();
     } catch (err) {
         if (errorEl) {
             errorEl.innerText = 'E-mail ou senha incorretos. Tente novamente.';
@@ -951,6 +1033,7 @@ async function handleLogin() {
 
 function handleLogout() {
     if(confirm("Deseja sair da sua conta?")) {
+        stopAutoRefresh();
         localStorage.removeItem('alltak_role');
         localStorage.removeItem('alltak_user_email');
         localStorage.removeItem('alltak_logged');
@@ -1569,6 +1652,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('app-main-content').style.display = 'block';
         document.getElementById('acesso').classList.remove('active');
         go('home');
+        startAutoRefresh();
     }
     renderFeaturedAnnouncement(); renderHomeFeed(); renderMural(); buildCalendar(); checkNotificationState();
 });
