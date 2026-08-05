@@ -3,624 +3,237 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alltak - Portal do Colaborador</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <title>Sistema Alltak - Requisições & Comunicação</title>
   <style>
     :root {
-      --bg: #F4F6F9;
-      --card-bg: #FFFFFF;
-      --ink: #1A202C;
-      --line: #E2E8F0;
-      --azul-escuro: #003366;
-      --azul-primario: #0056B3;
-      --azul-claro: #E6F0FA;
-      --amarelo: #D69E2E;
-      --vermelho: #E53E3E;
-      --verde: #2F855A;
-      --cinza-texto: #4A5568;
+      --azul-escuro: #1b2a4a;
+      --azul-medio: #2c4375;
+      --azul-claro: #4a6fa5;
+      --fundo: #f4f6f9;
+      --texto: #333333;
+      --branco: #ffffff;
+      --cinza-claro: #e9ecef;
+      --vermelho: #d9534f;
+      --amarelo: #ffc107;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--fundo); color: var(--texto); padding-bottom: 70px; }
 
-    body {
-      font-family: 'Work Sans', sans-serif;
-      background-color: var(--bg);
-      color: var(--ink);
-      padding-bottom: 90px;
-      -webkit-font-smoothing: antialiased;
-    }
+    /* Header & Navigation */
+    header { background: var(--azul-escuro); color: var(--branco); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .logo { font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+    .user-info { font-size: 14px; opacity: 0.9; }
 
-    /* Header e Barra Superior */
-    header {
-      background: var(--azul-escuro);
-      color: #FFFFFF;
-      padding: 16px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+    /* Layout Containers */
+    .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    /* Home Cards */
+    .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+    .qcard { background: var(--branco); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .qcard:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    .qicon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+    .qicon svg { width: 26px; height: 26px; fill: var(--branco); }
+    .qcard h4 { color: var(--azul-escuro); margin-bottom: 5px; }
+    .qcard p { font-size: 13px; color: #666; }
 
-    .brand h1 {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
+    /* Forms & Cards */
+    .card-block { background: var(--branco); border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .card-block h3 { margin-bottom: 15px; color: var(--azul-escuro); border-bottom: 2px solid var(--cinza-claro); padding-bottom: 8px; }
+    .form-field { margin-bottom: 15px; }
+    .form-field label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+    .form-field select, .form-field input, .form-field textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+    .form-field textarea { resize: vertical; min-height: 100px; }
 
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    /* Rating Stars */
+    .stars { display: flex; gap: 5px; cursor: pointer; }
+    .stars svg { width: 28px; height: 28px; fill: #ccc; transition: fill 0.2s; }
+    .stars svg.filled { fill: var(--amarelo); }
 
-    .user-badge {
-      font-size: 12px;
-      background: rgba(255, 255, 255, 0.15);
-      padding: 5px 12px;
-      border-radius: 20px;
-      color: #E2E8F0;
-      font-family: 'Space Mono', monospace;
-    }
+    /* Buttons */
+    .btn { background: var(--azul-escuro); color: var(--branco); border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; transition: background 0.2s; }
+    .btn:hover { background: var(--azul-medio); }
+    .btn.block { width: 100%; }
 
-    .role-toggle-btn {
-      background: var(--amarelo);
-      color: #1A202C;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+    /* Bottom Navigation Bar */
+    .navbar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--branco); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); border-top: 1px solid var(--cinza-claro); }
+    .navitem { display: flex; flex-direction: column; align-items: center; cursor: pointer; color: #777; font-size: 12px; text-decoration: none; }
+    .navitem svg { width: 22px; height: 22px; fill: #777; margin-bottom: 3px; }
+    .navitem.active, .navitem.active svg { color: var(--azul-escuro); fill: var(--azul-escuro); font-weight: bold; }
 
-    /* Navegação Inferior */
-    .bottomnav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 65px;
-      background: var(--card-bg);
-      display: flex;
-      border-top: 1px solid var(--line);
-      z-index: 200;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    }
+    /* Admin Tab Chips */
+    .admin-tabs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
+    .chip { padding: 8px 16px; background: var(--cinza-claro); border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .chip.on { background: var(--azul-escuro); color: var(--branco); }
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; }
 
-    .navitem {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      color: #718096;
-      cursor: pointer;
-      gap: 3px;
-      transition: color 0.2s;
-    }
-
-    .navitem.active {
-      color: var(--azul-primario);
-      font-weight: 700;
-    }
-
-    .navitem svg {
-      width: 22px;
-      height: 22px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    /* Estrutura de Telas */
-    .screen {
-      display: none;
-      padding: 20px;
-      max-width: 800px;
-      margin: 0 auto;
-      animation: fadeIn 0.25s ease-in-out;
-    }
-
-    .screen.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .screen-title {
-      margin-bottom: 20px;
-      border-bottom: 2px solid var(--azul-primario);
-      padding-bottom: 8px;
-    }
-
-    .screen-title h2 {
-      font-size: 22px;
-      color: var(--azul-escuro);
-    }
-
-    /* Cards e Containers */
-    .card-block {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-      border: 1px solid var(--line);
-    }
-
-    .card-block h3 {
-      font-size: 16px;
-      color: var(--azul-escuro);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* Formulários */
-    .form-field {
-      margin-bottom: 16px;
-    }
-
-    .form-field label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #4A5568;
-    }
-
-    .form-field input[type="text"],
-    .form-field input[type="email"],
-    .form-field select,
-    .form-field textarea {
-      width: 100%;
-      padding: 11px 14px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: inherit;
-      background: #FAFAFA;
-      transition: border-color 0.2s, background 0.2s;
-    }
-
-    .form-field input[type="text"]:focus,
-    .form-field select:focus,
-    .form-field textarea:focus {
-      outline: none;
-      border-color: var(--azul-primario);
-      background: #FFFFFF;
-    }
-
-    .form-field textarea {
-      resize: vertical;
-      min-height: 90px;
-    }
-
-    .form-field input[type="file"] {
-      font-size: 13px;
-      color: #4A5568;
-    }
-
-    /* Botões */
-    .btn {
-      background: var(--azul-primario);
-      color: #FFFFFF;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.2s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .btn:hover {
-      background: var(--azul-escuro);
-    }
-
-    .btn.block {
-      width: 100%;
-    }
-
-    /* Estrelas de Avaliação */
-    .stars {
-      display: flex;
-      gap: 8px;
-      cursor: pointer;
-      margin-top: 4px;
-    }
-
-    .stars svg {
-      width: 28px;
-      height: 28px;
-      fill: #CBD5E0;
-      transition: fill 0.15s;
-    }
-
-    .stars svg.filled {
-      fill: var(--amarelo);
-    }
-
-    /* Visualização de Mídia Anexada (Fotos e Vídeos) */
-    .media-container {
-      margin-top: 14px;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: #000000;
-    }
-
-    .media-container img {
-      width: 100%;
-      max-height: 380px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .media-container video {
-      width: 100%;
-      max-height: 380px;
-      display: block;
-      background: #000000;
-    }
-
-    /* Badges e Etiquetas */
-    .badge-urgent {
-      background: var(--vermelho);
-      color: #FFFFFF;
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .badge-tag {
-      background: var(--azul-claro);
-      color: var(--azul-primario);
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-
-    .meta-info {
-      font-size: 12px;
-      color: #A0AEC0;
-      margin-top: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Item de Feedback na Lista */
-    .feedback-item {
-      border-bottom: 1px dashed var(--line);
-      padding: 14px 0;
-    }
-
-    .feedback-item:last-child {
-      border-bottom: none;
-    }
-
-    .admin-only-badge {
-      font-size: 10px;
-      background: #ED8936;
-      color: white;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: bold;
-      margin-left: 6px;
-    }
+    /* Admin Lists */
+    .admin-item { background: var(--branco); padding: 15px; border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; border-left: 4px solid var(--azul-escuro); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .admin-item .info h4 { color: var(--azul-escuro); font-size: 15px; }
+    .admin-item .info .meta { font-size: 12px; color: #666; margin-top: 6px; display: block; }
+    .admin-actions button { background: transparent; border: none; cursor: pointer; padding: 5px; }
+    .admin-actions button.danger svg { fill: var(--vermelho); width: 20px; height: 20px; }
   </style>
 </head>
 <body>
 
-  <!-- HEADER / BARRA SUPERIOR -->
   <header>
-    <div class="brand">
-      <h1>ALLTAK</h1>
-      <span style="font-size:12px; opacity:0.8;">Portal do Colaborador</span>
-    </div>
-    <div class="user-profile">
-      <span class="user-badge" id="user-display">colaborador1@alltak.com.br</span>
-      <button class="role-toggle-btn" onclick="toggleRole()" id="role-toggle-btn">Alternar para Admin</button>
-    </div>
+    <div class="logo">ALLTAK APP</div>
+    <div class="user-info" id="user-display">Usuário: colaborador@alltak.com.br</div>
   </header>
 
-  <!-- 1. TELA INÍCIO -->
-  <section class="screen active" id="home">
-    <div class="screen-title">
-      <h2>Início</h2>
-    </div>
-    <div class="card-block">
-      <h3>Bem-vindo ao Portal Alltak 👋</h3>
-      <p style="color:var(--cinza-texto); font-size:14px; line-height:1.6;">
-        Este é o seu canal direto de comunicação com a empresa. Acesse os comunicados no <strong>Mural</strong>, envie suas sugestões na <strong>Ouvidoria</strong> e consulte seus feedbacks de desempenho.
-      </p>
-    </div>
-
-    <div class="card-block">
-      <h3>Acesso Rápido</h3>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
-        <button class="btn" onclick="go('mural')" style="background:var(--azul-claro); color:var(--azul-primario);">
-          📰 Ver Mural
-        </button>
-        <button class="btn" onclick="go('feedback')" style="background:var(--azul-claro); color:var(--azul-primario);">
-          💬 Ouvidoria
-        </button>
+  <div class="container">
+    <!-- TELA HOME -->
+    <section class="screen active" id="home">
+      <div class="card-block">
+        <h2>Bem-vindo ao Portal de Comunicação</h2>
+        <p style="margin-top: 5px; color: #555;">Selecione uma opção abaixo para navegar no sistema.</p>
       </div>
-    </div>
-  </section>
 
-  <!-- 2. TELA MURAL -->
-  <section class="screen" id="mural">
-    <div class="screen-title">
-      <h2>Mural de Comunicados</h2>
-    </div>
-
-    <!-- Formulário de Criação de Post (Apenas Admin) -->
-    <div class="card-block" id="mural-admin-create" style="display:none; background:#FFFBEB; border-color:#F6E05E;">
-      <h3>📢 Criar Novo Comunicado <span class="admin-only-badge">ADMIN</span></h3>
-      <form onsubmit="submitPost(event)">
-        <div class="form-field">
-          <label>Título do Comunicado</label>
-          <input type="text" id="post-title" required placeholder="Ex: Novo Treinamento Operacional">
-        </div>
-        <div class="form-field">
-          <label>Conteúdo / Mensagem</label>
-          <textarea id="post-content" required placeholder="Escreva aqui as informações detalhadas do comunicado..."></textarea>
-        </div>
-        <div class="form-field">
-          <label>Categoria</label>
-          <select id="post-tag">
-            <option value="Geral">Geral</option>
-            <option value="Aviso Urgente">Aviso Urgente</option>
-            <option value="Eventos">Eventos</option>
-            <option value="RH / Benefícios">RH / Benefícios</option>
-            <option value="Segurança">Segurança do Trabalho</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label>Anexar Foto ou Vídeo (Opcional)</label>
-          <input type="file" id="post-media" accept="image/*,video/*">
-        </div>
-        <button type="submit" class="btn block">Publicar Comunicado</button>
-      </form>
-    </div>
-
-    <!-- Lista de Posts do Mural -->
-    <div id="mural-list"></div>
-  </section>
-
-  <!-- 3. TELA AGENDA -->
-  <section class="screen" id="calendario">
-    <div class="screen-title">
-      <h2>Agenda & Eventos</h2>
-    </div>
-    <div class="card-block">
-      <h3>Próximos Eventos do Mês</h3>
-      <div style="padding:10px 0; border-bottom:1px solid var(--line);">
-        <strong style="color:var(--azul-primario);">15 de Agosto</strong> - Treinamento de Novos Produtos Alltak
-      </div>
-      <div style="padding:10px 0;">
-        <strong style="color:var(--azul-primario);">28 de Agosto</strong> - Reunião Geral de Resultados
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. TELA SOBRE -->
-  <section class="screen" id="institucional">
-    <div class="screen-title">
-      <h2>Sobre a Alltak</h2>
-    </div>
-    <div class="card-block">
-      <h3>Nossa Missão</h3>
-      <p style="color:var(--cinza-texto); font-size:14px; line-height:1.6;">
-        Transformar superfícies com inovação, qualidade superior e tecnologia avançada em vinis adesivos de alta performance, proporcionando soluções criativas para envelopamento e comunicação visual.
-      </p>
-    </div>
-    <div class="card-block">
-      <h3>Valores</h3>
-      <ul style="padding-left:20px; color:var(--cinza-texto); font-size:14px; line-height:1.8;">
-        <li>Inovação constante</li>
-        <li>Compromisso com a qualidade</li>
-        <li>Respeito e valorização das pessoas</li>
-        <li>Sustentabilidade e responsabilidade social</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- 5. TELA OUVIDORIA / FEEDBACKS DO COLABORADOR -->
-  <section class="screen" id="feedback">
-    <div class="screen-title">
-      <h2>Ouvidoria & Feedbacks</h2>
-    </div>
-
-    <!-- Seção A: Feedbacks Oficiais Enviados da Empresa para este Colaborador -->
-    <div class="card-block" id="direct-feedback-box" style="display: none; background: var(--azul-claro); border-color:#BEE3F8;">
-      <h3 style="color: var(--azul-escuro)">📋 Seus Feedbacks de Desempenho (Gestão → Você)</h3>
-      <div id="direct-feedback-received-list"></div>
-    </div>
-
-    <!-- Seção B: Canal Aberto de Sugestão/Dúvida do Colaborador para a Empresa -->
-    <div class="card-block">
-      <h3>Enviar Sugestão ou Dúvida para a Gestão</h3>
-      <form id="feedback-form" onsubmit="submitFeedback(event)">
-        <div class="form-field">
-          <label>Assunto / Categoria</label>
-          <select id="fb-subject">
-            <option value="Sugestão de melhoria">Sugestão de melhoria</option>
-            <option value="Elogio">Elogio</option>
-            <option value="Dúvida / Esclarecimento">Dúvida / Esclarecimento</option>
-            <option value="Reclamação ou Alerta">Reclamação ou Alerta</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label>Sua Mensagem</label>
-          <textarea id="fb-message" placeholder="Escreva aqui sua sugestão, dúvida ou comentário..." required></textarea>
-        </div>
-        <div class="form-field">
-          <label>Anexar Evidência / Arquivo (Foto ou Vídeo - Opcional)</label>
-          <input type="file" id="fb-media" accept="image/*,video/*">
-        </div>
-        <div class="form-field">
-          <label>Avaliação do Ambiente de Trabalho</label>
-          <div class="stars" id="stars-container">
-            <svg data-star="1" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
-            <svg data-star="2" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
-            <svg data-star="3" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
-            <svg data-star="4" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
-            <svg data-star="5" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+      <div class="grid-cards">
+        <div class="qcard" onclick="go('feedback')">
+          <div class="qicon" style="background:var(--azul-escuro)">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.5A8.5 8.5 0 1119.5 6.5 8.38 8.38 0 0121 11.5z"/></svg>
           </div>
+          <h4>Requisição</h4>
+          <p>Envie solicitações</p>
         </div>
-        <button type="submit" class="btn block">Enviar Mensagem para a Gestão</button>
-      </form>
-    </div>
-  </section>
 
-  <!-- 6. TELA PAINEL ADMIN -->
-  <section class="screen" id="admin">
-    <div class="screen-title">
-      <h2>Painel Administrativo <span class="admin-only-badge">ADMIN</span></h2>
-    </div>
-
-    <!-- Enviar Feedback Oficial a Colaborador -->
-    <div class="card-block">
-      <h3>Enviar Feedback Oficial / Orientação ao Colaborador</h3>
-      <form id="direct-feedback-form" onsubmit="submitDirectFeedback(event)">
-        <div class="form-field">
-          <label>Colaborador Destinatário</label>
-          <select id="direct-feedback-recipient" required>
-            <option value="colaborador1@alltak.com.br">João Silva (colaborador1@alltak.com.br)</option>
-            <option value="colaborador2@alltak.com.br">Maria Santos (colaborador2@alltak.com.br)</option>
-            <option value="colaborador3@alltak.com.br">Carlos Oliveira (colaborador3@alltak.com.br)</option>
-          </select>
+        <div class="qcard" onclick="go('admin')">
+          <div class="qicon" style="background:var(--azul-medio)">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          </div>
+          <h4>Painel Admin</h4>
+          <p>Gestão e Atendimento</p>
         </div>
-        <div class="form-field">
-          <label>Mensagem de Orientação / Avaliação</label>
-          <textarea id="direct-feedback-text" placeholder="Escreva a orientação técnica ou avaliação de desempenho..." required></textarea>
-        </div>
-        <div class="form-field">
-          <label>Anexar Foto ou Vídeo de Evidência (Opcional)</label>
-          <input type="file" id="direct-feedback-media" accept="image/*,video/*">
-        </div>
-        <button type="submit" class="btn block">Enviar Feedback ao Colaborador</button>
-      </form>
-    </div>
+      </div>
+    </section>
 
-    <!-- Sugestões da Ouvidoria Recebidas dos Colaboradores -->
-    <div class="card-block">
-      <h3>Mensagens Recebidas da Ouvidoria</h3>
-      <div id="admin-feedback-list"></div>
-    </div>
-  </section>
+    <!-- TELA REQUISIÇÃO (USUÁRIO) -->
+    <section class="screen" id="feedback">
+      <div class="card-block" style="background: transparent; box-shadow: none; padding: 0 0 10px 0;">
+        <h2>Requisições</h2>
+      </div>
 
-  <!-- BARRA DE NAVEGAÇÃO INFERIOR -->
-  <nav class="bottomnav" id="app-bottomnav">
+      <div class="fb-stack">
+        <!-- Feedback Direto Recebido da Administração -->
+        <div class="card-block" id="direct-feedback-box" style="display: none; background: #FFFEE0; border: 1px solid #FFE57F;">
+          <h3 style="color: var(--azul-escuro);">✉ Mensagens da Administração</h3>
+          <div id="direct-feedback-received-list"></div>
+        </div>
+
+        <!-- Formulário de Requisição do Usuário -->
+        <div class="card-block">
+          <h3>Enviar requisição ou solicitação</h3>
+          <form id="feedback-form" onsubmit="submitFeedback(event)">
+            <div class="form-field">
+              <label>Assunto</label>
+              <select id="fb-subject">
+                <option>Solicitação de Suporte</option>
+                <option>Requisição Geral</option>
+                <option>Dúvida / Esclarecimento</option>
+                <option>Sobre um comunicado</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Sua mensagem</label>
+              <textarea id="fb-message" placeholder="Descreva sua requisição em detalhes..." required></textarea>
+            </div>
+            <div class="form-field">
+              <label>Avaliação / Prioridade</label>
+              <div class="stars" id="stars-container">
+                <svg data-star="1" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+                <svg data-star="2" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+                <svg data-star="3" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+                <svg data-star="4" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+                <svg data-star="5" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+              </div>
+            </div>
+            <button type="submit" class="btn block">Enviar requisição</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA PAINEL ADMIN -->
+    <section class="screen" id="admin">
+      <div class="card-block" style="background: transparent; box-shadow: none; padding: 0 0 10px 0;">
+        <h2>Painel de Administração</h2>
+      </div>
+
+      <div class="admin-tabs" id="admin-tabs">
+        <div class="chip" data-admintab="conteudo" onclick="showAdminTab('conteudo')">Conteúdo</div>
+        <div class="chip" data-admintab="agenda" onclick="showAdminTab('agenda')">Agenda</div>
+        <div class="chip on" data-admintab="feedback" onclick="showAdminTab('feedback')">Requisições</div>
+        <div class="chip" data-admintab="usuarios" onclick="showAdminTab('usuarios')">Usuários</div>
+        <div class="chip" data-admintab="holerites" onclick="showAdminTab('holerites')">Holerites</div>
+        <div class="chip" data-admintab="metricas" onclick="showAdminTab('metricas')">Métricas</div>
+      </div>
+
+      <!-- PAINEL REQUISIÇÕES (ADMIN) -->
+      <div class="admin-panel active" id="admin-feedback">
+        <!-- Mantida a funcionalidade de Feedback Direto enviado pela Administração ao funcionário -->
+        <div class="card-block">
+          <h3>Enviar Mensagem Direta / Feedback a Funcionário</h3>
+          <form id="direct-feedback-form" onsubmit="submitDirectFeedback(event)">
+            <div class="form-field">
+              <label>Destinatário (Funcionário)</label>
+              <select id="direct-feedback-recipient" required>
+                <option value="">Selecione o colaborador...</option>
+                <option value="colaborador@alltak.com.br">colaborador@alltak.com.br</option>
+                <option value="joao.silva@alltak.com.br">joao.silva@alltak.com.br</option>
+                <option value="maria.souza@alltak.com.br">maria.souza@alltak.com.br</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Mensagem / Feedback</label>
+              <textarea id="direct-feedback-text" placeholder="Escreva a avaliação ou orientação profissional direcionada..." required></textarea>
+            </div>
+            <button type="submit" class="btn block">Enviar Feedback Direto</button>
+          </form>
+        </div>
+
+        <!-- Lista de Requisições Recebidas dos Usuários -->
+        <div class="card-block">
+          <h3>Requisições Recebidas</h3>
+          <div class="admin-list" id="admin-feedback-list"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="navbar">
     <div class="navitem active" data-screen="home" onclick="go('home')">
-      <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       <span>Início</span>
-    </div>
-    <div class="navitem" data-screen="mural" onclick="go('mural')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>
-      <span>Mural</span>
-    </div>
-    <div class="navitem" data-screen="calendario" onclick="go('calendario')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-      <span>Agenda</span>
-    </div>
-    <div class="navitem" data-screen="institucional" onclick="go('institucional')">
-      <svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg>
-      <span>Sobre</span>
     </div>
     <div class="navitem" data-screen="feedback" onclick="go('feedback')">
       <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.5A8.5 8.5 0 1119.5 6.5 8.38 8.38 0 0121 11.5z"/></svg>
-      <span>Ouvidoria</span>
+      <span>Requisição</span>
     </div>
-    <div class="navitem" data-screen="admin" onclick="go('admin')" id="admin-nav-item">
-      <svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+    <div class="navitem" data-screen="admin" onclick="go('admin')">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
       <span>Admin</span>
     </div>
   </nav>
 
-  <!-- JAVASCRIPT DE FUNCIONAMENTO COMPLETO -->
   <script>
-    // Configurações Globais
-    const API_URL = "http://localhost:8000/api";
-    let currentUserEmail = "colaborador1@alltak.com.br";
-    let currentRole = "user"; // 'user' ou 'admin'
-    let selectedRating = 5;
+    // Configurações e Estado
+    const API_URL = 'http://localhost:8000/api';
+    let selectedRating = 4;
+    let feedbackData = [];
 
-    // Dados Mock Offline (Garante que a tela funcione mesmo se o servidor backend estiver desligado)
-    let mockPosts = [
-      {
-        id: 1,
-        title: "Lançamento da Nova Linha Alltak Tuning",
-        content: "Apresentamos a nova linha de vinis automotivos com tecnologia de micro-canais de ar antiderrapante. Confira na área técnica!",
-        author: "Comunicação Interna",
-        tag: "Geral",
-        urgent: false,
-        media_url: null,
-        media_type: null
-      }
-    ];
-
-    let mockFeedbackSuggestions = [];
-    let mockDirectFeedbacks = [
-      {
-        id: 1,
-        recipient: "colaborador1@alltak.com.br",
-        message: "Parabéns pelo excelente desempenho no alinhamento da linha de corte esta semana!",
-        media_url: null,
-        media_type: null
-      }
-    ];
-
-    // Alternar Papel (Colaborador / Admin)
-    function toggleRole() {
-      if (currentRole === 'user') {
-        currentRole = 'admin';
-        document.getElementById('role-toggle-btn').innerText = "Modo: ADMIN (Mudar)";
-        document.getElementById('mural-admin-create').style.display = 'block';
-      } else {
-        currentRole = 'user';
-        document.getElementById('role-toggle-btn').innerText = "Alternar para Admin";
-        document.getElementById('mural-admin-create').style.display = 'none';
-      }
-      // Re-renderiza a tela atual
-      const activeScreen = document.querySelector('.screen.active').id;
-      go(activeScreen);
+    // Inicialização
+    if (!localStorage.getItem('alltak_user_email')) {
+      localStorage.setItem('alltak_user_email', 'colaborador@alltak.com.br');
     }
+    document.getElementById('user-display').innerText = 'Usuário: ' + localStorage.getItem('alltak_user_email');
 
-    // Navegação entre Telas
+    // Mapeamento de Telas
     function go(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.navitem').forEach(n => n.classList.remove('active'));
@@ -631,218 +244,137 @@
       const targetNav = document.querySelector(`.navitem[data-screen="${screenId}"]`);
       if (targetNav) targetNav.classList.add('active');
 
-      if (screenId === 'mural') fetchPosts();
-      if (screenId === 'feedback') fetchDirectFeedbacks();
-      if (screenId === 'admin') fetchAdminData();
+      if (screenId === 'feedback') {
+        loadUserDirectFeedbacks();
+      } else if (screenId === 'admin') {
+        autoRefreshData();
+      }
     }
 
-    // Gestão de Estrelas de Avaliação
-    document.querySelectorAll('#stars-container svg').forEach(star => {
-      star.addEventListener('click', () => {
-        selectedRating = parseInt(star.getAttribute('data-star'));
-        document.querySelectorAll('#stars-container svg').forEach(s => {
-          const val = parseInt(s.getAttribute('data-star'));
-          if (val <= selectedRating) {
-            s.classList.add('filled');
-          } else {
-            s.classList.remove('filled');
-          }
+    // Gestão de Estrelas na Requisição
+    const stars = document.querySelectorAll('#stars-container svg');
+    stars.forEach(star => {
+      star.addEventListener('click', function() {
+        selectedRating = parseInt(this.getAttribute('data-star'));
+        stars.forEach((s, idx) => {
+          if (idx < selectedRating) s.classList.add('filled');
+          else s.classList.remove('filled');
         });
       });
     });
 
-    // Converter Mídia Selecionada (Foto/Vídeo) para Base64
-    function getFileMediaData(fileInputEl) {
-      return new Promise((resolve) => {
-        const file = fileInputEl?.files?.[0];
-        if (!file) return resolve({ media_url: null, media_type: null });
-
-        const isVideo = file.type.startsWith('video/');
-        const isImage = file.type.startsWith('image/');
-        const media_type = isVideo ? 'video' : (isImage ? 'image' : null);
-
-        const reader = new FileReader();
-        reader.onload = () => resolve({ media_url: reader.result, media_type });
-        reader.onerror = () => resolve({ media_url: null, media_type: null });
-        reader.readAsDataURL(file);
-      });
-    }
-
-    // Renderizar Elemento HTML de Mídia (Foto ou Vídeo)
-    function renderMediaElement(mediaUrl, mediaType) {
-      if (!mediaUrl) return '';
-      if (mediaType === 'video') {
-        return `
-          <div class="media-container">
-            <video controls src="${mediaUrl}"></video>
-          </div>`;
-      } else {
-        return `
-          <div class="media-container">
-            <img src="${mediaUrl}" alt="Mídia Anexada">
-          </div>`;
+    // Mock API / Banco de Dados Local para Fallback
+    const Database = {
+      async getFeedbacks() {
+        try {
+          const res = await fetch(`${API_URL}/feedback`);
+          if (res.ok) return await res.json();
+        } catch (e) { console.log('Usando mock de dados para requisições.'); }
+        return JSON.parse(localStorage.getItem('mock_feedbacks') || '[]');
+      },
+      async createFeedback(userEmail, subject, message, rating) {
+        const item = {
+          id: Date.now().toString(),
+          userEmail,
+          subject,
+          message,
+          rating,
+          date: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})
+        };
+        try {
+          const res = await fetch(`${API_URL}/feedback`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(item)
+          });
+          if (res.ok) return await res.json();
+        } catch (e) {}
+        
+        let local = JSON.parse(localStorage.getItem('mock_feedbacks') || '[]');
+        local.unshift(item);
+        localStorage.setItem('mock_feedbacks', JSON.stringify(local));
+        return item;
+      },
+      async deleteFeedbackApi(id) {
+        try {
+          await fetch(`${API_URL}/feedback/${id}`, { method: 'DELETE' });
+        } catch (e) {}
+        let local = JSON.parse(localStorage.getItem('mock_feedbacks') || '[]');
+        local = local.filter(x => x.id !== id);
+        localStorage.setItem('mock_feedbacks', JSON.stringify(local));
+      },
+      async sendDirectFeedback(recipient, message) {
+        const item = {
+          id: Date.now().toString(),
+          recipient,
+          message,
+          date: new Date().toLocaleDateString('pt-BR')
+        };
+        try {
+          await fetch(`${API_URL}/direct-feedbacks`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(item)
+          });
+        } catch(e) {}
+        let local = JSON.parse(localStorage.getItem('mock_direct_feedbacks') || '[]');
+        local.unshift(item);
+        localStorage.setItem('mock_direct_feedbacks', JSON.stringify(local));
+      },
+      async getDirectFeedbacksForUser(email) {
+        let local = JSON.parse(localStorage.getItem('mock_direct_feedbacks') || '[]');
+        return local.filter(x => x.recipient === email);
       }
-    }
+    };
 
-    // Enviar Novo Post no Mural
-    async function submitPost(e) {
-      e.preventDefault();
-      const title = document.getElementById('post-title').value;
-      const content = document.getElementById('post-content').value;
-      const tag = document.getElementById('post-tag').value;
-      const mediaInput = document.getElementById('post-media');
-
-      const { media_url, media_type } = await getFileMediaData(mediaInput);
-
-      const payload = {
-        title,
-        content,
-        author: 'Gestão Alltak',
-        tag,
-        urgent: tag === 'Aviso Urgente',
-        media_url,
-        media_type
-      };
-
-      try {
-        const res = await fetch(`${API_URL}/posts`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error('Servidor indisponível');
-        alert('Comunicado publicado com sucesso!');
-      } catch (err) {
-        mockPosts.unshift({ id: Date.now(), ...payload });
-        alert('Comunicado publicado com sucesso!');
-      }
-
-      e.target.reset();
-      fetchPosts();
-    }
-
-    // Enviar Sugestão na Ouvidoria
-    async function submitFeedback(e) {
-      e.preventDefault();
-      const category = document.getElementById('fb-subject').value;
+    // Submissão de Requisição pelo Usuário
+    async function submitFeedback(event) {
+      event.preventDefault();
+      const subject = document.getElementById('fb-subject').value;
       const message = document.getElementById('fb-message').value;
-      const mediaInput = document.getElementById('fb-media');
+      const userEmail = localStorage.getItem('alltak_user_email');
 
-      const { media_url, media_type } = await getFileMediaData(mediaInput);
-
-      const payload = {
-        user_email: currentUserEmail,
-        category,
-        message,
-        rating: selectedRating,
-        media_url,
-        media_type
-      };
-
-      try {
-        const res = await fetch(`${API_URL}/feedback`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error('Servidor indisponível');
-        alert('Sua mensagem foi enviada à gestão!');
-      } catch (err) {
-        mockFeedbackSuggestions.unshift({ id: Date.now(), ...payload });
-        alert('Sua mensagem foi enviada à gestão!');
-      }
-
-      e.target.reset();
-    }
-
-    // Enviar Feedback Direto ao Colaborador (Admin)
-    async function submitDirectFeedback(e) {
-      e.preventDefault();
-      const recipient = document.getElementById('direct-feedback-recipient').value;
-      const message = document.getElementById('direct-feedback-text').value;
-      const mediaInput = document.getElementById('direct-feedback-media');
-
-      const { media_url, media_type } = await getFileMediaData(mediaInput);
-
-      const payload = {
-        recipient,
-        message,
-        media_url,
-        media_type
-      };
-
-      try {
-        const res = await fetch(`${API_URL}/direct-feedbacks`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error('Servidor indisponível');
-        alert('Feedback oficial enviado com sucesso ao colaborador!');
-      } catch (err) {
-        mockDirectFeedbacks.unshift({ id: Date.now(), ...payload });
-        alert('Feedback oficial enviado com sucesso ao colaborador!');
-      }
-
-      e.target.reset();
-    }
-
-    // Buscar e Exibir Posts do Mural
-    async function fetchPosts() {
-      const container = document.getElementById('mural-list');
-      let posts = [];
-
-      try {
-        const res = await fetch(`${API_URL}/posts`);
-        if (res.ok) posts = await res.json();
-        else posts = mockPosts;
-      } catch (err) {
-        posts = mockPosts;
-      }
-
-      if (!posts || posts.length === 0) {
-        container.innerHTML = `<div class="card-block"><p style="color:var(--cinza-texto);">Nenhum comunicado no mural.</p></div>`;
+      if (!userEmail) {
+        alert('Sessão expirada. Faça login novamente.');
         return;
       }
 
-      container.innerHTML = posts.map(p => `
-        <div class="card-block">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span class="${p.urgent ? 'badge-urgent' : 'badge-tag'}">${p.tag || 'Geral'}</span>
-            <span style="font-size:11px; color:#A0AEC0;">${p.author || 'Gestão'}</span>
-          </div>
-          <h3 style="margin-bottom:8px;">${p.title}</h3>
-          <p style="font-size:14px; color:var(--cinza-texto); line-height:1.6;">${p.content}</p>
-          ${renderMediaElement(p.media_url, p.media_type)}
-        </div>
-      `).join('');
+      try {
+        await Database.createFeedback(userEmail, subject, message, selectedRating);
+        alert('Requisição enviada com sucesso!');
+        document.getElementById('fb-message').value = '';
+        await autoRefreshData();
+      } catch (err) {
+        alert('Erro ao enviar requisição: ' + err.message);
+      }
     }
 
-    // Buscar e Exibir Feedbacks Recebidos pelo Colaborador
-    async function fetchDirectFeedbacks() {
+    // Submissão de Feedback Direto (Admin -> Colaborador)
+    async function submitDirectFeedback(event) {
+      event.preventDefault();
+      const recipient = document.getElementById('direct-feedback-recipient').value;
+      const message = document.getElementById('direct-feedback-text').value;
+
+      if (!recipient || !message) return;
+
+      await Database.sendDirectFeedback(recipient, message);
+      alert('Feedback direto enviado com sucesso para ' + recipient);
+      document.getElementById('direct-feedback-text').value = '';
+    }
+
+    // Carregar Feedbacks Diretos Recebidos pelo Colaborador
+    async function loadUserDirectFeedbacks() {
+      const email = localStorage.getItem('alltak_user_email');
+      const list = await Database.getDirectFeedbacksForUser(email);
       const box = document.getElementById('direct-feedback-box');
-      const list = document.getElementById('direct-feedback-received-list');
-      let items = [];
+      const container = document.getElementById('direct-feedback-received-list');
 
-      try {
-        const res = await fetch(`${API_URL}/direct-feedbacks`);
-        if (res.ok) items = await res.json();
-        else items = mockDirectFeedbacks;
-      } catch (err) {
-        items = mockDirectFeedbacks;
-      }
-
-      const userItems = items.filter(df => df.recipient === currentUserEmail);
-
-      if (userItems.length > 0) {
+      if (list && list.length > 0) {
         box.style.display = 'block';
-        list.innerHTML = userItems.map(m => `
-          <div class="feedback-item">
-            <p style="font-size:14px; color:var(--ink); line-height:1.5;">"${m.message}"</p>
-            ${renderMediaElement(m.media_url, m.media_type)}
-            <div class="meta-info">
-              <span>Enviado pela Direção / Gestão</span>
-            </div>
+        container.innerHTML = list.map(item => `
+          <div style="padding: 10px 0; border-bottom: 1px solid #FFE082;">
+            <p style="font-size: 14px; color: #333;">${item.message}</p>
+            <span style="font-size: 11px; color: #777;">Data: ${item.date}</span>
           </div>
         `).join('');
       } else {
@@ -850,40 +382,54 @@
       }
     }
 
-    // Buscar e Exibir Mensagens no Painel Admin
-    async function fetchAdminData() {
+    // Atualização de Dados no Painel Admin
+    async function autoRefreshData() {
+      feedbackData = await Database.getFeedbacks();
+      renderAdminFeedback();
+    }
+
+    // Renderizar Requisições Recebidas no Admin
+    function renderAdminFeedback() {
       const list = document.getElementById('admin-feedback-list');
-      let feedbacks = [];
+      if (!list) return;
 
-      try {
-        const res = await fetch(`${API_URL}/feedback`);
-        if (res.ok) feedbacks = await res.json();
-        else feedbacks = mockFeedbackSuggestions;
-      } catch (err) {
-        feedbacks = mockFeedbackSuggestions;
-      }
-
-      if (!feedbacks || feedbacks.length === 0) {
-        list.innerHTML = `<p style="font-size:13px; color:var(--cinza-texto);">Nenhuma mensagem recebida na ouvidoria até o momento.</p>`;
+      if (!feedbackData || feedbackData.length === 0) {
+        list.innerHTML = '<div style="padding: 15px; color: #888; text-align: center;">Nenhuma requisição recebida.</div>';
         return;
       }
 
-      list.innerHTML = feedbacks.map(f => `
-        <div class="feedback-item">
-          <div style="display:flex; justify-content:space-between; font-size:12px; color:#718096; margin-bottom:4px;">
-            <span><strong>${f.category}</strong> (${f.user_email})</span>
-            <span>Nota: ${'★'.repeat(f.rating || 5)}</span>
+      list.innerHTML = feedbackData.map(item => `
+        <div class="admin-item">
+          <div class="info">
+            <h4>${item.subject || 'Requisição'}</h4>
+            <p style="margin-top: 5px; font-size: 13px; color: #444;">${item.message}</p>
+            <span class="meta">
+              <strong>Enviado por:</strong> ${item.userEmail || 'Não identificado'} | 
+              <strong>Data:</strong> ${item.date || 'Recente'} | 
+              <strong>Prioridade:</strong> ${'★'.repeat(item.rating || 0)}
+            </span>
           </div>
-          <p style="font-size:14px; color:var(--ink); line-height:1.5;">${f.message}</p>
-          ${renderMediaElement(f.media_url, f.media_type)}
+          <div class="admin-actions">
+            <button class="danger" onclick="deleteFeedbackApi('${item.id}')" title="Excluir requisição">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            </button>
+          </div>
         </div>
       `).join('');
     }
 
-    // Inicialização ao carregar a página
-    window.addEventListener('DOMContentLoaded', () => {
-      fetchPosts();
-    });
+    async function deleteFeedbackApi(id) {
+      if (!confirm('Deseja realmente excluir esta requisição?')) return;
+      await Database.deleteFeedbackApi(id);
+      await autoRefreshData();
+    }
+
+    // Navegação de Abas do Admin
+    function showAdminTab(tabName) {
+      document.querySelectorAll('.admin-tabs .chip').forEach(c => c.classList.remove('on'));
+      const activeChip = document.querySelector(`.admin-tabs .chip[data-admintab="${tabName}"]`);
+      if (activeChip) activeChip.classList.add('on');
+    }
   </script>
 </body>
 </html>
