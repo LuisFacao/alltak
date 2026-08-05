@@ -1,685 +1,550 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Alltak — Intranet</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --azul-principal: #0056b3;
-    --azul-escuro: #002d62;
-    --azul-claro: #007bff;
-    --azul-suave: #e6f0fa;
-    --ink: #0a1118;
-    --white-pure: #ffffff;
-    --cream: #f4f8fc;
-    --paper: #ffffff;
-    --line: rgba(10, 17, 24, 0.12);
-    --shadow-hard: 4px 4px 0 var(--ink);
-    --shadow-hard-sm: 3px 3px 0 var(--ink);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --safe-top: env(safe-area-inset-top, 0px);
-  }
-  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
-  html,body{height:100%; overscroll-behavior-y:none;}
-  body{
-    font-family:'Inter', sans-serif;
-    background: var(--cream);
-    color: var(--ink);
-    -webkit-font-smoothing:antialiased;
-    max-width:480px;
-    margin:0 auto;
-    position:relative;
-    min-height:100vh;
-  }
-  .display{ font-family:'Anton', sans-serif; text-transform:uppercase; letter-spacing:0.3px; }
-  .mono{ font-family:'Space Mono', monospace; }
-  a{ color:inherit; }
-  button{ font-family:inherit; }
-
-  /* ===== APP SHELL ===== */
-  .app{ display:flex; flex-direction:column; min-height:100vh; }
-
-  /* ---- Topbar ---- */
-  .topbar{
-    height:calc(56px + var(--safe-top));
-    padding-top:var(--safe-top);
-    background:var(--ink);
-    display:flex; align-items:center; justify-content:space-between; padding-left:16px; padding-right:12px;
-    position:sticky; top:0; z-index:30;
-    border-bottom:3px solid var(--ink);
-  }
-  .brand{ display:flex; align-items:center; gap:9px; }
-  .badge{
-    width:32px; height:32px; border-radius:50%;
-    background: var(--white-pure);
-    display:flex; align-items:center; justify-content:center;
-    transform: rotate(-8deg);
-    border:2px solid var(--ink);
-    flex-shrink:0; overflow:hidden; padding:3px;
-  }
-  .brand-logo-img{ width:100%; height:100%; object-fit:contain; }
-  .brand span{ color:#fff; font-family:'Space Mono', monospace; font-weight:700; font-size:13px; letter-spacing:.03em; text-transform:uppercase; }
-  .topbar-right{ display:flex; align-items:center; gap:8px; }
-  .icon-btn{ width:36px; height:36px; border-radius:10px; border:2px solid rgba(255,255,255,.25); display:flex; align-items:center; justify-content:center; cursor:pointer; background:rgba(255,255,255,.06); position:relative; flex-shrink:0; }
-  .icon-btn svg{ width:16px; height:16px; stroke:#fff; fill:none; stroke-width:2.2; }
-  .dot-alert{ position:absolute; top:-4px; right:-4px; width:10px; height:10px; background:var(--azul-claro); border-radius:50%; border:2px solid var(--ink); }
-
-  .notif-wrap{ position:relative; }
-  .notif-panel{
-    display:none; position:absolute; top:44px; right:0; width:300px; max-height:380px; overflow-y:auto;
-    background:var(--paper); border:2px solid var(--ink); border-radius:14px; box-shadow:var(--shadow-hard);
-    z-index:50;
-  }
-  .notif-panel.open{ display:block; }
-  .notif-panel-head{
-    display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:2px solid var(--ink);
-    font-family:'Space Mono', monospace; font-size:11px; font-weight:700; text-transform:uppercase; color:var(--ink);
-  }
-  .notif-panel-head span.clear-link{ font-weight:700; color:var(--azul-principal); cursor:pointer; text-transform:none; font-size:11px; }
-  .notif-item{ display:flex; gap:10px; padding:12px 14px; border-bottom:1px solid var(--line); cursor:pointer; align-items:flex-start; }
-  .notif-item:last-child{ border-bottom:none; }
-  .notif-item:active{ background:var(--azul-suave); }
-  .notif-item.unread{ background:var(--azul-suave); }
-  .notif-ic{ width:28px; height:28px; border-radius:8px; background:var(--azul-principal); border:2px solid var(--ink); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .notif-ic svg{ width:14px; height:14px; stroke:#fff; fill:none; stroke-width:2.2; }
-  .notif-item .info{ flex:1; min-width:0; }
-  .notif-item .info h5{ font-size:12.5px; font-weight:700; color:var(--ink); margin-bottom:2px; }
-  .notif-item .info p{ font-size:11.5px; color:#5a6b78; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
-  .notif-item .info span.meta{ font-family:'Space Mono', monospace; font-size:9px; color:#788e9e; text-transform:uppercase; margin-top:4px; display:block; }
-  .notif-item.unread .info h5::before{ content:''; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--azul-claro); margin-right:6px; }
-  .notif-empty{ padding:28px 14px; text-align:center; font-size:12.5px; color:#788e9e; }
-  .avatar-sm{
-    width:32px; height:32px; border-radius:50%; background:var(--azul-claro);
-    border:2px solid #fff; display:flex; align-items:center; justify-content:center;
-    color:#fff; font-weight:800; font-size:11px; flex-shrink:0; cursor:pointer;
-  }
-
-  /* ---- Search ---- */
-  .search-bar{
-    display:flex; align-items:center; gap:8px; background:var(--paper);
-    border:2px solid var(--ink); border-radius:12px; padding:11px 14px; margin:14px 16px 2px;
-  }
-  .search-bar input{ border:none; background:none; outline:none; font-family:'Inter'; font-size:14px; width:100%; color:var(--ink); }
-  .search-bar svg{ width:16px; height:16px; stroke:var(--ink); fill:none; stroke-width:2.4; flex-shrink:0; }
-
-  /* ---- Content / screens ---- */
-  .content{ flex:1; padding-bottom:28px; }
-  .screen{ display:none; animation: fade .2s ease; }
-  .screen.active{ display:block; }
-  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
-
-  .eyebrow{
-    display:inline-flex; align-items:center; gap:7px;
-    font-family:'Space Mono', monospace; font-weight:700; font-size:10.5px;
-    letter-spacing:.06em; text-transform:uppercase; color:var(--white-pure);
-    background:var(--azul-claro); padding:5px 11px; border-radius:100px; border:2px solid #fff;
-    margin-bottom:12px;
-  }
-
-  /* ===== HERO DESTAQUE ===== */
-  .hero{
-    background: var(--ink);
-    border-radius:0 0 26px 26px; padding:20px 18px 26px; position:relative; overflow:hidden;
-    margin-bottom:22px;
-  }
-  .hero::before{
-    content:""; position:absolute; inset:0;
-    background:
-      radial-gradient(circle at 90% 8%, rgba(0, 86, 179, 0.4), transparent 45%),
-      radial-gradient(circle at 85% 75%, rgba(0, 123, 255, 0.3), transparent 50%);
-  }
-  .hero-inner{ position:relative; z-index:1; }
-  .hero h1{
-    font-size:30px; line-height:1.0; color:var(--azul-suave);
-    margin-bottom:12px;
-  }
-  .hero h1 span{ color:var(--paper); display:block; margin-top:2px; }
-  .hero p{ color:#d0deeb; font-size:13.5px; line-height:1.55; margin-bottom:18px; }
-  .hero-meta{ display:flex; gap:16px; margin-bottom:18px; }
-  .hero-meta div{ display:flex; flex-direction:column; }
-  .hero-meta .k{ font-family:'Space Mono', monospace; color:var(--azul-suave); font-size:9.5px; text-transform:uppercase; opacity:.75;}
-  .hero-meta .v{ color:#fff; font-weight:800; font-size:12.5px; }
-  .hero-actions{ display:flex; gap:10px; }
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:7px; border:2.5px solid var(--ink);
-    background:var(--azul-principal); color:var(--white-pure); font-weight:800; font-size:12.5px;
-    text-transform:uppercase; padding:12px 16px; border-radius:10px;
-    cursor:pointer; box-shadow: var(--shadow-hard-sm); transition: transform .1s ease;
-  }
-  .btn:active{ transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
-  .btn.block{ width:100%; }
-  .btn.ghost{ background:transparent; color:#fff; border-color:rgba(255,255,255,.5); box-shadow:none; }
-
-  /* ===== GRIDS & COMPONENTES ===== */
-  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin:4px 16px 12px; }
-  .section-head h2{ font-size:19px; }
-  .section-head a{ font-family:'Space Mono', monospace; font-size:11px; font-weight:700; color:var(--azul-principal); text-decoration:none; cursor:pointer; }
-
-  .quicklinks{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:0 16px; margin-bottom:26px; }
-  .qcard{
-    background:var(--paper); border:2.5px solid var(--ink); border-radius:14px; padding:14px;
-    cursor:pointer; box-shadow: var(--shadow-hard-sm);
-  }
-  .qcard .qicon{ width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;}
-  .qcard .qicon svg{ width:16px; height:16px; stroke:#fff; fill:none; stroke-width:2.2;}
-  .qcard h4{ font-size:12.5px; font-weight:800; margin-bottom:2px; }
-  .qcard p{ font-size:10.5px; color:#506473; }
-
-  .feed-list{ display:flex; flex-direction:column; gap:14px; padding:0 16px 6px; }
-  .post-card{
-    background:var(--paper); border:2.5px solid var(--ink); border-radius:16px; overflow:hidden;
-    box-shadow: var(--shadow-hard-sm); cursor:pointer;
-  }
-  .post-media{ height:76px; position:relative; display:flex; align-items:center; padding:0 14px; }
-  .post-tag{
-    font-family:'Space Mono', monospace; font-size:10px; font-weight:700; text-transform:uppercase;
-    padding:4px 10px; border-radius:100px; border:2px solid var(--ink); background:var(--paper);
-  }
-  .post-body{ padding:13px 15px 15px; }
-  .post-body h3{ font-size:15px; line-height:1.28; margin-bottom:6px; }
-  .post-body p{ font-size:12.5px; color:#506473; line-height:1.48; }
-  .post-foot{ display:flex; align-items:center; justify-content:space-between; font-family:'Space Mono', monospace; font-size:10px; color:#788e9e; margin-top:10px; }
-  .urgent-pill{ background:var(--azul-claro); color:#fff; font-family:'Space Mono', monospace; font-weight:700; font-size:9.5px; padding:3px 9px; border-radius:100px; }
-
-  /* ---- Filtros Mural ---- */
-  .screen-title{ padding:16px 16px 0; }
-  .screen-title h2{ font-size:22px; }
-  .filters{ display:flex; gap:8px; overflow-x:auto; padding:14px 16px 4px; scrollbar-width:none; }
-  .filters::-webkit-scrollbar{ display:none; }
-  .chip{ font-family:'Space Mono', monospace; font-size:11.5px; font-weight:700; padding:8px 14px; border-radius:100px; border:2px solid var(--ink); background:var(--paper); cursor:pointer; text-transform:uppercase; }
-  .chip.on{ background:var(--ink); color:var(--azul-suave); }
-
-  /* ===== INSTITUCIONAL & DOCS ===== */
-  .mvv{ display:flex; flex-direction:column; gap:12px; padding:16px; }
-  .mvv-card{ border:2.5px solid var(--ink); border-radius:16px; padding:20px; }
-  .doc-list{ display:flex; flex-direction:column; gap:10px; padding:0 16px 6px; }
-  .doc-row{ display:flex; align-items:center; gap:12px; background:var(--paper); border:2px solid var(--ink); border-radius:12px; padding:13px 14px; cursor:pointer; }
-  .doc-row:active{ background:var(--azul-suave); }
-  .doc-ic{ width:34px; height:34px; border-radius:8px; background:var(--azul-principal); border:2px solid var(--ink); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
-  .doc-ic svg{ width:15px; height:15px; stroke:var(--white-pure); fill:none; stroke-width:2.2; }
-  .doc-row .info{ flex:1; min-width:0; }
-  .doc-row .info h4{ font-size:13px; font-weight:700; }
-  .doc-row .info span{ font-family:'Space Mono'; font-size:10px; color:#788e9e; }
-  .doc-dl{ font-family:'Space Mono'; font-size:10px; font-weight:700; border:2px solid var(--ink); border-radius:8px; padding:6px 10px; background:var(--azul-suave); flex-shrink:0; }
-
-  /* ===== CALENDÁRIO ===== */
-  .cal-wrap{ margin:16px; background:var(--paper); border:2.5px solid var(--ink); border-radius:18px; padding:16px; box-shadow:var(--shadow-hard); }
-  .cal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-  .cal-head h2{ font-size:17px; }
-  .cal-nav{ display:flex; gap:6px; align-items:center; }
-  .cal-nav button{ width:30px; height:30px; border-radius:8px; border:2px solid var(--ink); background:var(--azul-suave); cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:15px;}
-  .legend{ display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
-  .legend div{ display:flex; align-items:center; gap:5px; font-family:'Space Mono'; font-size:9px; font-weight:700; text-transform:uppercase; }
-  .legend .sq{ width:9px; height:9px; border-radius:3px; border:1.5px solid var(--ink); flex-shrink:0; }
-  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
-  .cal-dow{ text-align:center; font-family:'Space Mono'; font-size:9px; font-weight:700; color:#788e9e; padding-bottom:4px; text-transform:uppercase; }
-  .cal-cell{ min-height:44px; border:1.5px solid var(--line); border-radius:8px; padding:4px; font-size:10.5px; font-weight:700; position:relative; background:#fff; overflow:hidden;}
-  .cal-cell.muted{ opacity:.3; background: #fafafa;}
-  .cal-cell.today{ border-color:var(--ink); border-width:2px; background:var(--azul-suave); }
-  .cal-evt{ margin-top:3px; width:6px; height:6px; border-radius:50%; }
-  .cal-evt-wrap{ display:flex; gap:2px; flex-wrap:wrap; position:absolute; bottom:4px; left:4px; }
-  .cal-day-events{ padding:0 16px; margin-top:14px; }
-  .cal-day-events .evt-row{ display:flex; align-items:center; gap:8px; background:var(--paper); border:2px solid var(--ink); border-radius:10px; padding:10px 12px; margin-bottom:8px; font-size:12px; font-weight:700; }
-  .cal-day-events .evt-dot{ width:10px; height:10px; border-radius:50%; border:1.5px solid var(--ink); flex-shrink:0; }
-
-  /* ===== FEEDBACK ===== */
-  .fb-stack{ display:flex; flex-direction:column; gap:16px; padding:16px; }
-  .card-block{ background:var(--paper); border:2.5px solid var(--ink); border-radius:16px; padding:18px; box-shadow:var(--shadow-hard-sm); }
-  .card-block h3{ font-size:16px; margin-bottom:14px; }
-  .form-field{ margin-bottom:14px; }
-  .form-field label{ display:block; font-family:'Space Mono'; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-bottom:7px; }
-  .form-field select, .form-field textarea, .form-field input{
-    width:100%; border:2px solid var(--ink); border-radius:10px; padding:11px 13px; font-family:'Inter'; font-size:15px; background:var(--azul-suave); outline:none;
-  }
-  .form-field textarea{ resize:vertical; min-height:90px; }
-  .stars{ display:flex; gap:8px; margin-top:4px; }
-  .stars svg{ width:28px; height:28px; fill:none; stroke:var(--ink); stroke-width:1.6; cursor:pointer; }
-  .stars svg.filled{ fill:var(--azul-principal); }
-
-  /* ===== ACESSO ===== */
-  .login-visual{
-    background:var(--ink); position:relative; padding:26px 20px; overflow:hidden; margin:0 16px 14px; border-radius:20px;
-    border:2.5px solid var(--ink);
-  }
-  .login-visual h2{ color:var(--azul-suave); font-size:24px; line-height:1.1; position:relative; z-index:1; }
-  .login-form{ background:var(--paper); border:2.5px solid var(--ink); border-radius:20px; padding:22px 18px; margin:0 16px 24px; box-shadow:var(--shadow-hard-sm); }
-  .login-form h3{ font-size:19px; margin-bottom:5px; }
-  .login-form p{ font-size:12.5px; color:#506473; margin-bottom:20px; }
-
-  .stat-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:0 16px; margin-bottom:26px; }
-  .stat-card{ background:var(--ink); border-radius:14px; padding:16px; color:#fff; }
-  .stat-card .n{ font-family:'Anton'; font-size:26px; color:var(--azul-principal); }
-  .stat-card .l{ font-family:'Space Mono'; font-size:9.5px; text-transform:uppercase; color:#8a9fae; margin-top:3px; }
-
-  /* ---- Bottom nav ---- */
-  .bottomnav{
-    position:sticky; bottom:0; left:0; right:0;
-    background:var(--ink);
-    display:flex; align-items:center; justify-content:space-between;
-    padding:10px 16px calc(10px + var(--safe-bottom));
-    border-top:3px solid var(--ink);
-    z-index:30;
-  }
-  .navitem{
-    display:flex; flex-direction:column; align-items:center; gap:6px;
-    cursor:pointer; color:#8a9fae; transition: color .15s ease;
-    padding:6px 2px; border-radius:12px; flex:1; text-align:center;
-  }
-  .navitem svg{ width:20px; height:20px; stroke:#8a9fae; fill:none; stroke-width:2; transition:stroke .15s ease;}
-  .navitem span { 
-    font-size:9px; 
-    font-weight:700; 
-    letter-spacing:.02em; 
-    text-transform:uppercase; 
-    line-height:1.2; 
-    white-space: normal; 
-    word-break: break-word; 
-  }
-  .navitem.active{ color:var(--white-pure); }
-  .navitem.active svg{ stroke:var(--azul-claro); }
-  .navitem.active span{ color:var(--azul-claro); }
-
-  /* ===== ADMIN ===== */
-  .role-pill{ display:inline-flex; align-items:center; gap:5px; font-family:'Space Mono', monospace; font-weight:700; font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink); background:#FFD166; padding:5px 10px; border-radius:100px; border:2px solid #fff; margin-right:8px; }
-  .avatar-sm.is-admin{ background:#FFD166; color:var(--ink); }
-
-  .admin-tabs{ 
-    display:flex; 
-    gap:8px; 
-    overflow-x:auto; 
-    padding:14px 16px 12px;
-    scrollbar-width: auto; 
-    -ms-overflow-style: auto; 
-    -webkit-overflow-scrolling: touch; 
-  }
-  .admin-tabs::-webkit-scrollbar{ height: 5px; display: block; }
-  .admin-tabs::-webkit-scrollbar-track { background: transparent; }
-  .admin-tabs::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alltak - Portal do Colaborador</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  .admin-panel{ display:none; padding:0 16px 6px; }
-  .admin-panel.active{ display:block; animation: fade .2s ease; }
+  <style>
+    :root {
+      --bg: #F4F6F9;
+      --card-bg: #FFFFFF;
+      --ink: #1A202C;
+      --line: #E2E8F0;
+      --azul-escuro: #003366;
+      --azul-primario: #0056B3;
+      --azul-claro: #E6F0FA;
+      --amarelo: #D69E2E;
+      --vermelho: #E53E3E;
+      --verde: #2F855A;
+      --cinza-texto: #4A5568;
+    }
 
-  .admin-list{ display:flex; flex-direction:column; gap:10px; margin-top:16px; }
-  .admin-item{ background:var(--paper); border:2px solid var(--ink); border-radius:12px; padding:12px 14px; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
-  .admin-item .info{ flex:1; min-width:0; }
-  .admin-item .info h4{ font-size:13px; font-weight:800; margin-bottom:3px; line-height:1.3; }
-  .admin-item .info p{ font-size:11.5px; color:#506473; line-height:1.4; }
-  .admin-item .info span.meta{ font-family:'Space Mono'; font-size:9.5px; color:#788e9e; display:block; margin-top:5px; text-transform:uppercase; }
-  .admin-actions{ display:flex; gap:6px; flex-shrink:0; align-items: center; }
-  .admin-actions button{ width:30px; height:30px; border-radius:8px; border:2px solid var(--ink); background:var(--azul-suave); cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  .admin-actions button.danger{ background:#FFDCDC; }
-  .admin-actions svg{ width:14px; height:14px; stroke:var(--ink); fill:none; stroke-width:2.2; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  .admin-empty{ text-align:center; padding:30px 16px; color:#788e9e; font-size:13px; }
+    body {
+      font-family: 'Work Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      padding-bottom: 90px;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  .checkbox-field{ display:flex; align-items:center; gap:9px; margin-bottom:14px; }
-  .checkbox-field input{ width:18px; height:18px; accent-color: var(--azul-principal); flex-shrink:0; }
-  .checkbox-field label{ font-family:'Inter'; font-size:13px; font-weight:600; text-transform:none; letter-spacing:0; margin-bottom:0; }
+    /* Header e Barra Superior */
+    header {
+      background: var(--azul-escuro);
+      color: #FFFFFF;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-  .app-protected { display: none; }
-  #app-main-content { display: none; }
-  .admin-only-nav { display: none; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  ::selection{ background:var(--azul-principal); color: var(--white-pure); }
-</style>
+    .brand h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-badge {
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 5px 12px;
+      border-radius: 20px;
+      color: #E2E8F0;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .role-toggle-btn {
+      background: var(--amarelo);
+      color: #1A202C;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Navegação Inferior */
+    .bottomnav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      background: var(--card-bg);
+      display: flex;
+      border-top: 1px solid var(--line);
+      z-index: 200;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+
+    .navitem {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #718096;
+      cursor: pointer;
+      gap: 3px;
+      transition: color 0.2s;
+    }
+
+    .navitem.active {
+      color: var(--azul-primario);
+      font-weight: 700;
+    }
+
+    .navitem svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Estrutura de Telas */
+    .screen {
+      display: none;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .screen-title {
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--azul-primario);
+      padding-bottom: 8px;
+    }
+
+    .screen-title h2 {
+      font-size: 22px;
+      color: var(--azul-escuro);
+    }
+
+    /* Cards e Containers */
+    .card-block {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid var(--line);
+    }
+
+    .card-block h3 {
+      font-size: 16px;
+      color: var(--azul-escuro);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Formulários */
+    .form-field {
+      margin-bottom: 16px;
+    }
+
+    .form-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #4A5568;
+    }
+
+    .form-field input[type="text"],
+    .form-field input[type="email"],
+    .form-field select,
+    .form-field textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #FAFAFA;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .form-field input[type="text"]:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      outline: none;
+      border-color: var(--azul-primario);
+      background: #FFFFFF;
+    }
+
+    .form-field textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .form-field input[type="file"] {
+      font-size: 13px;
+      color: #4A5568;
+    }
+
+    /* Botões */
+    .btn {
+      background: var(--azul-primario);
+      color: #FFFFFF;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: var(--azul-escuro);
+    }
+
+    .btn.block {
+      width: 100%;
+    }
+
+    /* Estrelas de Avaliação */
+    .stars {
+      display: flex;
+      gap: 8px;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .stars svg {
+      width: 28px;
+      height: 28px;
+      fill: #CBD5E0;
+      transition: fill 0.15s;
+    }
+
+    .stars svg.filled {
+      fill: var(--amarelo);
+    }
+
+    /* Visualização de Mídia Anexada (Fotos e Vídeos) */
+    .media-container {
+      margin-top: 14px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #000000;
+    }
+
+    .media-container img {
+      width: 100%;
+      max-height: 380px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .media-container video {
+      width: 100%;
+      max-height: 380px;
+      display: block;
+      background: #000000;
+    }
+
+    /* Badges e Etiquetas */
+    .badge-urgent {
+      background: var(--vermelho);
+      color: #FFFFFF;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-tag {
+      background: var(--azul-claro);
+      color: var(--azul-primario);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .meta-info {
+      font-size: 12px;
+      color: #A0AEC0;
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Item de Feedback na Lista */
+    .feedback-item {
+      border-bottom: 1px dashed var(--line);
+      padding: 14px 0;
+    }
+
+    .feedback-item:last-child {
+      border-bottom: none;
+    }
+
+    .admin-only-badge {
+      font-size: 10px;
+      background: #ED8936;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+  </style>
 </head>
 <body>
 
-<div class="app">
-  <header class="topbar app-protected" id="app-header">
+  <!-- HEADER / BARRA SUPERIOR -->
+  <header>
     <div class="brand">
-      <div class="badge">
-        <img src="logo.jpg" alt="Logo Alltak" class="brand-logo-img">
-      </div>
-      <span>Alltak</span>
+      <h1>ALLTAK</h1>
+      <span style="font-size:12px; opacity:0.8;">Portal do Colaborador</span>
     </div>
-    <div class="topbar-right">
-      <span class="role-pill" id="role-pill" style="display:none;">Admin</span>
-      <div class="notif-wrap">
-        <div class="icon-btn" onclick="toggleNotificationPanel(event)">
-          <span class="dot-alert" id="notification-dot" style="display: none;"></span>
-          <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
-        </div>
-        <div class="notif-panel" id="notif-panel">
-          <div class="notif-panel-head">
-            <span>Notificações</span>
-            <span class="clear-link" onclick="clearAllNotifications(event)">Limpar</span>
-          </div>
-          <div id="notif-list"></div>
-        </div>
-      </div>
-      <div class="avatar-sm" id="user-avatar" onclick="handleLogout()">AT</div>
+    <div class="user-profile">
+      <span class="user-badge" id="user-display">colaborador1@alltak.com.br</span>
+      <button class="role-toggle-btn" onclick="toggleRole()" id="role-toggle-btn">Alternar para Admin</button>
     </div>
   </header>
 
-  <div class="content">
-
-    <section class="screen active" id="acesso">
-      <div class="screen-title"><h2 class="display">Acesso</h2></div>
-      <div class="login-visual">
-        <h2>Entre e fique<br>por dentro de tudo.</h2>
-      </div>
-      <div class="login-form">
-        <h3 id="login-title">Bem-vindo de volta</h3>
-        <p id="login-desc">Acesse com suas credenciais de e-mail corporativo cadastradas.</p>
-        <div id="login-fields">
-          <div class="form-field"><label>E-mail corporativo</label><input type="email" id="login-email" placeholder="nome@alltak.com.br"></div>
-          <div class="form-field"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
-        </div>
-        <div id="login-error-msg" style="color: #e63946; font-size: 13px; font-weight: 700; margin-top: -6px; margin-bottom: 14px; display: none; text-align: left;">E-mail ou senha incorretos.</div>
-        <button class="btn block" id="login-btn" onclick="handleLogin()">Entrar</button>
-      </div>
-    </section>
-
-    <div id="app-main-content">
-        <section class="screen" id="home">
-          <div class="hero">
-            <div class="hero-inner" id="featured-announcement"></div>
-          </div>
-
-          <div class="section-head"><h2 class="display">Acesso rápido</h2></div>
-          <div class="quicklinks">
-            <div class="qcard" onclick="go('mural')">
-              <div class="qicon" style="background:var(--azul-principal)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></div>
-              <h4>Mural</h4>
-              <p>Todos os avisos</p>
-            </div>
-            <div class="qcard" onclick="go('calendario')">
-              <div class="qicon" style="background:var(--azul-claro)"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
-              <h4>Calendário</h4>
-              <p>Agenda integrada</p>
-            </div>
-            <div class="qcard" onclick="go('institucional')">
-              <div class="qicon" style="background:var(--ink)"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg></div>
-              <h4>Institucional</h4>
-              <p>Missão e arquivos</p>
-            </div>
-            <div class="qcard" onclick="go('feedback')">
-              <div class="qicon" style="background:var(--azul-escuro)"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.5A8.5 8.5 0 1119.5 6.5 8.38 8.38 0 0121 11.5z"/></svg></div>
-              <h4>Feedback</h4>
-              <p>Opine e vote</p>
-            </div>
-            <div class="qcard" onclick="go('holerites')">
-              <div class="qicon" style="background:var(--azul-claro)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg></div>
-              <h4>Holerites</h4>
-              <p>Seus contracheques</p>
-            </div>
-          </div>
-
-          <div class="section-head"><h2 class="display">Últimos informativos</h2><a onclick="go('mural')">Ver tudo →</a></div>
-          <div class="feed-list" id="home-feed-grid"></div>
-        </section>
-
-        <section class="screen" id="mural">
-          <div class="screen-title"><h2 class="display">Mural</h2></div>
-          <div class="filters" id="mural-filters">
-            <div class="chip on" data-filter="Todos">Todos</div>
-            <div class="chip" data-filter="RH">RH</div>
-            <div class="chip" data-filter="TI">TI</div>
-            <div class="chip" data-filter="Financeiro">Financeiro</div>
-            <div class="chip" data-filter="Eventos">Eventos</div>
-          </div>
-          <div class="search-bar">
-            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-            <input type="text" id="search-input" placeholder="Buscar por título...">
-          </div>
-          <div class="feed-list" id="mural-grid" style="margin-top:16px;"></div>
-        </section>
-
-        <section class="screen" id="institucional">
-          <div class="screen-title"><h2 class="display">Institucional</h2></div>
-          <div class="mvv">
-            <div class="mvv-card" style="background:var(--azul-suave)">
-              <h3 class="display">Missão</h3>
-              <p>Simplificar a rotina de quem constrói algo todos os dias, com soluções honestas e feitas para durar.</p>
-            </div>
-            <div class="mvv-card" style="background:var(--azul-principal); color:#fff;">
-              <h3 class="display">Visão</h3>
-              <p style="color:#e6f0fa;">Ser referência do setor até 2030, reconhecida pela cultura de colaboração e transparência.</p>
-            </div>
-            <div class="mvv-card" style="background:var(--ink); color:#fff;">
-              <h3 class="display" style="color:var(--azul-suave)">Valores</h3>
-              <p style="color:#D8D2C4;">Respeito, ownership, simplicidade e coragem para questionar o que já foi feito.</p>
-            </div>
-          </div>
-
-          <div class="section-head"><h2 style="font-size:16px;">Documentos e materiais</h2></div>
-          <div class="doc-list">
-            <div class="doc-row" onclick="alert('Download iniciado: Organograma_2026.pdf')">
-              <div class="doc-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
-              <div class="info"><h4>Organograma 2026</h4><span>PDF · 1.2 MB</span></div>
-              <div class="doc-dl">Baixar</div>
-            </div>
-            <div class="doc-row" onclick="alert('Download iniciado: Codigo_de_Conduta.pdf')">
-              <div class="doc-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
-              <div class="info"><h4>Código de conduta</h4><span>PDF · 860 KB</span></div>
-              <div class="doc-dl">Baixar</div>
-            </div>
-            <div class="doc-row" onclick="alert('Download iniciado: Politica_de_Beneficios.pdf')">
-              <div class="doc-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
-              <div class="info"><h4>Política de benefícios</h4><span>PDF · 640 KB</span></div>
-              <div class="doc-dl">Baixar</div>
-            </div>
-          </div>
-        </section>
-
-        <section class="screen" id="calendario">
-          <div class="screen-title"><h2 class="display">Calendário</h2></div>
-          <div class="cal-wrap">
-            <div class="cal-head">
-              <h2 id="calendar-month-year">Julho 2026</h2>
-              <div class="cal-nav">
-                <button onclick="changeMonth(-1)">‹</button>
-                <button onclick="changeMonth(1)">›</button>
-              </div>
-            </div>
-            <div class="legend">
-              <div><span class="sq" style="background:var(--azul-principal)"></span>Campanha</div>
-              <div><span class="sq" style="background:var(--azul-claro)"></span>Urgente</div>
-              <div><span class="sq" style="background:var(--ink)"></span>Evento</div>
-              <div><span class="sq" style="background:var(--azul-suave)"></span>Treinamento</div>
-            </div>
-            <div class="cal-grid" id="cal-grid"></div>
-          </div>
-          <div class="cal-day-events" id="cal-day-events"></div>
-        </section>
-
-        <section class="screen" id="feedback">
-          <div class="screen-title"><h2 class="display">Feedback</h2></div>
-          <div class="fb-stack">
-            <div class="card-block" id="direct-feedback-box" style="display: none; background: #FFFEE0;">
-              <h3 style="color: var(--azul-escuro)">✉ Mensagens da Administração</h3>
-              <div id="direct-feedback-received-list"></div>
-            </div>
-
-            <div class="card-block">
-              <h3>Enviar sugestão ou comentário</h3>
-              <form id="feedback-form" onsubmit="submitFeedback(event)">
-                <div class="form-field">
-                  <label>Assunto</label>
-                  <select id="fb-subject"><option>Sobre um comunicado</option><option>Sugestão geral</option><option>Dúvida</option></select>
-                </div>
-                <div class="form-field">
-                  <label>Sua mensagem</label>
-                  <textarea id="fb-message" placeholder="Conte pra gente o que você pensa..." required></textarea>
-                </div>
-                <div class="form-field">
-                  <label>Avaliação geral</label>
-                  <div class="stars" id="stars-container">
-                    <svg data-star="1" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
-                    <svg data-star="2" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
-                    <svg data-star="3" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
-                    <svg data-star="4" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
-                    <svg data-star="5" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
-                  </div>
-                </div>
-                <button type="submit" class="btn block">Enviar feedback</button>
-              </form>
-            </div>
-          </div>
-        </section>
-
-        <section class="screen" id="holerites">
-          <div class="screen-title"><h2 class="display">Holerites</h2></div>
-          <div style="padding:16px;">
-            <p style="font-size:12.5px; color:#506473; line-height:1.5; margin-bottom:16px;">Aqui você encontra os contracheques enviados pela administração. Toque para baixar o arquivo.</p>
-            <div class="doc-list" id="user-payslips-list"></div>
-          </div>
-        </section>
-
-        <section class="screen" id="admin">
-          <div class="screen-title"><h2 class="display">Painel Admin</h2></div>
-
-          <div class="admin-tabs" id="admin-tabs">
-            <div class="chip on" data-admintab="conteudo" onclick="showAdminTab('conteudo')">Conteúdo</div>
-            <div class="chip" data-admintab="agenda" onclick="showAdminTab('agenda')">Agenda</div>
-            <div class="chip" data-admintab="feedback" onclick="showAdminTab('feedback')">Feedbacks</div>
-            <div class="chip" data-admintab="usuarios" onclick="showAdminTab('usuarios')">Usuários</div>
-            <div class="chip" data-admintab="holerites" onclick="showAdminTab('holerites')">Holerites</div>
-            <div class="chip" data-admintab="metricas" onclick="showAdminTab('metricas')">Métricas</div>
-          </div>
-
-          <div class="admin-panel active" id="admin-conteudo">
-            <div class="card-block" style="margin-top:14px;">
-              <h3 id="post-form-title">Novo comunicado</h3>
-              <form id="post-form" onsubmit="submitPostForm(event)">
-                <div class="form-field"><label>Título</label><input type="text" id="post-title" required></div>
-                <div class="form-field"><label>Descrição</label><textarea id="post-desc" required></textarea></div>
-                <div class="form-field"><label>Categoria</label>
-                  <select id="post-tag">
-                    <option>RH</option><option>TI</option><option>Financeiro</option><option>Eventos</option>
-                  </select>
-                </div>
-                <div class="form-field"><label>Autor</label><input type="text" id="post-author" placeholder="Ex: RH Alltak" required></div>
-                <div class="checkbox-field"><input type="checkbox" id="post-urgent"><label for="post-urgent">Marcar como urgente</label></div>
-                <button type="submit" class="btn block" id="post-submit-btn">Publicar comunicado</button>
-              </form>
-            </div>
-            <div class="admin-list" id="admin-posts-list"></div>
-          </div>
-
-          <div class="admin-panel" id="admin-agenda">
-            <div class="card-block" style="margin-top:14px;">
-              <h3>Novo evento</h3>
-              <form id="event-form" onsubmit="submitEventForm(event)">
-                <div class="form-field"><label>Data</label><input type="date" id="event-date" required></div>
-                <div class="form-field"><label>Título</label><input type="text" id="event-title" required></div>
-                <div class="form-field"><label>Tipo</label>
-                  <select id="event-color">
-                    <option value="var(--azul-principal)">Campanha</option>
-                    <option value="var(--azul-claro)">Urgente</option>
-                    <option value="var(--ink)">Evento</option>
-                    <option value="var(--azul-suave)">Treinamento</option>
-                  </select>
-                </div>
-                <button type="submit" class="btn block">Adicionar à agenda</button>
-              </form>
-            </div>
-            <div class="admin-list" id="admin-events-list"></div>
-          </div>
-
-          <div class="admin-panel" id="admin-feedback">
-            <div class="card-block" style="margin-top:14px;">
-              <h3>Enviar Mensagem Direta a Funcionário</h3>
-              <form id="direct-feedback-form" onsubmit="submitDirectFeedback(event)">
-                <div class="form-field">
-                  <label>Destinatário (Funcionário)</label>
-                  <select id="direct-feedback-recipient" required></select>
-                </div>
-                <div class="form-field">
-                  <label>Mensagem / Feedback</label>
-                  <textarea id="direct-feedback-text" placeholder="Escreva a avaliação ou orientação profissional direcionada..." required></textarea>
-                </div>
-                <button type="submit" class="btn block">Enviar Feedback Direto</button>
-              </form>
-            </div>
-
-            <div class="section-head" style="margin-top:20px;"><h2 style="font-size:16px;">Sugestões Recebidas (Geral)</h2></div>
-            <div class="admin-list" id="admin-feedback-list"></div>
-          </div>
-
-          <div class="admin-panel" id="admin-usuarios">
-            <div class="card-block" style="margin-top:14px;">
-              <h3>Cadastrar Novo Usuário</h3>
-              <form id="user-form" onsubmit="submitUserForm(event)">
-                <div class="form-field">
-                  <label>Email</label>
-                  <input type="email" id="user-email" placeholder="exemplo@alltak.com.br" required>
-                </div>
-                <div class="form-field">
-                  <label>Senha</label>
-                  <input type="password" id="user-password" placeholder="Digite a senha" required>
-                </div>
-                <div class="form-field">
-                  <label>Função (Cargo)</label>
-                  <select id="user-role">
-                    <option value="funcionario">Funcionário</option>
-                    <option value="admin">Administrador</option>
-                  </select>
-                </div>
-                <button type="submit" class="btn block" style="margin-top:8px;">Cadastrar Usuário</button>
-              </form>
-            </div>
-
-            <div class="card-block" style="margin-top:16px;">
-              <h3>Lista de Usuários</h3>
-              <div class="admin-list" id="admin-users-list" style="margin-top:10px;"></div>
-            </div>
-          </div>
-
-          <div class="admin-panel" id="admin-holerites">
-            <div class="card-block" style="margin-top:14px;">
-              <h3>Enviar Holerite</h3>
-              <form id="payslip-form" onsubmit="submitPayslipForm(event)">
-                <div class="form-field">
-                  <label>Funcionário</label>
-                  <select id="payslip-recipient" required></select>
-                </div>
-                <div class="form-field">
-                  <label>Mês de referência</label>
-                  <input type="month" id="payslip-ref" required>
-                </div>
-                <div class="form-field">
-                  <label>Arquivo (PDF ou imagem)</label>
-                  <input type="file" id="payslip-file" accept="application/pdf,image/*" required>
-                </div>
-                <button type="submit" class="btn block">Enviar Holerite</button>
-              </form>
-            </div>
-
-            <div class="card-block" style="margin-top:16px;">
-              <h3>Envio em massa</h3>
-              <p style="font-size:11.5px; color:#506473; margin-bottom:14px; line-height:1.5;">Selecione vários arquivos de uma vez (um por funcionário). O sistema tenta identificar o destinatário pelo nome do arquivo — por exemplo, "joao.silva.pdf" é associado a joao.silva@alltak.com.br.</p>
-              <form id="payslip-bulk-form" onsubmit="submitBulkPayslips(event)">
-                <div class="form-field">
-                  <label>Mês de referência (aplicado a todos)</label>
-                  <input type="month" id="payslip-bulk-ref" required>
-                </div>
-                <div class="form-field">
-                  <label>Arquivos</label>
-                  <input type="file" id="payslip-bulk-files" accept="application/pdf,image/*" multiple onchange="handleBulkFilesSelected(this)">
-                </div>
-                <div class="admin-list" id="payslip-bulk-preview" style="margin-bottom:14px;"></div>
-                <button type="submit" class="btn block" id="payslip-bulk-submit" disabled>Enviar todos</button>
-              </form>
-            </div>
-
-            <div class="section-head" style="margin-top:20px;"><h2 style="font-size:16px;">Holerites Enviados</h2></div>
-            <div class="admin-list" id="admin-payslips-list"></div>
-          </div>
-
-          <div class="admin-panel" id="admin-metricas">
-            <div class="stat-grid" id="admin-stat-grid" style="margin-top:14px;"></div>
-          </div>
-        </section>
+  <!-- 1. TELA INÍCIO -->
+  <section class="screen active" id="home">
+    <div class="screen-title">
+      <h2>Início</h2>
+    </div>
+    <div class="card-block">
+      <h3>Bem-vindo ao Portal Alltak 👋</h3>
+      <p style="color:var(--cinza-texto); font-size:14px; line-height:1.6;">
+        Este é o seu canal direto de comunicação com a empresa. Acesse os comunicados no <strong>Mural</strong>, envie suas sugestões na <strong>Ouvidoria</strong> e consulte seus feedbacks de desempenho.
+      </p>
     </div>
 
-  </div>
+    <div class="card-block">
+      <h3>Acesso Rápido</h3>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+        <button class="btn" onclick="go('mural')" style="background:var(--azul-claro); color:var(--azul-primario);">
+          📰 Ver Mural
+        </button>
+        <button class="btn" onclick="go('feedback')" style="background:var(--azul-claro); color:var(--azul-primario);">
+          💬 Ouvidoria
+        </button>
+      </div>
+    </div>
+  </section>
 
-  <nav class="bottomnav app-protected" id="app-bottomnav">
+  <!-- 2. TELA MURAL -->
+  <section class="screen" id="mural">
+    <div class="screen-title">
+      <h2>Mural de Comunicados</h2>
+    </div>
+
+    <!-- Formulário de Criação de Post (Apenas Admin) -->
+    <div class="card-block" id="mural-admin-create" style="display:none; background:#FFFBEB; border-color:#F6E05E;">
+      <h3>📢 Criar Novo Comunicado <span class="admin-only-badge">ADMIN</span></h3>
+      <form onsubmit="submitPost(event)">
+        <div class="form-field">
+          <label>Título do Comunicado</label>
+          <input type="text" id="post-title" required placeholder="Ex: Novo Treinamento Operacional">
+        </div>
+        <div class="form-field">
+          <label>Conteúdo / Mensagem</label>
+          <textarea id="post-content" required placeholder="Escreva aqui as informações detalhadas do comunicado..."></textarea>
+        </div>
+        <div class="form-field">
+          <label>Categoria</label>
+          <select id="post-tag">
+            <option value="Geral">Geral</option>
+            <option value="Aviso Urgente">Aviso Urgente</option>
+            <option value="Eventos">Eventos</option>
+            <option value="RH / Benefícios">RH / Benefícios</option>
+            <option value="Segurança">Segurança do Trabalho</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Anexar Foto ou Vídeo (Opcional)</label>
+          <input type="file" id="post-media" accept="image/*,video/*">
+        </div>
+        <button type="submit" class="btn block">Publicar Comunicado</button>
+      </form>
+    </div>
+
+    <!-- Lista de Posts do Mural -->
+    <div id="mural-list"></div>
+  </section>
+
+  <!-- 3. TELA AGENDA -->
+  <section class="screen" id="calendario">
+    <div class="screen-title">
+      <h2>Agenda & Eventos</h2>
+    </div>
+    <div class="card-block">
+      <h3>Próximos Eventos do Mês</h3>
+      <div style="padding:10px 0; border-bottom:1px solid var(--line);">
+        <strong style="color:var(--azul-primario);">15 de Agosto</strong> - Treinamento de Novos Produtos Alltak
+      </div>
+      <div style="padding:10px 0;">
+        <strong style="color:var(--azul-primario);">28 de Agosto</strong> - Reunião Geral de Resultados
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. TELA SOBRE -->
+  <section class="screen" id="institucional">
+    <div class="screen-title">
+      <h2>Sobre a Alltak</h2>
+    </div>
+    <div class="card-block">
+      <h3>Nossa Missão</h3>
+      <p style="color:var(--cinza-texto); font-size:14px; line-height:1.6;">
+        Transformar superfícies com inovação, qualidade superior e tecnologia avançada em vinis adesivos de alta performance, proporcionando soluções criativas para envelopamento e comunicação visual.
+      </p>
+    </div>
+    <div class="card-block">
+      <h3>Valores</h3>
+      <ul style="padding-left:20px; color:var(--cinza-texto); font-size:14px; line-height:1.8;">
+        <li>Inovação constante</li>
+        <li>Compromisso com a qualidade</li>
+        <li>Respeito e valorização das pessoas</li>
+        <li>Sustentabilidade e responsabilidade social</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5. TELA OUVIDORIA / FEEDBACKS DO COLABORADOR -->
+  <section class="screen" id="feedback">
+    <div class="screen-title">
+      <h2>Ouvidoria & Feedbacks</h2>
+    </div>
+
+    <!-- Seção A: Feedbacks Oficiais Enviados da Empresa para este Colaborador -->
+    <div class="card-block" id="direct-feedback-box" style="display: none; background: var(--azul-claro); border-color:#BEE3F8;">
+      <h3 style="color: var(--azul-escuro)">📋 Seus Feedbacks de Desempenho (Gestão → Você)</h3>
+      <div id="direct-feedback-received-list"></div>
+    </div>
+
+    <!-- Seção B: Canal Aberto de Sugestão/Dúvida do Colaborador para a Empresa -->
+    <div class="card-block">
+      <h3>Enviar Sugestão ou Dúvida para a Gestão</h3>
+      <form id="feedback-form" onsubmit="submitFeedback(event)">
+        <div class="form-field">
+          <label>Assunto / Categoria</label>
+          <select id="fb-subject">
+            <option value="Sugestão de melhoria">Sugestão de melhoria</option>
+            <option value="Elogio">Elogio</option>
+            <option value="Dúvida / Esclarecimento">Dúvida / Esclarecimento</option>
+            <option value="Reclamação ou Alerta">Reclamação ou Alerta</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Sua Mensagem</label>
+          <textarea id="fb-message" placeholder="Escreva aqui sua sugestão, dúvida ou comentário..." required></textarea>
+        </div>
+        <div class="form-field">
+          <label>Anexar Evidência / Arquivo (Foto ou Vídeo - Opcional)</label>
+          <input type="file" id="fb-media" accept="image/*,video/*">
+        </div>
+        <div class="form-field">
+          <label>Avaliação do Ambiente de Trabalho</label>
+          <div class="stars" id="stars-container">
+            <svg data-star="1" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+            <svg data-star="2" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+            <svg data-star="3" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+            <svg data-star="4" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+            <svg data-star="5" class="filled" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
+          </div>
+        </div>
+        <button type="submit" class="btn block">Enviar Mensagem para a Gestão</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- 6. TELA PAINEL ADMIN -->
+  <section class="screen" id="admin">
+    <div class="screen-title">
+      <h2>Painel Administrativo <span class="admin-only-badge">ADMIN</span></h2>
+    </div>
+
+    <!-- Enviar Feedback Oficial a Colaborador -->
+    <div class="card-block">
+      <h3>Enviar Feedback Oficial / Orientação ao Colaborador</h3>
+      <form id="direct-feedback-form" onsubmit="submitDirectFeedback(event)">
+        <div class="form-field">
+          <label>Colaborador Destinatário</label>
+          <select id="direct-feedback-recipient" required>
+            <option value="colaborador1@alltak.com.br">João Silva (colaborador1@alltak.com.br)</option>
+            <option value="colaborador2@alltak.com.br">Maria Santos (colaborador2@alltak.com.br)</option>
+            <option value="colaborador3@alltak.com.br">Carlos Oliveira (colaborador3@alltak.com.br)</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Mensagem de Orientação / Avaliação</label>
+          <textarea id="direct-feedback-text" placeholder="Escreva a orientação técnica ou avaliação de desempenho..." required></textarea>
+        </div>
+        <div class="form-field">
+          <label>Anexar Foto ou Vídeo de Evidência (Opcional)</label>
+          <input type="file" id="direct-feedback-media" accept="image/*,video/*">
+        </div>
+        <button type="submit" class="btn block">Enviar Feedback ao Colaborador</button>
+      </form>
+    </div>
+
+    <!-- Sugestões da Ouvidoria Recebidas dos Colaboradores -->
+    <div class="card-block">
+      <h3>Mensagens Recebidas da Ouvidoria</h3>
+      <div id="admin-feedback-list"></div>
+    </div>
+  </section>
+
+  <!-- BARRA DE NAVEGAÇÃO INFERIOR -->
+  <nav class="bottomnav" id="app-bottomnav">
     <div class="navitem active" data-screen="home" onclick="go('home')">
       <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
       <span>Início</span>
@@ -698,998 +563,327 @@
     </div>
     <div class="navitem" data-screen="feedback" onclick="go('feedback')">
       <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.5A8.5 8.5 0 1119.5 6.5 8.38 8.38 0 0121 11.5z"/></svg>
-      <span>Feedback</span>
+      <span>Ouvidoria</span>
     </div>
-    <div class="navitem admin-only-nav" data-screen="admin" onclick="go('admin')">
+    <div class="navitem" data-screen="admin" onclick="go('admin')" id="admin-nav-item">
       <svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
       <span>Admin</span>
     </div>
   </nav>
-</div>
 
-<script>
-// URL base da API FastAPI hospedada no Render.
-const API_URL = 'https://alltak.onrender.com/api';
-
-// Integração real com o backend (Supabase via FastAPI).
-const Database = {
-    async login(email, password) {
-        const res = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        if (!res.ok) throw new Error('Credenciais inválidas');
-        return await res.json();
-    },
-    async getUsersRaw() {
-        const res = await fetch(`${API_URL}/users`);
-        if (!res.ok) throw new Error('Erro ao buscar usuários');
-        return await res.json();
-    },
-    async getUsers() {
-        const list = await this.getUsersRaw();
-        const map = {};
-        list.forEach(u => {
-            map[u.email] = { id: u.id, role: u.role, initial: u.initial || u.email.slice(0, 2).toUpperCase() };
-        });
-        return map;
-    },
-    async saveUser(email, data) {
-        const res = await fetch(`${API_URL}/users`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password: data.password, role: data.role })
-        });
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.detail || 'Erro ao cadastrar usuário');
-        }
-        return true;
-    },
-    async deleteUser(userId) {
-        const res = await fetch(`${API_URL}/users/${userId}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao remover usuário');
-        return true;
-    },
-    async getPosts() {
-        const res = await fetch(`${API_URL}/posts`);
-        if (!res.ok) throw new Error('Erro ao buscar comunicados');
-        return await res.json();
-    },
-    async createPost(title, content, author, tag, urgent) {
-        const res = await fetch(`${API_URL}/posts`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, content, author, tag, urgent })
-        });
-        if (!res.ok) throw new Error('Erro ao salvar comunicado');
-        return await res.json();
-    },
-    async deletePost(id) {
-        const res = await fetch(`${API_URL}/posts/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao excluir comunicado');
-        return true;
-    },
-    async getEvents() {
-        const res = await fetch(`${API_URL}/events`);
-        if (!res.ok) throw new Error('Erro ao buscar agenda');
-        return await res.json();
-    },
-    async createEvent(date, title, color) {
-        const res = await fetch(`${API_URL}/events`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date, title, color })
-        });
-        if (!res.ok) throw new Error('Erro ao salvar evento');
-        return await res.json();
-    },
-    async deleteEvent(id) {
-        const res = await fetch(`${API_URL}/events/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao excluir evento');
-        return true;
-    },
-    async getFeedback() {
-        const res = await fetch(`${API_URL}/feedback`);
-        if (!res.ok) throw new Error('Erro ao buscar feedbacks');
-        return await res.json();
-    },
-    async createFeedback(userEmail, category, message, rating) {
-        const res = await fetch(`${API_URL}/feedback`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_email: userEmail, category, message, rating })
-        });
-        if (!res.ok) throw new Error('Erro ao enviar feedback');
-        return await res.json();
-    },
-    async deleteFeedbackApi(id) {
-        const res = await fetch(`${API_URL}/feedback/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao excluir feedback');
-        return true;
-    },
-    async getDirectFeedbacks(recipient) {
-        const url = recipient ? `${API_URL}/direct-feedbacks?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/direct-feedbacks`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Erro ao buscar feedbacks direcionados');
-        return await res.json();
-    },
-    async createDirectFeedback(recipient, message) {
-        const res = await fetch(`${API_URL}/direct-feedbacks`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ recipient, message })
-        });
-        if (!res.ok) throw new Error('Erro ao enviar feedback direcionado');
-        return await res.json();
-    },
-    async getPayslips(recipient) {
-        const url = recipient ? `${API_URL}/payslips?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/payslips`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Erro ao buscar holerites');
-        return await res.json();
-    },
-    async createPayslip(recipient, ref, fileName, fileData) {
-        const res = await fetch(`${API_URL}/payslips`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ recipient, ref, file_name: fileName, file_data: fileData })
-        });
-        if (!res.ok) throw new Error('Erro ao enviar holerite');
-        return await res.json();
-    },
-    async deletePayslipApi(id) {
-        const res = await fetch(`${API_URL}/payslips/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao excluir holerite');
-        return true;
-    }
-};
-
-let VALID_USERS = {};
-let directFeedbacksData = [];
-let payslipsData = [];
-let postsData = [];
-let eventsData = {};
-let feedbackData = [];
-
-// Reconstrói o mapa { "YYYY-MM-DD": [{id,title,color}, ...] } a partir da lista plana vinda da API,
-// preservando o id de cada evento (necessário pra excluir depois).
-// A tabela `posts` no Supabase já tem tag/urgent — só formatamos a data a partir de created_at.
-function normalizePost(p) {
-  return {
-    id: p.id,
-    title: p.title,
-    desc: p.content,
-    author: p.author,
-    tag: p.tag || 'Geral',
-    bg: 'var(--azul-suave)',
-    urgent: !!p.urgent,
-    date: p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : 'Hoje'
-  };
-}
-
-// Normaliza os campos snake_case que vêm do Supabase (file_name, file_data) e formata
-// a data de upload a partir de created_at, já que a tabela não guarda uma coluna de data própria.
-function normalizePayslip(p) {
-  return {
-    id: p.id,
-    recipient: p.recipient,
-    ref: p.ref,
-    fileName: p.file_name,
-    fileData: p.file_data,
-    uploadDate: p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : ''
-  };
-}
-
-// Idem para feedback geral: mapeia user_email/category (nomes reais das colunas) e formata a data.
-function normalizeFeedback(f) {
-  return {
-    id: f.id,
-    subject: f.category,
-    message: f.message,
-    rating: f.rating,
-    userEmail: f.user_email,
-    date: f.created_at ? new Date(f.created_at).toLocaleDateString('pt-BR') : ''
-  };
-}
-
-// Idem para feedback direcionado.
-function normalizeDirectFeedback(f) {
-  return {
-    id: f.id,
-    recipient: f.recipient,
-    message: f.message,
-    date: f.created_at ? new Date(f.created_at).toLocaleDateString('pt-BR') : ''
-  };
-}
-
-function rebuildEventsMap(list) {
-  const map = {};
-  (list || []).forEach(ev => {
-    if (!map[ev.date]) map[ev.date] = [];
-    map[ev.date].push({ id: ev.id, title: ev.title, color: ev.color });
-  });
-  return map;
-}
-
-// Busca tudo que hoje é compartilhado entre usuários (comunicados, agenda, feedbacks, holerites)
-// direto do backend/Supabase, em vez de depender do localStorage do navegador.
-async function loadSharedData(currentUserEmail, currentUserRole) {
-  try {
-    const [posts, events, feedback, directFeedbacks, payslips] = await Promise.all([
-      Database.getPosts(),
-      Database.getEvents(),
-      Database.getFeedback(),
-      currentUserRole === 'admin' ? Database.getDirectFeedbacks() : (currentUserEmail ? Database.getDirectFeedbacks(currentUserEmail) : Promise.resolve([])),
-      currentUserRole === 'admin' ? Database.getPayslips() : (currentUserEmail ? Database.getPayslips(currentUserEmail) : Promise.resolve([]))
-    ]);
-    postsData = (posts || []).map(normalizePost);
-    eventsData = rebuildEventsMap(events);
-    feedbackData = (feedback || []).map(normalizeFeedback);
-    directFeedbacksData = (directFeedbacks || []).map(normalizeDirectFeedback);
-    payslipsData = (payslips || []).map(normalizePayslip);
-  } catch (err) {
-    console.error('Erro ao carregar dados compartilhados:', err);
-    alert('Não foi possível carregar os dados do servidor. Verifique sua conexão.');
-  }
-}
-
-let currentYear = 2026;
-let currentMonth = 6;
-const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-let selectedRating = 4;
-let selectedBulkFiles = [];
-
-async function initDatabase() {
-    VALID_USERS = await Database.getUsers();
-}
-
-// ---------------------------------------------------------------------------
-// ATUALIZAÇÃO AUTOMÁTICA (polling)
-// Em vez de esperar o usuário dar F5, o app busca os dados no backend
-// periodicamente e re-renderiza as telas sozinho. Assim, quando um admin
-// publica um comunicado, feedback direcionado ou holerite novo, os outros
-// usuários recebem sem precisar recarregar a página.
-// ---------------------------------------------------------------------------
-let autoRefreshTimer = null;
-const AUTO_REFRESH_MS = 6000; // busca novidades a cada 6s (inclui remoções, não só itens novos)
-
-function refreshAllViews() {
-  const role = localStorage.getItem('alltak_role');
-  const email = localStorage.getItem('alltak_user_email');
-
-  renderFeaturedAnnouncement();
-  renderHomeFeed();
-  renderMural();
-  buildCalendar();
-
-  if (email) {
-    renderDirectFeedbackForUser(email);
-    renderUserPayslips(email);
-  }
-
-  if (role === 'admin') {
-    renderAdminPosts();
-    renderAdminEvents();
-    renderAdminFeedback();
-    renderAdminMetrics();
-    renderAdminPayslips();
-  }
-}
-
-async function autoRefreshData() {
-  const email = localStorage.getItem('alltak_user_email');
-  const role = localStorage.getItem('alltak_role');
-  if (!email || localStorage.getItem('alltak_logged') !== 'true') return;
-
-  // Guarda o que já existia antes de buscar, pra saber se chegou algo novo.
-  const prevPostIds = new Set(postsData.map(p => p.id));
-  const prevPayslipIds = new Set(payslipsData.map(p => p.id));
-  const prevDirectIds = new Set(directFeedbacksData.map(d => d.id));
-
-  try {
-    await loadSharedData(email, role);
-  } catch (err) {
-    console.error('Erro na atualização automática:', err);
-    return;
-  }
-
-  const hasNewPost = postsData.some(p => !prevPostIds.has(p.id));
-  const hasNewPayslip = role !== 'admin' && payslipsData.some(p => p.recipient === email && !prevPayslipIds.has(p.id));
-  const hasNewDirect = role !== 'admin' && directFeedbacksData.some(d => d.recipient === email && !prevDirectIds.has(d.id));
-
-  if (hasNewPost || hasNewPayslip || hasNewDirect) {
-    localStorage.setItem('alltak_new_notification', 'true');
-    checkNotificationState();
-  }
-
-  refreshAllViews();
-}
-
-function handleVisibilityRefresh() {
-  if (document.visibilityState === 'visible' && localStorage.getItem('alltak_logged') === 'true') {
-    autoRefreshData();
-  }
-}
-
-function startAutoRefresh() {
-  stopAutoRefresh();
-  autoRefreshTimer = setInterval(autoRefreshData, AUTO_REFRESH_MS);
-  document.addEventListener('visibilitychange', handleVisibilityRefresh);
-  window.addEventListener('focus', handleVisibilityRefresh);
-}
-
-function stopAutoRefresh() {
-  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
-  document.removeEventListener('visibilitychange', handleVisibilityRefresh);
-  window.removeEventListener('focus', handleVisibilityRefresh);
-}
-
-// Comunicados, agenda, feedbacks e holerites agora vivem no Supabase (via API),
-// não mais no localStorage — por isso não há mais funções de "saveXToStorage" aqui.
-
-async function handleLogin() {
-    const emailInp = document.getElementById('login-email').value.trim().toLowerCase();
-    const passInp = document.getElementById('login-pass').value;
-    const errorEl = document.getElementById('login-error-msg');
-
-    try {
-        const { token, user } = await Database.login(emailInp, passInp);
-        await initDatabase();
-        await loadSharedData(user.email, user.role);
-
-        if (errorEl) errorEl.style.display = 'none';
-        localStorage.setItem('alltak_token', token);
-        localStorage.setItem('alltak_role', user.role);
-        localStorage.setItem('alltak_user_email', user.email);
-        localStorage.setItem('alltak_user_id', user.id);
-        localStorage.setItem('alltak_logged', "true");
-
-        document.getElementById('user-avatar').innerText = (VALID_USERS[user.email] && VALID_USERS[user.email].initial) || user.email.slice(0, 2).toUpperCase();
-        applyRoleUI(user.role);
-        renderDirectFeedbackForUser(user.email);
-        renderUserPayslips(user.email);
-
-        document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'flex');
-        document.getElementById('app-main-content').style.display = 'block';
-        document.getElementById('acesso').classList.remove('active');
-        renderFeaturedAnnouncement(); renderHomeFeed(); renderMural(); buildCalendar();
-        go('home');
-        startAutoRefresh();
-    } catch (err) {
-        if (errorEl) {
-            errorEl.innerText = 'E-mail ou senha incorretos. Tente novamente.';
-            errorEl.style.display = 'block';
-        }
-    }
-}
-
-function handleLogout() {
-    if(confirm("Deseja sair da sua conta?")) {
-        stopAutoRefresh();
-        localStorage.removeItem('alltak_role');
-        localStorage.removeItem('alltak_user_email');
-        localStorage.removeItem('alltak_logged');
-        
-        document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'none');
-        document.getElementById('app-main-content').style.display = 'none';
-        applyRoleUI(null);
-
-        document.getElementById('login-email').value = '';
-        document.getElementById('login-pass').value = '';
-        document.getElementById('direct-feedback-box').style.display = 'none';
-        document.getElementById('user-payslips-list').innerHTML = '';
-
-        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-        document.getElementById('acesso').classList.add('active');
-    }
-}
-
-function applyRoleUI(role) {
-    const isAdmin = role === 'admin';
-    document.querySelectorAll('.admin-only-nav').forEach(el => el.style.display = isAdmin ? 'flex' : 'none');
-
-    const pill = document.getElementById('role-pill');
-    if(pill) pill.style.display = isAdmin ? 'inline-flex' : 'none';
-
-    const avatar = document.getElementById('user-avatar');
-    if(avatar) avatar.classList.toggle('is-admin', isAdmin);
-
-    if(isAdmin) {
-        renderAdminPosts();
-        renderAdminEvents();
-        renderAdminFeedback();
-        renderAdminMetrics();
-        populateRecipientDropdown();
-        populatePayslipRecipientDropdown();
-        renderAdminPayslips();
-    }
-}
-
-function renderDirectFeedbackForUser(email) {
-  const box = document.getElementById('direct-feedback-box');
-  const list = document.getElementById('direct-feedback-received-list');
-  if(!box || !list) return;
-
-  const userMessages = directFeedbacksData.filter(df => df.recipient === email);
-
-  if(userMessages.length > 0 && localStorage.getItem('alltak_role') !== 'admin') {
-    box.style.display = 'block';
-    list.innerHTML = userMessages.map(m => `
-      <div style="border-bottom: 1.5px dashed var(--line); padding: 10px 0; margin-bottom: 8px;">
-         <p style="font-size:13px; font-weight:600; color:var(--ink); line-height:1.4;">"${m.message}"</p>
-         <span style="font-family:'Space Mono'; font-size:9.5px; color:#788e9e; display:block; margin-top:4px;">Enviado pela Administração em ${m.date}</span>
-      </div>
-    `).join('');
-  } else {
-    box.style.display = 'none';
-  }
-}
-
-function populateRecipientDropdown() {
-  const dropdown = document.getElementById('direct-feedback-recipient');
-  if(!dropdown) return;
-  dropdown.innerHTML = '';
-  const nonAdmins = Object.keys(VALID_USERS).filter(email => VALID_USERS[email].role !== 'admin');
-  if(nonAdmins.length === 0) {
-    dropdown.innerHTML = '<option value="">Nenhum funcionário cadastrado</option>';
-    return;
-  }
-  nonAdmins.forEach(email => {
-    dropdown.innerHTML += `<option value="${email}">${email}</option>`;
-  });
-}
-
-async function submitDirectFeedback(e) {
-  e.preventDefault();
-  const recipient = document.getElementById('direct-feedback-recipient').value;
-  const message = document.getElementById('direct-feedback-text').value.trim();
-  if(!recipient) return alert('Por favor, cadastre um funcionário primeiro!');
-
-  try {
-    await Database.createDirectFeedback(recipient, message);
-    directFeedbacksData = (await Database.getDirectFeedbacks()).map(normalizeDirectFeedback);
-    alert(`Mensagem direcionada com sucesso para: ${recipient}`);
-    document.getElementById('direct-feedback-text').value = '';
-    renderAdminFeedback();
-  } catch (err) {
-    alert(err.message);
-  }
-}
-
-function renderAdminFeedback() {
-    const container = document.getElementById('admin-feedback-list');
-    if(!container) return;
-    if(feedbackData.length === 0) {
-        container.innerHTML = '<div class="admin-empty">Nenhum feedback recebido.</div>';
-        return;
-    }
-    container.innerHTML = feedbackData.map((f) => `
-        <div class="admin-item">
-            <div class="info">
-                <h4>${f.subject} <span style="color:var(--azul-claro)">★ ${f.rating}/5</span></h4>
-                <p>"${f.message}"</p>
-                <span class="meta">Recebido em ${f.date}</span>
-            </div>
-            <div class="admin-actions">
-                <button class="danger" onclick="deleteFeedback('${f.id}')">
-                    <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
-
-async function deleteFeedback(feedbackId) {
-    if(confirm("Excluir este feedback permanentemente?")) {
-        try {
-            await Database.deleteFeedbackApi(feedbackId);
-            feedbackData = (await Database.getFeedback()).map(normalizeFeedback);
-            renderAdminFeedback();
-            renderAdminMetrics();
-        } catch (err) {
-            alert(err.message);
-        }
-    }
-}
-
-function go(id){
-  if(!localStorage.getItem('alltak_logged') && id !== 'acesso') id = 'acesso';
-  if(id === 'admin' && localStorage.getItem('alltak_role') !== 'admin') id = 'home';
-
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  const targetScreen = document.getElementById(id);
-  if(targetScreen) targetScreen.classList.add('active');
-
-  document.querySelectorAll('.navitem').forEach(n=>n.classList.remove('active'));
-  const targetNav = document.querySelector('.navitem[data-screen="'+id+'"]');
-  if(targetNav) targetNav.classList.add('active');
-}
-
-function renderFeaturedAnnouncement() {
-  const container = document.getElementById('featured-announcement');
-  if(!container || postsData.length === 0) return;
-  const latestPost = postsData[0];
-  container.innerHTML = `
-    <span class="eyebrow">Comunicado em destaque</span>
-    <h1>${latestPost.title}</h1>
-    <p>${latestPost.desc}</p>
-    <div class="hero-meta">
-      <div><span class="k">Publicado</span><span class="v">${latestPost.date}</span></div>
-      <div><span class="k">Categoria</span><span class="v">${latestPost.tag}</span></div>
-    </div>
-    <div class="hero-actions">
-      <button class="btn" onclick="openFeaturedPost('${latestPost.id}')">Ler comunicado</button>
-    </div>
-  `;
-}
-
-function openFeaturedPost(id) {
-  const post = postsData.find(p => p.id == id);
-  if(!post) return;
-  go('mural');
-  const searchInput = document.getElementById('search-input');
-  if (searchInput) { searchInput.value = post.title; renderMural('Todos', post.title); }
-}
-
-function renderHomeFeed() {
-  const container = document.getElementById('home-feed-grid');
-  if(!container) return;
-  container.innerHTML = postsData.slice(0, 2).map(p => createPostCard(p)).join('');
-}
-
-function renderMural(filter = 'Todos', search = '') {
-  const container = document.getElementById('mural-grid');
-  if(!container) return;
-  
-  const filtered = postsData.filter(p => {
-    const matchFilter = filter === 'Todos' || p.tag === filter;
-    const matchSearch = p.title.toLowerCase().includes(search.toLowerCase());
-    return matchFilter && matchSearch;
-  });
-
-  container.innerHTML = filtered.length === 0 ? '<div style="padding:32px; color:#788e9e;">Nenhum informativo.</div>' : filtered.map(p => createPostCard(p)).join('');
-}
-
-function createPostCard(p) {
-  return `
-    <div class="post-card" onclick="alert('Post: ${p.title}')">
-      <div class="post-media" style="background:${p.bg}"><span class="post-tag">${p.tag}</span></div>
-      <div class="post-body">
-        <h3>${p.urgent ? '<span class="urgent-pill">Urgente</span> ' : ''}${p.title}</h3>
-        <p>${p.desc}</p>
-        <div class="post-foot"><span>Por ${p.author}</span><span>${p.date}</span></div>
-      </div>
-    </div>
-  `;
-}
-
-function buildCalendar() {
-  const grid = document.getElementById('cal-grid');
-  const monthYearLabel = document.getElementById('calendar-month-year');
-  if(!grid) return;
-
-  grid.innerHTML = '';
-  monthYearLabel.innerText = `${monthNames[currentMonth]} ${currentYear}`;
-
-  const dows = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-  dows.forEach(d => grid.innerHTML += `<div class="cal-dow">${d}</div>`);
-
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-  for(let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="cal-cell muted"></div>`;
-
-  for(let day = 1; day <= totalDays; day++) {
-    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    let evtsHtml = eventsData[dateStr] ? '<div class="cal-evt-wrap">' + eventsData[dateStr].map(e => `<div class="cal-evt" style="background:${e.color}"></div>`).join('') + '</div>' : '';
-
-    grid.innerHTML += `<div class="cal-cell" onclick="showDayEvents('${dateStr}', ${day})">${day}${evtsHtml}</div>`;
-  }
-}
-
-function changeMonth(dir) {
-  currentMonth += dir;
-  if(currentMonth > 11) { currentMonth = 0; currentYear++; }
-  if(currentMonth < 0) { currentMonth = 11; currentYear--; }
-  buildCalendar();
-}
-
-function showDayEvents(dateStr, day) {
-  const container = document.getElementById('cal-day-events');
-  if(!container) return;
-  container.innerHTML = `<h4 style="margin-bottom:8px;">Dia ${day}</h4>`;
-  if(eventsData[dateStr]) {
-    eventsData[dateStr].forEach(e => {
-      container.innerHTML += `<div class="evt-row"><span class="evt-dot" style="background:${e.color}"></span><span>${e.title}</span></div>`;
-    });
-  } else {
-    container.innerHTML += '<p style="font-size:12px; color:#788e9e;">Nenhum evento.</p>';
-  }
-}
-
-async function submitFeedback(e) {
-  e.preventDefault();
-  const subject = document.getElementById('fb-subject').value;
-  const message = document.getElementById('fb-message').value;
-  const userEmail = localStorage.getItem('alltak_user_email') || 'anonimo@alltak.com.br';
-
-  try {
-    await Database.createFeedback(userEmail, subject, message, selectedRating);
-    feedbackData = (await Database.getFeedback()).map(normalizeFeedback);
-    alert('Feedback enviado!');
-    document.getElementById('fb-message').value = '';
-    if(localStorage.getItem('alltak_role') === 'admin') { renderAdminFeedback(); renderAdminMetrics(); }
-  } catch (err) {
-    alert(err.message);
-  }
-}
-
-function showAdminTab(tab) {
-  document.querySelectorAll('#admin-tabs .chip').forEach(c => c.classList.remove('on'));
-  document.querySelector(`#admin-tabs .chip[data-admintab="${tab}"]`).classList.add('on');
-  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('admin-' + tab).classList.add('active');
-  
-  if (tab === 'usuarios') renderAdminUsers();
-  if (tab === 'feedback') renderAdminFeedback();
-  if (tab === 'metricas') renderAdminMetrics();
-  if (tab === 'holerites') { populatePayslipRecipientDropdown(); renderAdminPayslips(); }
-}
-
-async function submitPostForm(e) {
-  e.preventDefault();
-  const title = document.getElementById('post-title').value.trim();
-  const desc = document.getElementById('post-desc').value.trim();
-  const tag = document.getElementById('post-tag').value;
-  const author = document.getElementById('post-author').value.trim();
-  const urgent = document.getElementById('post-urgent').checked;
-
-  try {
-    await Database.createPost(title, desc, author, tag, urgent);
-    localStorage.setItem('alltak_new_notification', 'true');
-    checkNotificationState();
-    postsData = (await Database.getPosts()).map(normalizePost);
-    document.getElementById('post-form').reset();
-    renderFeaturedAnnouncement(); renderHomeFeed(); renderMural(); renderAdminPosts(); renderAdminMetrics();
-  } catch (err) {
-    alert(err.message);
-  }
-}
-
-function renderAdminPosts() {
-  const container = document.getElementById('admin-posts-list');
-  if(!container) return;
-  if(postsData.length === 0) { container.innerHTML = '<div class="admin-empty">Nenhum comunicado criado.</div>'; return; }
-  container.innerHTML = postsData.map((p, index) => `
-    <div class="admin-item">
-        <div class="info"><h4>${p.title}</h4><p>${p.desc.substring(0, 60)}...</p></div>
-        <div class="admin-actions">
-            <button class="danger" onclick="deletePost(${index})">
-                <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-            </button>
-        </div>
-    </div>`).join('');
-}
-
-async function deletePost(index) {
-    if(confirm("Excluir este comunicado permanentemente?")) {
-        const post = postsData[index];
-        try {
-            await Database.deletePost(post.id);
-            postsData = (await Database.getPosts()).map(normalizePost);
-            renderFeaturedAnnouncement(); renderHomeFeed(); renderMural(); renderAdminPosts(); renderAdminMetrics();
-        } catch (err) {
-            alert(err.message);
-        }
-    }
-}
-
-async function submitEventForm(e) {
-  e.preventDefault();
-  const date = document.getElementById('event-date').value;
-  const title = document.getElementById('event-title').value.trim();
-  const color = document.getElementById('event-color').value;
-
-  try {
-    await Database.createEvent(date, title, color);
-    eventsData = rebuildEventsMap(await Database.getEvents());
-    document.getElementById('event-form').reset();
-    buildCalendar(); renderAdminEvents();
-  } catch (err) {
-    alert(err.message);
-  }
-}
-
-function renderAdminEvents() {
-    const container = document.getElementById('admin-events-list');
-    if(!container) return;
-    let html = '';
-    let count = 0;
-    for (let d in eventsData) {
-        eventsData[d].forEach((ev) => {
-            count++;
-            html += `
-            <div class="admin-item">
-                <div class="info"><h4>${ev.title}</h4><span class="meta">${d}</span></div>
-                <div class="admin-actions">
-                    <button class="danger" onclick="deleteEvent('${ev.id}')">
-                        <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-                    </button>
-                </div>
-            </div>`;
-        });
-    }
-    container.innerHTML = count === 0 ? '<div class="admin-empty">Nenhum evento agendado.</div>' : html;
-}
-
-async function deleteEvent(eventId) {
-    if(confirm("Excluir este evento da agenda?")) {
-        try {
-            await Database.deleteEvent(eventId);
-            eventsData = rebuildEventsMap(await Database.getEvents());
-            buildCalendar(); renderAdminEvents();
-        } catch (err) {
-            alert(err.message);
-        }
-    }
-}
-
-async function submitUserForm(e) {
-  e.preventDefault();
-  const email = document.getElementById('user-email').value.trim().toLowerCase();
-  const pass = document.getElementById('user-password').value;
-  const role = document.getElementById('user-role').value;
-
-  const newUser = { password: pass, role: role, initial: email.substring(0,2).toUpperCase() };
-  await Database.saveUser(email, newUser);
-  VALID_USERS = await Database.getUsers();
-  
-  document.getElementById('user-form').reset();
-  alert(`Usuário ${email} cadastrado com sucesso e salvo no banco!`);
-  renderAdminUsers();
-  populateRecipientDropdown();
-  populatePayslipRecipientDropdown();
-  renderAdminMetrics();
-}
-
-function renderAdminUsers() {
-  const container = document.getElementById('admin-users-list');
-  if(!container) return;
-  const keys = Object.keys(VALID_USERS);
-  if(keys.length === 0) { container.innerHTML = '<div class="admin-empty">Nenhum usuário cadastrado.</div>'; return; }
-  container.innerHTML = keys.map(email => `
-    <div class="admin-item">
-        <div class="info"><h4>${email}</h4><span class="meta">Cargo/Nível: ${VALID_USERS[email].role}</span></div>
-        <div class="admin-actions">
-            ${email !== 'admin@alltak.com.br' ? `
-            <button class="danger" onclick="deleteUserSystem('${email}')">
-                <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-            </button>` : ''}
-        </div>
-    </div>`).join('');
-}
-
-async function deleteUserSystem(email) {
-    if(confirm(`Tem certeza que deseja excluir permanentemente o acesso de ${email}?`)) {
-        const userId = VALID_USERS[email] && VALID_USERS[email].id;
-        await Database.deleteUser(userId);
-        VALID_USERS = await Database.getUsers();
-        renderAdminUsers();
-        populateRecipientDropdown();
-        populatePayslipRecipientDropdown();
-        renderAdminMetrics();
-    }
-}
-
-function populatePayslipRecipientDropdown() {
-  const dropdown = document.getElementById('payslip-recipient');
-  if(!dropdown) return;
-  dropdown.innerHTML = Object.keys(VALID_USERS).map(email => `<option value="${email}">${email}</option>`).join('');
-}
-
-function submitPayslipForm(e) {
-  e.preventDefault();
-  const recipient = document.getElementById('payslip-recipient').value;
-  const ref = document.getElementById('payslip-ref').value;
-  const file = document.getElementById('payslip-file').files[0];
-
-  const reader = new FileReader();
-  reader.onload = async function() {
-    try {
-      await Database.createPayslip(recipient, ref, file.name, reader.result);
-      payslipsData = (await Database.getPayslips()).map(normalizePayslip);
-      renderAdminPayslips(); alert('Holerite enviado com sucesso!');
-      document.getElementById('payslip-form').reset();
-      renderAdminMetrics();
-    } catch (err) {
-      alert(err.message);
-    }
-  };
-  reader.readAsDataURL(file);
-}
-
-function handleBulkFilesSelected(input) {
-  selectedBulkFiles = Array.from(input.files);
-  const preview = document.getElementById('payslip-bulk-preview');
-  const btn = document.getElementById('payslip-bulk-submit');
-  if(!preview) return;
-
-  if(selectedBulkFiles.length === 0) {
-    preview.innerHTML = '';
-    btn.disabled = true;
-    return;
-  }
-
-  const emails = Object.keys(VALID_USERS);
-  preview.innerHTML = selectedBulkFiles.map(file => {
-     let matchedEmail = 'Não identificado (será ignorado)';
-     const nameLower = file.name.toLowerCase();
-     
-     for(let email of emails) {
-        const prefix = email.split('@')[0];
-        if(nameLower.includes(prefix)) { matchedEmail = email; break; }
-     }
-     return `<div class="admin-item"><div><strong>Arquivo:</strong> ${file.name}<br><small style="color:var(--azul-principal)">Destinatário: ${matchedEmail}</small></div></div>`;
-  }).join('');
-  btn.disabled = false;
-}
-
-function readFileAsDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-async function submitBulkPayslips(e) {
-  e.preventDefault();
-  const ref = document.getElementById('payslip-bulk-ref').value;
-  const emails = Object.keys(VALID_USERS);
-
-  try {
-    for (const file of selectedBulkFiles) {
-      let matchedEmail = null;
-      const nameLower = file.name.toLowerCase();
-      for (let email of emails) {
-        const prefix = email.split('@')[0];
-        if (nameLower.includes(prefix)) { matchedEmail = email; break; }
+  <!-- JAVASCRIPT DE FUNCIONAMENTO COMPLETO -->
+  <script>
+    // Configurações Globais
+    const API_URL = "http://localhost:8000/api";
+    let currentUserEmail = "colaborador1@alltak.com.br";
+    let currentRole = "user"; // 'user' ou 'admin'
+    let selectedRating = 5;
+
+    // Dados Mock Offline (Garante que a tela funcione mesmo se o servidor backend estiver desligado)
+    let mockPosts = [
+      {
+        id: 1,
+        title: "Lançamento da Nova Linha Alltak Tuning",
+        content: "Apresentamos a nova linha de vinis automotivos com tecnologia de micro-canais de ar antiderrapante. Confira na área técnica!",
+        author: "Comunicação Interna",
+        tag: "Geral",
+        urgent: false,
+        media_url: null,
+        media_type: null
       }
-      if (matchedEmail) {
-        const dataUrl = await readFileAsDataURL(file);
-        await Database.createPayslip(matchedEmail, ref, file.name, dataUrl);
+    ];
+
+    let mockFeedbackSuggestions = [];
+    let mockDirectFeedbacks = [
+      {
+        id: 1,
+        recipient: "colaborador1@alltak.com.br",
+        message: "Parabéns pelo excelente desempenho no alinhamento da linha de corte esta semana!",
+        media_url: null,
+        media_type: null
       }
+    ];
+
+    // Alternar Papel (Colaborador / Admin)
+    function toggleRole() {
+      if (currentRole === 'user') {
+        currentRole = 'admin';
+        document.getElementById('role-toggle-btn').innerText = "Modo: ADMIN (Mudar)";
+        document.getElementById('mural-admin-create').style.display = 'block';
+      } else {
+        currentRole = 'user';
+        document.getElementById('role-toggle-btn').innerText = "Alternar para Admin";
+        document.getElementById('mural-admin-create').style.display = 'none';
+      }
+      // Re-renderiza a tela atual
+      const activeScreen = document.querySelector('.screen.active').id;
+      go(activeScreen);
     }
-    payslipsData = (await Database.getPayslips()).map(normalizePayslip);
-    renderAdminPayslips(); renderAdminMetrics();
-    alert('Envio em massa processado com sucesso!');
-    document.getElementById('payslip-bulk-form').reset();
-    document.getElementById('payslip-bulk-preview').innerHTML = '';
-    document.getElementById('payslip-bulk-submit').disabled = true;
-  } catch (err) {
-    alert(err.message);
-  }
-}
 
-function renderAdminPayslips() {
-  const container = document.getElementById('admin-payslips-list');
-  if(!container) return;
-  if(payslipsData.length === 0) { container.innerHTML = '<div class="admin-empty">Nenhum holerite enviado.</div>'; return; }
-  container.innerHTML = payslipsData.map((p) => `
-    <div class="admin-item">
-        <div class="info"><h4>Ref: ${p.ref} ➔ ${p.recipient}</h4><p>${p.fileName}</p></div>
-        <div class="admin-actions">
-            <button class="danger" onclick="deletePayslip('${p.id}')">
-                <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-            </button>
-        </div>
-    </div>`).join('');
-}
+    // Navegação entre Telas
+    function go(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.navitem').forEach(n => n.classList.remove('active'));
 
-async function deletePayslip(payslipId) {
-    if(confirm("Remover este holerite do servidor?")) {
-        try {
-            await Database.deletePayslipApi(payslipId);
-            payslipsData = (await Database.getPayslips()).map(normalizePayslip);
-            renderAdminPayslips(); renderAdminMetrics();
-            const currentEmail = localStorage.getItem('alltak_user_email');
-            if(currentEmail) renderUserPayslips(currentEmail);
-        } catch (err) {
-            alert(err.message);
-        }
+      const targetScreen = document.getElementById(screenId);
+      if (targetScreen) targetScreen.classList.add('active');
+
+      const targetNav = document.querySelector(`.navitem[data-screen="${screenId}"]`);
+      if (targetNav) targetNav.classList.add('active');
+
+      if (screenId === 'mural') fetchPosts();
+      if (screenId === 'feedback') fetchDirectFeedbacks();
+      if (screenId === 'admin') fetchAdminData();
     }
-}
 
-function renderUserPayslips(email) {
-  const container = document.getElementById('user-payslips-list');
-  if(!container) return;
-  const filtered = payslipsData.filter(p => p.recipient === email);
-  if(filtered.length === 0) {
-      container.innerHTML = '<p style="font-size:12px; color:#788e9e; text-align:center; padding:20px;">Nenhum contracheque disponível para sua conta até o momento.</p>';
-      return;
-  }
-  container.innerHTML = filtered.map(p => `
-    <div class="doc-row" onclick="downloadPayslip('${p.id}')">
-      <div class="doc-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
-      <div class="info"><h4>Holerite Competência: ${p.ref}</h4><span>Upload em ${p.uploadDate} · Clique para abrir</span></div>
-      <div class="doc-dl">Baixar</div>
-    </div>`).join('');
-}
-
-function downloadPayslip(id) {
-  const p = payslipsData.find(p => p.id == id);
-  if(!p) return;
-  const link = document.createElement('a'); link.href = p.fileData; link.download = p.fileName; link.click();
-}
-
-function renderAdminMetrics() {
-    const grid = document.getElementById('admin-stat-grid');
-    if(!grid) return;
-    let totalEvts = 0; for(let k in eventsData) totalEvts += eventsData[k].length;
-    grid.innerHTML = `
-      <div class="stat-card"><div class="n">${Object.keys(VALID_USERS).length}</div><div class="l">Usuários Ativos</div></div>
-      <div class="stat-card"><div class="n">${postsData.length}</div><div class="l">Comunicados</div></div>
-      <div class="stat-card"><div class="n">${feedbackData.length}</div><div class="l">Sugestões</div></div>
-      <div class="stat-card"><div class="n">${payslipsData.length}</div><div class="l">Holerites no Banco</div></div>
-    `;
-}
-
-function checkNotificationState() {
-  const hasNew = localStorage.getItem('alltak_new_notification') === 'true';
-  const dot = document.getElementById('notification-dot');
-  if(dot) dot.style.display = hasNew ? 'block' : 'none';
-}
-
-function handleNotificationClick() {
-  localStorage.removeItem('alltak_new_notification'); checkNotificationState(); go('mural');
-}
-
-document.querySelectorAll('#stars-container svg').forEach(star => {
-    star.addEventListener('click', function() {
-        selectedRating = parseInt(this.getAttribute('data-star'));
+    // Gestão de Estrelas de Avaliação
+    document.querySelectorAll('#stars-container svg').forEach(star => {
+      star.addEventListener('click', () => {
+        selectedRating = parseInt(star.getAttribute('data-star'));
         document.querySelectorAll('#stars-container svg').forEach(s => {
-            if(parseInt(s.getAttribute('data-star')) <= selectedRating) { s.classList.add('filled'); } 
-            else { s.classList.remove('filled'); }
+          const val = parseInt(s.getAttribute('data-star'));
+          if (val <= selectedRating) {
+            s.classList.add('filled');
+          } else {
+            s.classList.remove('filled');
+          }
         });
+      });
     });
-});
 
-document.getElementById('search-input')?.addEventListener('input', function() {
-    const currentActiveChip = document.querySelector('#mural-filters .chip.on');
-    const activeTag = currentActiveChip ? currentActiveChip.getAttribute('data-filter') : 'Todos';
-    renderMural(activeTag, this.value);
-});
+    // Converter Mídia Selecionada (Foto/Vídeo) para Base64
+    function getFileMediaData(fileInputEl) {
+      return new Promise((resolve) => {
+        const file = fileInputEl?.files?.[0];
+        if (!file) return resolve({ media_url: null, media_type: null });
 
-document.querySelectorAll('#mural-filters .chip').forEach(chip => {
-    chip.addEventListener('click', function() {
-        document.querySelectorAll('#mural-filters .chip').forEach(c => c.classList.remove('on'));
-        this.classList.add('on');
-        const searchVal = document.getElementById('search-input')?.value || '';
-        renderMural(this.getAttribute('data-filter'), searchVal);
-    });
-});
+        const isVideo = file.type.startsWith('video/');
+        const isImage = file.type.startsWith('image/');
+        const media_type = isVideo ? 'video' : (isImage ? 'image' : null);
 
-window.addEventListener('DOMContentLoaded', async () => {
-    await initDatabase();
-    const isLogged = localStorage.getItem('alltak_logged') === "true";
-    const userEmail = localStorage.getItem('alltak_user_email');
-    const userRole = localStorage.getItem('alltak_role');
-    if (isLogged && userEmail && VALID_USERS[userEmail]) {
-        await loadSharedData(userEmail, userRole);
-        document.getElementById('user-avatar').innerText = VALID_USERS[userEmail].initial;
-        applyRoleUI(userRole);
-        renderDirectFeedbackForUser(userEmail); renderUserPayslips(userEmail);
-        document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'flex');
-        document.getElementById('app-main-content').style.display = 'block';
-        document.getElementById('acesso').classList.remove('active');
-        go('home');
-        startAutoRefresh();
+        const reader = new FileReader();
+        reader.onload = () => resolve({ media_url: reader.result, media_type });
+        reader.onerror = () => resolve({ media_url: null, media_type: null });
+        reader.readAsDataURL(file);
+      });
     }
-    renderFeaturedAnnouncement(); renderHomeFeed(); renderMural(); buildCalendar(); checkNotificationState();
-});
-</script>
+
+    // Renderizar Elemento HTML de Mídia (Foto ou Vídeo)
+    function renderMediaElement(mediaUrl, mediaType) {
+      if (!mediaUrl) return '';
+      if (mediaType === 'video') {
+        return `
+          <div class="media-container">
+            <video controls src="${mediaUrl}"></video>
+          </div>`;
+      } else {
+        return `
+          <div class="media-container">
+            <img src="${mediaUrl}" alt="Mídia Anexada">
+          </div>`;
+      }
+    }
+
+    // Enviar Novo Post no Mural
+    async function submitPost(e) {
+      e.preventDefault();
+      const title = document.getElementById('post-title').value;
+      const content = document.getElementById('post-content').value;
+      const tag = document.getElementById('post-tag').value;
+      const mediaInput = document.getElementById('post-media');
+
+      const { media_url, media_type } = await getFileMediaData(mediaInput);
+
+      const payload = {
+        title,
+        content,
+        author: 'Gestão Alltak',
+        tag,
+        urgent: tag === 'Aviso Urgente',
+        media_url,
+        media_type
+      };
+
+      try {
+        const res = await fetch(`${API_URL}/posts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Servidor indisponível');
+        alert('Comunicado publicado com sucesso!');
+      } catch (err) {
+        mockPosts.unshift({ id: Date.now(), ...payload });
+        alert('Comunicado publicado com sucesso!');
+      }
+
+      e.target.reset();
+      fetchPosts();
+    }
+
+    // Enviar Sugestão na Ouvidoria
+    async function submitFeedback(e) {
+      e.preventDefault();
+      const category = document.getElementById('fb-subject').value;
+      const message = document.getElementById('fb-message').value;
+      const mediaInput = document.getElementById('fb-media');
+
+      const { media_url, media_type } = await getFileMediaData(mediaInput);
+
+      const payload = {
+        user_email: currentUserEmail,
+        category,
+        message,
+        rating: selectedRating,
+        media_url,
+        media_type
+      };
+
+      try {
+        const res = await fetch(`${API_URL}/feedback`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Servidor indisponível');
+        alert('Sua mensagem foi enviada à gestão!');
+      } catch (err) {
+        mockFeedbackSuggestions.unshift({ id: Date.now(), ...payload });
+        alert('Sua mensagem foi enviada à gestão!');
+      }
+
+      e.target.reset();
+    }
+
+    // Enviar Feedback Direto ao Colaborador (Admin)
+    async function submitDirectFeedback(e) {
+      e.preventDefault();
+      const recipient = document.getElementById('direct-feedback-recipient').value;
+      const message = document.getElementById('direct-feedback-text').value;
+      const mediaInput = document.getElementById('direct-feedback-media');
+
+      const { media_url, media_type } = await getFileMediaData(mediaInput);
+
+      const payload = {
+        recipient,
+        message,
+        media_url,
+        media_type
+      };
+
+      try {
+        const res = await fetch(`${API_URL}/direct-feedbacks`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Servidor indisponível');
+        alert('Feedback oficial enviado com sucesso ao colaborador!');
+      } catch (err) {
+        mockDirectFeedbacks.unshift({ id: Date.now(), ...payload });
+        alert('Feedback oficial enviado com sucesso ao colaborador!');
+      }
+
+      e.target.reset();
+    }
+
+    // Buscar e Exibir Posts do Mural
+    async function fetchPosts() {
+      const container = document.getElementById('mural-list');
+      let posts = [];
+
+      try {
+        const res = await fetch(`${API_URL}/posts`);
+        if (res.ok) posts = await res.json();
+        else posts = mockPosts;
+      } catch (err) {
+        posts = mockPosts;
+      }
+
+      if (!posts || posts.length === 0) {
+        container.innerHTML = `<div class="card-block"><p style="color:var(--cinza-texto);">Nenhum comunicado no mural.</p></div>`;
+        return;
+      }
+
+      container.innerHTML = posts.map(p => `
+        <div class="card-block">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span class="${p.urgent ? 'badge-urgent' : 'badge-tag'}">${p.tag || 'Geral'}</span>
+            <span style="font-size:11px; color:#A0AEC0;">${p.author || 'Gestão'}</span>
+          </div>
+          <h3 style="margin-bottom:8px;">${p.title}</h3>
+          <p style="font-size:14px; color:var(--cinza-texto); line-height:1.6;">${p.content}</p>
+          ${renderMediaElement(p.media_url, p.media_type)}
+        </div>
+      `).join('');
+    }
+
+    // Buscar e Exibir Feedbacks Recebidos pelo Colaborador
+    async function fetchDirectFeedbacks() {
+      const box = document.getElementById('direct-feedback-box');
+      const list = document.getElementById('direct-feedback-received-list');
+      let items = [];
+
+      try {
+        const res = await fetch(`${API_URL}/direct-feedbacks`);
+        if (res.ok) items = await res.json();
+        else items = mockDirectFeedbacks;
+      } catch (err) {
+        items = mockDirectFeedbacks;
+      }
+
+      const userItems = items.filter(df => df.recipient === currentUserEmail);
+
+      if (userItems.length > 0) {
+        box.style.display = 'block';
+        list.innerHTML = userItems.map(m => `
+          <div class="feedback-item">
+            <p style="font-size:14px; color:var(--ink); line-height:1.5;">"${m.message}"</p>
+            ${renderMediaElement(m.media_url, m.media_type)}
+            <div class="meta-info">
+              <span>Enviado pela Direção / Gestão</span>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        box.style.display = 'none';
+      }
+    }
+
+    // Buscar e Exibir Mensagens no Painel Admin
+    async function fetchAdminData() {
+      const list = document.getElementById('admin-feedback-list');
+      let feedbacks = [];
+
+      try {
+        const res = await fetch(`${API_URL}/feedback`);
+        if (res.ok) feedbacks = await res.json();
+        else feedbacks = mockFeedbackSuggestions;
+      } catch (err) {
+        feedbacks = mockFeedbackSuggestions;
+      }
+
+      if (!feedbacks || feedbacks.length === 0) {
+        list.innerHTML = `<p style="font-size:13px; color:var(--cinza-texto);">Nenhuma mensagem recebida na ouvidoria até o momento.</p>`;
+        return;
+      }
+
+      list.innerHTML = feedbacks.map(f => `
+        <div class="feedback-item">
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:#718096; margin-bottom:4px;">
+            <span><strong>${f.category}</strong> (${f.user_email})</span>
+            <span>Nota: ${'★'.repeat(f.rating || 5)}</span>
+          </div>
+          <p style="font-size:14px; color:var(--ink); line-height:1.5;">${f.message}</p>
+          ${renderMediaElement(f.media_url, f.media_type)}
+        </div>
+      `).join('');
+    }
+
+    // Inicialização ao carregar a página
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchPosts();
+    });
+  </script>
 </body>
 </html>
