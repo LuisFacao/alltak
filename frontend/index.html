@@ -332,7 +332,7 @@
   <header class="topbar app-protected" id="app-header">
     <div class="brand">
       <div class="badge">
-        <img src="logo.jpg" alt="Logo Alltak" class="brand-logo-img">
+        <img src="logo_2.jpg" alt="Logo Alltak" class="brand-logo-img">
       </div>
       <span>Alltak</span>
     </div>
@@ -853,9 +853,6 @@ let postsData = [];
 let eventsData = {};
 let feedbackData = [];
 
-// Reconstrói o mapa { "YYYY-MM-DD": [{id,title,color}, ...] } a partir da lista plana vinda da API,
-// preservando o id de cada evento (necessário pra excluir depois).
-// A tabela `posts` no Supabase já tem tag/urgent — só formatamos a data a partir de created_at.
 function normalizePost(p) {
   return {
     id: p.id,
@@ -869,8 +866,6 @@ function normalizePost(p) {
   };
 }
 
-// Normaliza os campos snake_case que vêm do Supabase (file_name, file_data) e formata
-// a data de upload a partir de created_at, já que a tabela não guarda uma coluna de data própria.
 function normalizePayslip(p) {
   return {
     id: p.id,
@@ -882,7 +877,6 @@ function normalizePayslip(p) {
   };
 }
 
-// Idem para feedback geral: mapeia user_email/category (nomes reais das colunas) e formata a data.
 function normalizeFeedback(f) {
   return {
     id: f.id,
@@ -894,7 +888,6 @@ function normalizeFeedback(f) {
   };
 }
 
-// Idem para feedback direcionado.
 function normalizeDirectFeedback(f) {
   return {
     id: f.id,
@@ -913,8 +906,6 @@ function rebuildEventsMap(list) {
   return map;
 }
 
-// Busca tudo que hoje é compartilhado entre usuários (comunicados, agenda, feedbacks, holerites)
-// direto do backend/Supabase, em vez de depender do localStorage do navegador.
 async function loadSharedData(currentUserEmail, currentUserRole) {
   try {
     const [posts, events, feedback, directFeedbacks, payslips] = await Promise.all([
@@ -945,15 +936,8 @@ async function initDatabase() {
     VALID_USERS = await Database.getUsers();
 }
 
-// ---------------------------------------------------------------------------
-// ATUALIZAÇÃO AUTOMÁTICA (polling)
-// Em vez de esperar o usuário dar F5, o app busca os dados no backend
-// periodicamente e re-renderiza as telas sozinho. Assim, quando um admin
-// publica um comunicado, feedback direcionado ou holerite novo, os outros
-// usuários recebem sem precisar recarregar a página.
-// ---------------------------------------------------------------------------
 let autoRefreshTimer = null;
-const AUTO_REFRESH_MS = 6000; // busca novidades a cada 6s (inclui remoções, não só itens novos)
+const AUTO_REFRESH_MS = 6000;
 
 function refreshAllViews() {
   const role = localStorage.getItem('alltak_role');
@@ -983,7 +967,6 @@ async function autoRefreshData() {
   const role = localStorage.getItem('alltak_role');
   if (!email || localStorage.getItem('alltak_logged') !== 'true') return;
 
-  // Guarda o que já existia antes de buscar, pra saber se chegou algo novo.
   const prevPostIds = new Set(postsData.map(p => p.id));
   const prevPayslipIds = new Set(payslipsData.map(p => p.id));
   const prevDirectIds = new Set(directFeedbacksData.map(d => d.id));
@@ -1025,9 +1008,6 @@ function stopAutoRefresh() {
   document.removeEventListener('visibilitychange', handleVisibilityRefresh);
   window.removeEventListener('focus', handleVisibilityRefresh);
 }
-
-// Comunicados, agenda, feedbacks e holerites agora vivem no Supabase (via API),
-// não mais no localStorage — por isso não há mais funções de "saveXToStorage" aqui.
 
 async function handleLogin() {
     const emailInp = document.getElementById('login-email').value.trim().toLowerCase();
@@ -1608,87 +1588,229 @@ function renderUserPayslips(email) {
   if(!container) return;
   const filtered = payslipsData.filter(p => p.recipient === email);
   if(filtered.length === 0) {
-      container.innerHTML = '<p style="font-size:12px; color:#788e9e; text-align:center; padding:20px;">Nenhum contracheque disponível para sua conta até o momento.</p>';
+      container.innerHTML = '<p style="font-size:12px; color:#788e9e;">Nenhum holerite disponível.</p>';
       return;
   }
   container.innerHTML = filtered.map(p => `
-    <div class="doc-row" onclick="downloadPayslip('${p.id}')">
-      <div class="doc-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
-      <div class="info"><h4>Holerite Competência: ${p.ref}</h4><span>Upload em ${p.uploadDate} · Clique para abrir</span></div>
-      <div class="doc-dl">Baixar</div>
-    </div>`).join('');
-}
-
-function downloadPayslip(id) {
-  const p = payslipsData.find(p => p.id == id);
-  if(!p) return;
-  const link = document.createElement('a'); link.href = p.fileData; link.download = p.fileName; link.click();
+    <div class="doc-row">
+      <div class="doc-ic">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+      </div>
+      <div class="info">
+        <h4>Holerite - ${p.ref}</h4>
+        <span>${p.fileName}</span>
+      </div>
+      <a href="${p.fileData}" download="${p.fileName}" class="doc-dl" style="text-decoration:none; color:inherit;">Baixar</a>
+    </div>
+  `).join('');
 }
 
 function renderAdminMetrics() {
-    const grid = document.getElementById('admin-stat-grid');
-    if(!grid) return;
-    let totalEvts = 0; for(let k in eventsData) totalEvts += eventsData[k].length;
-    grid.innerHTML = `
-      <div class="stat-card"><div class="n">${Object.keys(VALID_USERS).length}</div><div class="l">Usuários Ativos</div></div>
-      <div class="stat-card"><div class="n">${postsData.length}</div><div class="l">Comunicados</div></div>
-      <div class="stat-card"><div class="n">${feedbackData.length}</div><div class="l">Sugestões</div></div>
-      <div class="stat-card"><div class="n">${payslipsData.length}</div><div class="l">Holerites no Banco</div></div>
-    `;
+  const container = document.getElementById('admin-stat-grid');
+  if(!container) return;
+
+  const totalUsers = Object.keys(VALID_USERS).length;
+  const totalPosts = postsData.length;
+  let totalEvents = 0;
+  for (let key in eventsData) {
+    totalEvents += eventsData[key].length;
+  }
+  const totalFeedbacks = feedbackData.length;
+  const totalPayslips = payslipsData.length;
+
+  container.innerHTML = `
+    <div class="stat-card">
+      <div class="n">${totalUsers}</div>
+      <div class="l">Usuários</div>
+    </div>
+    <div class="stat-card">
+      <div class="n">${totalPosts}</div>
+      <div class="l">Comunicados</div>
+    </div>
+    <div class="stat-card">
+      <div class="n">${totalEvents}</div>
+      <div class="l">Eventos</div>
+    </div>
+    <div class="stat-card">
+      <div class="n">${totalFeedbacks}</div>
+      <div class="l">Feedbacks</div>
+    </div>
+    <div class="stat-card">
+      <div class="n">${totalPayslips}</div>
+      <div class="l">Holerites</div>
+    </div>
+  `;
+}
+
+function toggleNotificationPanel(e) {
+  if (e) e.stopPropagation();
+  const panel = document.getElementById('notif-panel');
+  if (!panel) return;
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    renderNotificationList();
+  }
+}
+
+function renderNotificationList() {
+  const container = document.getElementById('notif-list');
+  if (!container) return;
+
+  const hasNew = localStorage.getItem('alltak_new_notification') === 'true';
+  const email = localStorage.getItem('alltak_user_email');
+
+  let items = [];
+
+  if (postsData.length > 0) {
+    items.push({
+      title: 'Novo Comunicado',
+      desc: postsData[0].title,
+      date: postsData[0].date,
+      unread: hasNew
+    });
+  }
+
+  const userPayslips = payslipsData.filter(p => p.recipient === email);
+  if (userPayslips.length > 0) {
+    items.push({
+      title: 'Novo Holerite Disponível',
+      desc: `Referência: ${userPayslips[0].ref}`,
+      date: userPayslips[0].uploadDate || 'Hoje',
+      unread: hasNew
+    });
+  }
+
+  const userDirect = directFeedbacksData.filter(d => d.recipient === email);
+  if (userDirect.length > 0) {
+    items.push({
+      title: 'Mensagem da Administração',
+      desc: userDirect[0].message,
+      date: userDirect[0].date || 'Hoje',
+      unread: hasNew
+    });
+  }
+
+  if (items.length === 0) {
+    container.innerHTML = '<div class="notif-empty">Nenhuma notificação no momento.</div>';
+    return;
+  }
+
+  container.innerHTML = items.map(item => `
+    <div class="notif-item ${item.unread ? 'unread' : ''}">
+      <div class="notif-ic">
+        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+      </div>
+      <div class="info">
+        <h5>${item.title}</h5>
+        <p>${item.desc}</p>
+        <span class="meta">${item.date}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function clearAllNotifications(e) {
+  if (e) e.stopPropagation();
+  localStorage.removeItem('alltak_new_notification');
+  const dot = document.getElementById('notification-dot');
+  if (dot) dot.style.display = 'none';
+  renderNotificationList();
 }
 
 function checkNotificationState() {
-  const hasNew = localStorage.getItem('alltak_new_notification') === 'true';
   const dot = document.getElementById('notification-dot');
-  if(dot) dot.style.display = hasNew ? 'block' : 'none';
+  const hasNew = localStorage.getItem('alltak_new_notification') === 'true';
+  if (dot) {
+    dot.style.display = hasNew ? 'block' : 'none';
+  }
 }
 
-function handleNotificationClick() {
-  localStorage.removeItem('alltak_new_notification'); checkNotificationState(); go('mural');
+function initStarRating() {
+  const container = document.getElementById('stars-container');
+  if (!container) return;
+  const stars = container.querySelectorAll('svg');
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      selectedRating = parseInt(star.getAttribute('data-star'), 10);
+      stars.forEach(s => {
+        const val = parseInt(s.getAttribute('data-star'), 10);
+        if (val <= selectedRating) {
+          s.classList.add('filled');
+        } else {
+          s.classList.remove('filled');
+        }
+      });
+    });
+  });
 }
 
-document.querySelectorAll('#stars-container svg').forEach(star => {
-    star.addEventListener('click', function() {
-        selectedRating = parseInt(this.getAttribute('data-star'));
-        document.querySelectorAll('#stars-container svg').forEach(s => {
-            if(parseInt(s.getAttribute('data-star')) <= selectedRating) { s.classList.add('filled'); } 
-            else { s.classList.remove('filled'); }
-        });
-    });
-});
+function initMuralFiltersAndSearch() {
+  const filterChips = document.querySelectorAll('#mural-filters .chip');
+  let currentFilter = 'Todos';
 
-document.getElementById('search-input')?.addEventListener('input', function() {
-    const currentActiveChip = document.querySelector('#mural-filters .chip.on');
-    const activeTag = currentActiveChip ? currentActiveChip.getAttribute('data-filter') : 'Todos';
-    renderMural(activeTag, this.value);
-});
-
-document.querySelectorAll('#mural-filters .chip').forEach(chip => {
-    chip.addEventListener('click', function() {
-        document.querySelectorAll('#mural-filters .chip').forEach(c => c.classList.remove('on'));
-        this.classList.add('on');
-        const searchVal = document.getElementById('search-input')?.value || '';
-        renderMural(this.getAttribute('data-filter'), searchVal);
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      filterChips.forEach(c => c.classList.remove('on'));
+      chip.classList.add('on');
+      currentFilter = chip.getAttribute('data-filter');
+      const searchVal = document.getElementById('search-input')?.value || '';
+      renderMural(currentFilter, searchVal);
     });
+  });
+
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const activeChip = document.querySelector('#mural-filters .chip.on');
+      const activeFilter = activeChip ? activeChip.getAttribute('data-filter') : 'Todos';
+      renderMural(activeFilter, e.target.value);
+    });
+  }
+}
+
+document.addEventListener('click', (e) => {
+  const notifWrap = document.querySelector('.notif-wrap');
+  const notifPanel = document.getElementById('notif-panel');
+  if (notifWrap && notifPanel && !notifWrap.contains(e.target)) {
+    notifPanel.classList.remove('open');
+  }
 });
 
 window.addEventListener('DOMContentLoaded', async () => {
-    await initDatabase();
-    const isLogged = localStorage.getItem('alltak_logged') === "true";
-    const userEmail = localStorage.getItem('alltak_user_email');
-    const userRole = localStorage.getItem('alltak_role');
-    if (isLogged && userEmail && VALID_USERS[userEmail]) {
-        await loadSharedData(userEmail, userRole);
-        document.getElementById('user-avatar').innerText = VALID_USERS[userEmail].initial;
-        applyRoleUI(userRole);
-        renderDirectFeedbackForUser(userEmail); renderUserPayslips(userEmail);
-        document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'flex');
-        document.getElementById('app-main-content').style.display = 'block';
-        document.getElementById('acesso').classList.remove('active');
-        go('home');
-        startAutoRefresh();
+  initStarRating();
+  initMuralFiltersAndSearch();
+
+  const logged = localStorage.getItem('alltak_logged') === 'true';
+  const role = localStorage.getItem('alltak_role');
+  const email = localStorage.getItem('alltak_user_email');
+
+  if (logged && email) {
+    try {
+      await initDatabase();
+      await loadSharedData(email, role);
+
+      document.getElementById('user-avatar').innerText = (VALID_USERS[email] && VALID_USERS[email].initial) || email.slice(0, 2).toUpperCase();
+      applyRoleUI(role);
+      renderDirectFeedbackForUser(email);
+      renderUserPayslips(email);
+
+      document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'flex');
+      document.getElementById('app-main-content').style.display = 'block';
+      document.getElementById('acesso').classList.remove('active');
+      renderFeaturedAnnouncement();
+      renderHomeFeed();
+      renderMural();
+      buildCalendar();
+      go('home');
+      startAutoRefresh();
+      checkNotificationState();
+    } catch (err) {
+      console.error('Erro ao inicializar sessão:', err);
+      go('acesso');
     }
-    renderFeaturedAnnouncement(); renderHomeFeed(); renderMural(); buildCalendar(); checkNotificationState();
+  } else {
+    go('acesso');
+  }
 });
 </script>
 </body>
