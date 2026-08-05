@@ -399,7 +399,7 @@
             </div>
             <div class="qcard" onclick="go('feedback')">
               <div class="qicon" style="background:var(--azul-escuro)"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.5A8.5 8.5 0 1119.5 6.5 8.38 8.38 0 0121 11.5z"/></svg></div>
-              <h4>Feedback</h4>
+              <h4>Requisição</h4>
               <p>Opine e vote</p>
             </div>
             <div class="qcard" onclick="go('holerites')">
