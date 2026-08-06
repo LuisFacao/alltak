@@ -69,7 +69,7 @@ class RequisicaoData(BaseModel):
     rating: int
 
 
-class DirectRequisicaokData(BaseModel):
+class DirectRequisicaoData(BaseModel):
     recipient: str
     message: str
 
@@ -265,8 +265,8 @@ async def list_requisicao():
 
 
 @app.post("/api/requisicao")
-async def create_requisicao(data: requisicaoData):
-    res = supabase_admin.table("requisicaos").insert(
+async def create_requisicao(data: RequisicaoData):
+    res = supabase_admin.table("requisicao").insert(
         {
             "user_email": data.user_email,
             "category": data.category,
@@ -279,7 +279,7 @@ async def create_requisicao(data: requisicaoData):
 
 @app.delete("/api/requisicao/{requisicao_id}")
 async def delete_requisicao(requisicao_id: str):
-    supabase_admin.table("requisicaos").delete().eq("id", requisicao_id).execute()
+    supabase_admin.table("requisicao").delete().eq("id", requisicao_id).execute()
     return {"status": "deleted"}
 
 
@@ -296,7 +296,7 @@ async def list_direct_requisicaos(recipient: Optional[str] = None):
 
 
 @app.post("/api/direct-requisicaos")
-async def create_direct_requisicao(data: DirectrequisicaoData):
+async def create_direct_requisicao(data: DirectRequisicaoData):
     res = supabase_admin.table("direct_requisicaos").insert(
         {"recipient": data.recipient, "message": data.message}
     ).execute()
