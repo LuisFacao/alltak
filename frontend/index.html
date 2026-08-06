@@ -1221,7 +1221,7 @@ function renderAdminrequisicao() {
                 <h4>${f.subject} <span style="color:var(--azul-claro)">★ ${f.rating}/5</span></h4>
                 <p>"${f.message}"</p>
                 ${renderAttachments(f.attachments)}
-                <span class="meta">Recebido em ${f.date}</span>
+                <span class="meta">Enviado por ${f.userEmail} · ${f.date}</span>
             </div>
             <div class="admin-actions">
                 <button class="danger" onclick="deleterequisicao('${f.id}')">
