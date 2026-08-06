@@ -316,6 +316,12 @@ async def create_direct_requisicao(data: DirectRequisicaoData):
     return res.data[0] if res.data else {}
 
 
+@app.delete("/api/direct-requisicaos/{direct_requisicao_id}")
+async def delete_direct_requisicao(direct_requisicao_id: str):
+    supabase_admin.table("direct_requisicaos").delete().eq("id", direct_requisicao_id).execute()
+    return {"status": "deleted"}
+
+
 # ---------------------------------------------------------------------------
 # HOLERITES (PAYSLIPS)
 # ---------------------------------------------------------------------------
