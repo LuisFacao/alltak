@@ -810,13 +810,13 @@ const Database = {
         return true;
     },
     async getDirectrequisicao(recipient) {
-        const url = recipient ? `${API_URL}/direct-requisicao?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/direct-requisicao`;
+        const url = recipient ? `${API_URL}/direct-requisicaos?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/direct-requisicaos`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Erro ao buscar requisicao direcionados');
         return await res.json();
     },
     async createDirectrequisicao(recipient, message) {
-        const res = await fetch(`${API_URL}/direct-requisicao`, {
+        const res = await fetch(`${API_URL}/direct-requisicaos`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ recipient, message })
