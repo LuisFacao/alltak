@@ -62,14 +62,14 @@ class EventData(BaseModel):
     color: str
 
 
-class FeedbackData(BaseModel):
+class RequisicaoData(BaseModel):
     user_email: str
     category: str
     message: str
     rating: int
 
 
-class DirectFeedbackData(BaseModel):
+class DirectRequisicaokData(BaseModel):
     recipient: str
     message: str
 
@@ -251,12 +251,12 @@ async def delete_event(event_id: str):
 
 
 # ---------------------------------------------------------------------------
-# FEEDBACK (GERAL / SUGESTÕES)
+# requisicao (GERAL / SUGESTÕES)
 # ---------------------------------------------------------------------------
-@app.get("/api/feedback")
-async def list_feedback():
+@app.get("/api/requisicao")
+async def list_requisicao():
     res = (
-        supabase_admin.table("feedbacks")
+        supabase_admin.table("requisicao")
         .select("*")
         .order("created_at", desc=True)
         .execute()
@@ -264,9 +264,9 @@ async def list_feedback():
     return res.data
 
 
-@app.post("/api/feedback")
-async def create_feedback(data: FeedbackData):
-    res = supabase_admin.table("feedbacks").insert(
+@app.post("/api/requisicao")
+async def create_requisicao(data: requisicaoData):
+    res = supabase_admin.table("requisicaos").insert(
         {
             "user_email": data.user_email,
             "category": data.category,
@@ -277,27 +277,27 @@ async def create_feedback(data: FeedbackData):
     return res.data[0] if res.data else {}
 
 
-@app.delete("/api/feedback/{feedback_id}")
-async def delete_feedback(feedback_id: str):
-    supabase_admin.table("feedbacks").delete().eq("id", feedback_id).execute()
+@app.delete("/api/requisicao/{requisicao_id}")
+async def delete_requisicao(requisicao_id: str):
+    supabase_admin.table("requisicaos").delete().eq("id", requisicao_id).execute()
     return {"status": "deleted"}
 
 
 # ---------------------------------------------------------------------------
-# FEEDBACK DIRECIONADO (ADMIN -> FUNCIONÁRIO)
+# requisicao DIRECIONADO (ADMIN -> FUNCIONÁRIO)
 # ---------------------------------------------------------------------------
-@app.get("/api/direct-feedbacks")
-async def list_direct_feedbacks(recipient: Optional[str] = None):
-    query = supabase_admin.table("direct_feedbacks").select("*").order("created_at", desc=True)
+@app.get("/api/direct-requisicaos")
+async def list_direct_requisicaos(recipient: Optional[str] = None):
+    query = supabase_admin.table("direct_requisicaos").select("*").order("created_at", desc=True)
     if recipient:
         query = query.eq("recipient", recipient)
     res = query.execute()
     return res.data
 
 
-@app.post("/api/direct-feedbacks")
-async def create_direct_feedback(data: DirectFeedbackData):
-    res = supabase_admin.table("direct_feedbacks").insert(
+@app.post("/api/direct-requisicaos")
+async def create_direct_requisicao(data: DirectrequisicaoData):
+    res = supabase_admin.table("direct_requisicaos").insert(
         {"recipient": data.recipient, "message": data.message}
     ).execute()
     return res.data[0] if res.data else {}
