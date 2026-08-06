@@ -518,9 +518,10 @@
                 </div>
                 <div class="form-field">
                   <label>Anexos (fotos, vídeos ou documentos — opcional)</label>
-                  <input type="file" id="fb-attachments" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt">
+                  <input type="file" id="fb-attachments" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="showFilePreview(this, 'fb-attachments-preview')">
+                  <div id="fb-attachments-preview" style="font-size:11px; color:#788e9e; margin-top:6px;"></div>
                 </div>
-                <button type="submit" class="btn block">Enviar Requisição</button>
+                <button type="submit" class="btn block" id="fb-submit-btn">Enviar Requisição</button>
               </form>
             </div>
           </div>
@@ -599,9 +600,10 @@
                 </div>
                 <div class="form-field">
                   <label>Anexos (fotos, vídeos ou documentos — opcional)</label>
-                  <input type="file" id="direct-requisicao-attachments" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt">
+                  <input type="file" id="direct-requisicao-attachments" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="showFilePreview(this, 'direct-requisicao-attachments-preview')">
+                  <div id="direct-requisicao-attachments-preview" style="font-size:11px; color:#788e9e; margin-top:6px;"></div>
                 </div>
-                <button type="submit" class="btn block">Enviar Feedback Direto</button>
+                <button type="submit" class="btn block" id="direct-requisicao-submit-btn">Enviar Feedback Direto</button>
               </form>
             </div>
 
@@ -893,7 +895,7 @@ function normalizePayslip(p) {
 // Idem para requisicao geral: mapeia user_email/category (nomes reais das colunas) e formata a data.
 // Converte os arquivos escolhidos num input[type=file] em anexos base64 (data URI).
 // Limita o tamanho total pra não travar o envio (Render/Supabase não aguentam payload gigante).
-const MAX_ATTACHMENTS_BYTES = 8 * 1024 * 1024; // 8MB somados
+const MAX_ATTACHMENTS_BYTES = 30 * 1024 * 1024; // 30MB somados
 function filesToAttachments(fileList) {
   const files = Array.from(fileList || []);
   if (files.length === 0) return Promise.resolve([]);
@@ -925,6 +927,19 @@ function renderAttachments(atts) {
     return `<a href="${a.file_data}" download="${a.file_name}" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;background:var(--azul-suave);padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--ink);">📎 ${a.file_name}</a>`;
   }).join('');
   return `<div class="attach-list" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">${items}</div>`;
+}
+
+// Mostra nome + tamanho de cada arquivo escolhido, e alerta em vermelho se passar do limite total.
+function showFilePreview(input, previewId) {
+  const preview = document.getElementById(previewId);
+  if (!preview) return;
+  const files = Array.from(input.files || []);
+  if (files.length === 0) { preview.innerHTML = ''; return; }
+  const totalSize = files.reduce((sum, f) => sum + f.size, 0);
+  const formatSize = (bytes) => bytes >= 1024 * 1024 ? (bytes / 1024 / 1024).toFixed(1) + 'MB' : (bytes / 1024).toFixed(0) + 'KB';
+  const overLimit = totalSize > MAX_ATTACHMENTS_BYTES;
+  preview.innerHTML = files.map(f => `• ${f.name} (${formatSize(f.size)})`).join('<br>') +
+    `<br><strong style="color:${overLimit ? '#c0392b' : 'inherit'}">Total: ${formatSize(totalSize)} / ${formatSize(MAX_ATTACHMENTS_BYTES)}</strong>`;
 }
 
 function normalizerequisicao(f) {
@@ -1193,8 +1208,11 @@ async function submitDirectrequisicao(e) {
   const recipient = document.getElementById('direct-requisicao-recipient').value;
   const message = document.getElementById('direct-requisicao-text').value.trim();
   const fileInput = document.getElementById('direct-requisicao-attachments');
+  const submitBtn = document.getElementById('direct-requisicao-submit-btn');
   if(!recipient) return alert('Por favor, cadastre um funcionário primeiro!');
 
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Enviando...';
   try {
     const attachments = await filesToAttachments(fileInput.files);
     await Database.createDirectrequisicao(recipient, message, attachments);
@@ -1202,9 +1220,13 @@ async function submitDirectrequisicao(e) {
     alert(`Mensagem direcionada com sucesso para: ${recipient}`);
     document.getElementById('direct-requisicao-text').value = '';
     fileInput.value = '';
+    document.getElementById('direct-requisicao-attachments-preview').innerHTML = '';
     renderAdminrequisicao();
   } catch (err) {
     alert(err.message);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Enviar Feedback Direto';
   }
 }
 
@@ -1366,7 +1388,10 @@ async function submitrequisicao(e) {
   const message = document.getElementById('fb-message').value;
   const userEmail = localStorage.getItem('alltak_user_email') || 'anonimo@alltak.com.br';
   const fileInput = document.getElementById('fb-attachments');
+  const submitBtn = document.getElementById('fb-submit-btn');
 
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Enviando...';
   try {
     const attachments = await filesToAttachments(fileInput.files);
     await Database.createrequisicao(userEmail, subject, message, selectedRating, attachments);
@@ -1374,9 +1399,13 @@ async function submitrequisicao(e) {
     alert('Requisição enviada!');
     document.getElementById('fb-message').value = '';
     fileInput.value = '';
+    document.getElementById('fb-attachments-preview').innerHTML = '';
     if(localStorage.getItem('alltak_role') === 'admin') { renderAdminrequisicao(); renderAdminMetrics(); }
   } catch (err) {
     alert(err.message);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Enviar Requisição';
   }
 }
 
