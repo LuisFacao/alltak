@@ -921,10 +921,35 @@ function filesToAttachments(fileList) {
   })));
 }
 
+// Converte um data URI base64 em Blob e dispara o download.
+// Um <a href="data:..." download> direto falha silenciosamente em vários
+// navegadores pra arquivos grandes — via Blob funciona de forma confiável.
+function downloadAttachment(dataUri, fileName) {
+  try {
+    const [header, base64] = dataUri.split(',');
+    const mimeMatch = header.match(/data:(.*?);base64/);
+    const mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const blob = new Blob([bytes], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (err) {
+    alert('Erro ao baixar o arquivo: ' + err.message);
+  }
+}
+
 // Renderiza os anexos de uma requisicao/feedback: imagem inline, vídeo com player, ou link de download pra documentos.
 function renderAttachments(atts) {
   if (!atts || atts.length === 0) return '';
-  const items = atts.map(a => {
+  const items = atts.map((a, i) => {
     const type = a.file_type || '';
     if (type.startsWith('image/')) {
       return `<a href="${a.file_data}" target="_blank" title="${a.file_name}"><img src="${a.file_data}" alt="${a.file_name}" style="width:64px;height:64px;object-fit:cover;border-radius:6px;border:1.5px solid var(--line);"></a>`;
@@ -932,7 +957,7 @@ function renderAttachments(atts) {
     if (type.startsWith('video/')) {
       return `<video src="${a.file_data}" controls style="width:140px;height:64px;border-radius:6px;border:1.5px solid var(--line);"></video>`;
     }
-    return `<a href="${a.file_data}" download="${a.file_name}" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;background:var(--azul-suave);padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--ink);">📎 ${a.file_name}</a>`;
+    return `<button type="button" onclick='downloadAttachment(${JSON.stringify(a.file_data)}, ${JSON.stringify(a.file_name)})' style="display:inline-flex;align-items:center;gap:4px;font-size:11px;background:var(--azul-suave);padding:6px 10px;border-radius:6px;border:none;cursor:pointer;color:var(--ink);">📎 ${a.file_name}</button>`;
   }).join('');
   return `<div class="attach-list" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">${items}</div>`;
 }
