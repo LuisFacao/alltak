@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -62,16 +62,24 @@ class EventData(BaseModel):
     color: str
 
 
+class Attachment(BaseModel):
+    file_name: str
+    file_type: str
+    file_data: str  # base64 no formato data URI (ex: "data:image/png;base64,....")
+
+
 class RequisicaoData(BaseModel):
     user_email: str
     category: str
     message: str
     rating: int
+    attachments: Optional[List[Attachment]] = []
 
 
 class DirectRequisicaoData(BaseModel):
     recipient: str
     message: str
+    attachments: Optional[List[Attachment]] = []
 
 
 class PayslipData(BaseModel):
@@ -272,6 +280,7 @@ async def create_requisicao(data: RequisicaoData):
             "category": data.category,
             "message": data.message,
             "rating": data.rating,
+            "attachments": [a.model_dump() for a in (data.attachments or [])],
         }
     ).execute()
     return res.data[0] if res.data else {}
@@ -298,7 +307,11 @@ async def list_direct_requisicaos(recipient: Optional[str] = None):
 @app.post("/api/direct-requisicaos")
 async def create_direct_requisicao(data: DirectRequisicaoData):
     res = supabase_admin.table("direct_requisicaos").insert(
-        {"recipient": data.recipient, "message": data.message}
+        {
+            "recipient": data.recipient,
+            "message": data.message,
+            "attachments": [a.model_dump() for a in (data.attachments or [])],
+        }
     ).execute()
     return res.data[0] if res.data else {}
 
