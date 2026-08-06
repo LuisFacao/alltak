@@ -399,7 +399,7 @@
             </div>
             <div class="qcard" onclick="go('requisicao')">
               <div class="qicon" style="background:var(--azul-escuro)"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.5A8.5 8.5 0 1119.5 6.5 8.38 8.38 0 0121 11.5z"/></svg></div>
-              <h4>requisicao</h4>
+              <h4>Requisição</h4>
               <p>Opine e vote</p>
             </div>
             <div class="qcard" onclick="go('holerites')">
@@ -488,7 +488,7 @@
         </section>
 
         <section class="screen" id="requisicao">
-          <div class="screen-title"><h2 class="display">requisicao</h2></div>
+          <div class="screen-title"><h2 class="display">Requisição</h2></div>
           <div class="fb-stack">
             <div class="card-block" id="direct-requisicao-box" style="display: none; background: #FFFEE0;">
               <h3 style="color: var(--azul-escuro)">✉ Mensagens da Administração</h3>
@@ -516,7 +516,7 @@
                     <svg data-star="5" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
                   </div>
                 </div>
-                <button type="submit" class="btn block">Enviar requisicao</button>
+                <button type="submit" class="btn block">Enviar Requisição</button>
               </form>
             </div>
           </div>
@@ -536,7 +536,7 @@
           <div class="admin-tabs" id="admin-tabs">
             <div class="chip on" data-admintab="conteudo" onclick="showAdminTab('conteudo')">Conteúdo</div>
             <div class="chip" data-admintab="agenda" onclick="showAdminTab('agenda')">Agenda</div>
-            <div class="chip" data-admintab="requisicao" onclick="showAdminTab('requisicao')">requisicao</div>
+            <div class="chip" data-admintab="requisicao" onclick="showAdminTab('requisicao')">Feedbacks</div>
             <div class="chip" data-admintab="usuarios" onclick="showAdminTab('usuarios')">Usuários</div>
             <div class="chip" data-admintab="holerites" onclick="showAdminTab('holerites')">Holerites</div>
             <div class="chip" data-admintab="metricas" onclick="showAdminTab('metricas')">Métricas</div>
@@ -590,10 +590,10 @@
                   <select id="direct-requisicao-recipient" required></select>
                 </div>
                 <div class="form-field">
-                  <label>Mensagem / requisicao</label>
+                  <label>Mensagem / Feedback</label>
                   <textarea id="direct-requisicao-text" placeholder="Escreva a avaliação ou orientação profissional direcionada..." required></textarea>
                 </div>
-                <button type="submit" class="btn block">Enviar requisicao Direto</button>
+                <button type="submit" class="btn block">Enviar Feedback Direto</button>
               </form>
             </div>
 
@@ -698,7 +698,7 @@
     </div>
     <div class="navitem" data-screen="requisicao" onclick="go('requisicao')">
       <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.5A8.5 8.5 0 1119.5 6.5 8.38 8.38 0 0121 11.5z"/></svg>
-      <span>requisicao</span>
+      <span>Requisição</span>
     </div>
     <div class="navitem admin-only-nav" data-screen="admin" onclick="go('admin')">
       <svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
@@ -1162,7 +1162,7 @@ function renderAdminrequisicao() {
     const container = document.getElementById('admin-requisicao-list');
     if(!container) return;
     if(requisicaoData.length === 0) {
-        container.innerHTML = '<div class="admin-empty">Nenhum requisicao recebido.</div>';
+        container.innerHTML = '<div class="admin-empty">Nenhum feedback recebido.</div>';
         return;
     }
     container.innerHTML = requisicaoData.map((f) => `
@@ -1182,7 +1182,7 @@ function renderAdminrequisicao() {
 }
 
 async function deleterequisicao(requisicaoId) {
-    if(confirm("Excluir este requisicao permanentemente?")) {
+    if(confirm("Excluir este feedback permanentemente?")) {
         try {
             await Database.deleterequisicaoApi(requisicaoId);
             requisicaoData = (await Database.getrequisicao()).map(normalizerequisicao);
@@ -1318,7 +1318,7 @@ async function submitrequisicao(e) {
   try {
     await Database.createrequisicao(userEmail, subject, message, selectedRating);
     requisicaoData = (await Database.getrequisicao()).map(normalizerequisicao);
-    alert('requisicao enviado!');
+    alert('Requisição enviada!');
     document.getElementById('fb-message').value = '';
     if(localStorage.getItem('alltak_role') === 'admin') { renderAdminrequisicao(); renderAdminMetrics(); }
   } catch (err) {
