@@ -397,9 +397,9 @@
               <h4>Institucional</h4>
               <p>Missão e arquivos</p>
             </div>
-            <div class="qcard" onclick="go('feedbacks')">
+            <div class="qcard" onclick="go('feedback')">
               <div class="qicon" style="background:var(--azul-escuro)"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.5A8.5 8.5 0 1119.5 6.5 8.38 8.38 0 0121 11.5z"/></svg></div>
-              <h4>feedbacks</h4>
+              <h4>feedback</h4>
               <p>Opine e vote</p>
             </div>
             <div class="qcard" onclick="go('holerites')">
@@ -516,7 +516,7 @@
                     <svg data-star="5" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>
                   </div>
                 </div>
-                <button type="submit" class="btn block">Enviar feedbacks</button>
+                <button type="submit" class="btn block">Enviar feedback</button>
               </form>
             </div>
           </div>
@@ -536,7 +536,7 @@
           <div class="admin-tabs" id="admin-tabs">
             <div class="chip on" data-admintab="conteudo" onclick="showAdminTab('conteudo')">Conteúdo</div>
             <div class="chip" data-admintab="agenda" onclick="showAdminTab('agenda')">Agenda</div>
-            <div class="chip" data-admintab="feedback" onclick="showAdminTab('feedback')">Feedbacks</div>
+            <div class="chip" data-admintab="feedback" onclick="showAdminTab('feedback')">feedback</div>
             <div class="chip" data-admintab="usuarios" onclick="showAdminTab('usuarios')">Usuários</div>
             <div class="chip" data-admintab="holerites" onclick="showAdminTab('holerites')">Holerites</div>
             <div class="chip" data-admintab="metricas" onclick="showAdminTab('metricas')">Métricas</div>
@@ -792,7 +792,7 @@ const Database = {
     },
     async getFeedback() {
         const res = await fetch(`${API_URL}/feedback`);
-        if (!res.ok) throw new Error('Erro ao buscar feedbacks');
+        if (!res.ok) throw new Error('Erro ao buscar feedback');
         return await res.json();
     },
     async createFeedback(userEmail, category, message, rating) {
@@ -809,14 +809,14 @@ const Database = {
         if (!res.ok) throw new Error('Erro ao excluir feedback');
         return true;
     },
-    async getDirectFeedbacks(recipient) {
-        const url = recipient ? `${API_URL}/direct-feedbacks?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/direct-feedbacks`;
+    async getDirectfeedback(recipient) {
+        const url = recipient ? `${API_URL}/direct-feedback?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/direct-feedback`;
         const res = await fetch(url);
-        if (!res.ok) throw new Error('Erro ao buscar feedbacks direcionados');
+        if (!res.ok) throw new Error('Erro ao buscar feedback direcionados');
         return await res.json();
     },
     async createDirectFeedback(recipient, message) {
-        const res = await fetch(`${API_URL}/direct-feedbacks`, {
+        const res = await fetch(`${API_URL}/direct-feedback`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ recipient, message })
@@ -847,7 +847,7 @@ const Database = {
 };
 
 let VALID_USERS = {};
-let directFeedbacksData = [];
+let directfeedbackData = [];
 let payslipsData = [];
 let postsData = [];
 let eventsData = {};
@@ -913,21 +913,21 @@ function rebuildEventsMap(list) {
   return map;
 }
 
-// Busca tudo que hoje é compartilhado entre usuários (comunicados, agenda, feedbacks, holerites)
+// Busca tudo que hoje é compartilhado entre usuários (comunicados, agenda, feedback, holerites)
 // direto do backend/Supabase, em vez de depender do localStorage do navegador.
 async function loadSharedData(currentUserEmail, currentUserRole) {
   try {
-    const [posts, events, feedback, directFeedbacks, payslips] = await Promise.all([
+    const [posts, events, feedback, directfeedback, payslips] = await Promise.all([
       Database.getPosts(),
       Database.getEvents(),
       Database.getFeedback(),
-      currentUserRole === 'admin' ? Database.getDirectFeedbacks() : (currentUserEmail ? Database.getDirectFeedbacks(currentUserEmail) : Promise.resolve([])),
+      currentUserRole === 'admin' ? Database.getDirectfeedback() : (currentUserEmail ? Database.getDirectfeedback(currentUserEmail) : Promise.resolve([])),
       currentUserRole === 'admin' ? Database.getPayslips() : (currentUserEmail ? Database.getPayslips(currentUserEmail) : Promise.resolve([]))
     ]);
     postsData = (posts || []).map(normalizePost);
     eventsData = rebuildEventsMap(events);
     feedbackData = (feedback || []).map(normalizeFeedback);
-    directFeedbacksData = (directFeedbacks || []).map(normalizeDirectFeedback);
+    directfeedbackData = (directfeedback || []).map(normalizeDirectFeedback);
     payslipsData = (payslips || []).map(normalizePayslip);
   } catch (err) {
     console.error('Erro ao carregar dados compartilhados:', err);
@@ -986,7 +986,7 @@ async function autoRefreshData() {
   // Guarda o que já existia antes de buscar, pra saber se chegou algo novo.
   const prevPostIds = new Set(postsData.map(p => p.id));
   const prevPayslipIds = new Set(payslipsData.map(p => p.id));
-  const prevDirectIds = new Set(directFeedbacksData.map(d => d.id));
+  const prevDirectIds = new Set(directfeedbackData.map(d => d.id));
 
   try {
     await loadSharedData(email, role);
@@ -997,7 +997,7 @@ async function autoRefreshData() {
 
   const hasNewPost = postsData.some(p => !prevPostIds.has(p.id));
   const hasNewPayslip = role !== 'admin' && payslipsData.some(p => p.recipient === email && !prevPayslipIds.has(p.id));
-  const hasNewDirect = role !== 'admin' && directFeedbacksData.some(d => d.recipient === email && !prevDirectIds.has(d.id));
+  const hasNewDirect = role !== 'admin' && directfeedbackData.some(d => d.recipient === email && !prevDirectIds.has(d.id));
 
   if (hasNewPost || hasNewPayslip || hasNewDirect) {
     localStorage.setItem('alltak_new_notification', 'true');
@@ -1026,7 +1026,7 @@ function stopAutoRefresh() {
   window.removeEventListener('focus', handleVisibilityRefresh);
 }
 
-// Comunicados, agenda, feedbacks e holerites agora vivem no Supabase (via API),
+// Comunicados, agenda, feedback e holerites agora vivem no Supabase (via API),
 // não mais no localStorage — por isso não há mais funções de "saveXToStorage" aqui.
 
 async function handleLogin() {
@@ -1112,7 +1112,7 @@ function renderDirectFeedbackForUser(email) {
   const list = document.getElementById('direct-feedback-received-list');
   if(!box || !list) return;
 
-  const userMessages = directFeedbacksData.filter(df => df.recipient === email);
+  const userMessages = directfeedbackData.filter(df => df.recipient === email);
 
   if(userMessages.length > 0 && localStorage.getItem('alltak_role') !== 'admin') {
     box.style.display = 'block';
@@ -1149,7 +1149,7 @@ async function submitDirectFeedback(e) {
 
   try {
     await Database.createDirectFeedback(recipient, message);
-    directFeedbacksData = (await Database.getDirectFeedbacks()).map(normalizeDirectFeedback);
+    directfeedbackData = (await Database.getDirectfeedback()).map(normalizeDirectFeedback);
     alert(`Mensagem direcionada com sucesso para: ${recipient}`);
     document.getElementById('direct-feedback-text').value = '';
     renderAdminFeedback();
