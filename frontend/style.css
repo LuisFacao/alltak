@@ -698,7 +698,7 @@ body {
     border: 1.5px solid var(--ink);
 }
 
-/* ===== FEEDBACK & ENQUETE ===== */
+/* ===== requisicao & ENQUETE ===== */
 .fb-stack {
     display: flex;
     flex-direction: column;
