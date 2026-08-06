@@ -607,6 +607,9 @@
               </form>
             </div>
 
+            <div class="section-head" style="margin-top:20px;"><h2 style="font-size:16px;">Feedbacks Enviados</h2></div>
+            <div class="admin-list" id="admin-direct-requisicao-list"></div>
+
             <div class="section-head" style="margin-top:20px;"><h2 style="font-size:16px;">Sugestões Recebidas (Geral)</h2></div>
             <div class="admin-list" id="admin-requisicao-list"></div>
           </div>
@@ -834,6 +837,11 @@ const Database = {
         if (!res.ok) throw new Error('Erro ao enviar requisicao direcionado');
         return await res.json();
     },
+    async deleteDirectrequisicaoApi(id) {
+        const res = await fetch(`${API_URL}/direct-requisicaos/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Erro ao excluir feedback direto');
+        return true;
+    },
     async getPayslips(recipient) {
         const url = recipient ? `${API_URL}/payslips?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/payslips`;
         const res = await fetch(url);
@@ -1034,6 +1042,7 @@ function refreshAllViews() {
     renderAdminPosts();
     renderAdminEvents();
     renderAdminrequisicao();
+    renderAdminDirectrequisicao();
     renderAdminMetrics();
     renderAdminPayslips();
   }
@@ -1161,6 +1170,7 @@ function applyRoleUI(role) {
         renderAdminPosts();
         renderAdminEvents();
         renderAdminrequisicao();
+        renderAdminDirectrequisicao();
         renderAdminMetrics();
         populateRecipientDropdown();
         populatePayslipRecipientDropdown();
@@ -1221,7 +1231,7 @@ async function submitDirectrequisicao(e) {
     document.getElementById('direct-requisicao-text').value = '';
     fileInput.value = '';
     document.getElementById('direct-requisicao-attachments-preview').innerHTML = '';
-    renderAdminrequisicao();
+    renderAdminDirectrequisicao();
   } catch (err) {
     alert(err.message);
   } finally {
@@ -1261,6 +1271,45 @@ async function deleterequisicao(requisicaoId) {
             requisicaoData = (await Database.getrequisicao()).map(normalizerequisicao);
             renderAdminrequisicao();
             renderAdminMetrics();
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+}
+
+// Lista, no painel admin, os feedbacks diretos já enviados a funcionários — com opção de apagar.
+function renderAdminDirectrequisicao() {
+    const container = document.getElementById('admin-direct-requisicao-list');
+    if (!container) return;
+    if (directrequisicaoData.length === 0) {
+        container.innerHTML = '<div class="admin-empty">Nenhum feedback enviado ainda.</div>';
+        return;
+    }
+    container.innerHTML = directrequisicaoData.map((m) => `
+        <div class="admin-item">
+            <div class="info">
+                <h4>${m.recipient}</h4>
+                <p>"${m.message}"</p>
+                ${renderAttachments(m.attachments)}
+                <span class="meta">Enviado em ${m.date}</span>
+            </div>
+            <div class="admin-actions">
+                <button class="danger" onclick="deleteDirectrequisicao('${m.id}')">
+                    <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function deleteDirectrequisicao(directRequisicaoId) {
+    if (confirm("Excluir este feedback enviado permanentemente?")) {
+        try {
+            await Database.deleteDirectrequisicaoApi(directRequisicaoId);
+            directrequisicaoData = (await Database.getDirectrequisicao()).map(normalizeDirectrequisicao);
+            renderAdminDirectrequisicao();
+            const email = localStorage.getItem('alltak_user_email');
+            if (email) renderDirectrequisicaoForUser(email);
         } catch (err) {
             alert(err.message);
         }
@@ -1416,7 +1465,7 @@ function showAdminTab(tab) {
   document.getElementById('admin-' + tab).classList.add('active');
   
   if (tab === 'usuarios') renderAdminUsers();
-  if (tab === 'requisicao') renderAdminrequisicao();
+  if (tab === 'requisicao') { renderAdminrequisicao(); renderAdminDirectrequisicao(); }
   if (tab === 'metricas') renderAdminMetrics();
   if (tab === 'holerites') { populatePayslipRecipientDropdown(); renderAdminPayslips(); }
 }
