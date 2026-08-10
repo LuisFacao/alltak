@@ -225,7 +225,7 @@
   .cal-day-events .evt-row{ display:flex; align-items:center; gap:8px; background:var(--paper); border:2px solid var(--ink); border-radius:10px; padding:10px 12px; margin-bottom:8px; font-size:12px; font-weight:700; }
   .cal-day-events .evt-dot{ width:10px; height:10px; border-radius:50%; border:1.5px solid var(--ink); flex-shrink:0; }
 
-  /* ===== requisicao ===== */
+  /* ===== feedback ===== */
   .fb-stack{ display:flex; flex-direction:column; gap:16px; padding:16px; }
   .card-block{ background:var(--paper); border:2.5px solid var(--ink); border-radius:16px; padding:18px; box-shadow:var(--shadow-hard-sm); }
   .card-block h3{ font-size:16px; margin-bottom:14px; }
@@ -397,7 +397,7 @@
               <h4>Institucional</h4>
               <p>Missão e arquivos</p>
             </div>
-            <div class="qcard" onclick="go('requisicao')">
+            <div class="qcard" onclick="go('feedback')">
               <div class="qicon" style="background:var(--azul-escuro)"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.5A8.5 8.5 0 1119.5 6.5 8.38 8.38 0 0121 11.5z"/></svg></div>
               <h4>Requisição</h4>
               <p>Opine e vote</p>
@@ -487,17 +487,17 @@
           <div class="cal-day-events" id="cal-day-events"></div>
         </section>
 
-        <section class="screen" id="requisicao">
+        <section class="screen" id="feedback">
           <div class="screen-title"><h2 class="display">Requisição</h2></div>
           <div class="fb-stack">
-            <div class="card-block" id="direct-requisicao-box" style="display: none; background: #FFFEE0;">
+            <div class="card-block" id="direct-feedback-box" style="display: none; background: #FFFEE0;">
               <h3 style="color: var(--azul-escuro)">✉ Mensagens da Administração</h3>
-              <div id="direct-requisicao-received-list"></div>
+              <div id="direct-feedback-received-list"></div>
             </div>
 
             <div class="card-block">
               <h3>Enviar sugestão ou comentário</h3>
-              <form id="requisicao-form" onsubmit="submitrequisicao(event)">
+              <form id="feedback-form" onsubmit="submitfeedback(event)">
                 <div class="form-field">
                   <label>Assunto</label>
                   <select id="fb-subject"><option>Sobre um comunicado</option><option>Sugestão geral</option><option>Dúvida</option></select>
@@ -541,7 +541,7 @@
           <div class="admin-tabs" id="admin-tabs">
             <div class="chip on" data-admintab="conteudo" onclick="showAdminTab('conteudo')">Conteúdo</div>
             <div class="chip" data-admintab="agenda" onclick="showAdminTab('agenda')">Agenda</div>
-            <div class="chip" data-admintab="requisicao" onclick="showAdminTab('requisicao')">Feedbacks</div>
+            <div class="chip" data-admintab="feedback" onclick="showAdminTab('feedback')">Feedbacks</div>
             <div class="chip" data-admintab="usuarios" onclick="showAdminTab('usuarios')">Usuários</div>
             <div class="chip" data-admintab="holerites" onclick="showAdminTab('holerites')">Holerites</div>
             <div class="chip" data-admintab="metricas" onclick="showAdminTab('metricas')">Métricas</div>
@@ -586,32 +586,32 @@
             <div class="admin-list" id="admin-events-list"></div>
           </div>
 
-          <div class="admin-panel" id="admin-requisicao">
+          <div class="admin-panel" id="admin-feedback">
             <div class="card-block" style="margin-top:14px;">
               <h3>Enviar Mensagem Direta a Funcionário</h3>
-              <form id="direct-requisicao-form" onsubmit="submitDirectrequisicao(event)">
+              <form id="direct-feedback-form" onsubmit="submitDirectfeedback(event)">
                 <div class="form-field">
                   <label>Destinatário (Funcionário)</label>
-                  <select id="direct-requisicao-recipient" required></select>
+                  <select id="direct-feedback-recipient" required></select>
                 </div>
                 <div class="form-field">
                   <label>Mensagem / Feedback</label>
-                  <textarea id="direct-requisicao-text" placeholder="Escreva a avaliação ou orientação profissional direcionada..." required></textarea>
+                  <textarea id="direct-feedback-text" placeholder="Escreva a avaliação ou orientação profissional direcionada..." required></textarea>
                 </div>
                 <div class="form-field">
                   <label>Anexos (fotos, vídeos ou documentos — opcional)</label>
-                  <input type="file" id="direct-requisicao-attachments" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="showFilePreview(this, 'direct-requisicao-attachments-preview')">
-                  <div id="direct-requisicao-attachments-preview" style="font-size:11px; color:#788e9e; margin-top:6px;"></div>
+                  <input type="file" id="direct-feedback-attachments" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="showFilePreview(this, 'direct-feedback-attachments-preview')">
+                  <div id="direct-feedback-attachments-preview" style="font-size:11px; color:#788e9e; margin-top:6px;"></div>
                 </div>
-                <button type="submit" class="btn block" id="direct-requisicao-submit-btn">Enviar Feedback Direto</button>
+                <button type="submit" class="btn block" id="direct-feedback-submit-btn">Enviar Feedback Direto</button>
               </form>
             </div>
 
             <div class="section-head" style="margin-top:20px;"><h2 style="font-size:16px;">Feedbacks Enviados</h2></div>
-            <div class="admin-list" id="admin-direct-requisicao-list"></div>
+            <div class="admin-list" id="admin-direct-feedback-list"></div>
 
             <div class="section-head" style="margin-top:20px;"><h2 style="font-size:16px;">Sugestões Recebidas (Geral)</h2></div>
-            <div class="admin-list" id="admin-requisicao-list"></div>
+            <div class="admin-list" id="admin-feedback-list"></div>
           </div>
 
           <div class="admin-panel" id="admin-usuarios">
@@ -709,7 +709,7 @@
       <svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg>
       <span>Sobre</span>
     </div>
-    <div class="navitem" data-screen="requisicao" onclick="go('requisicao')">
+    <div class="navitem" data-screen="feedback" onclick="go('feedback')">
       <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.5A8.5 8.5 0 1119.5 6.5 8.38 8.38 0 0121 11.5z"/></svg>
       <span>Requisição</span>
     </div>
@@ -803,42 +803,42 @@ const Database = {
         if (!res.ok) throw new Error('Erro ao excluir evento');
         return true;
     },
-    async getrequisicao() {
-        const res = await fetch(`${API_URL}/requisicao`);
-        if (!res.ok) throw new Error('Erro ao buscar requisicao');
+    async getfeedback() {
+        const res = await fetch(`${API_URL}/feedback`);
+        if (!res.ok) throw new Error('Erro ao buscar feedback');
         return await res.json();
     },
-    async createrequisicao(userEmail, category, message, rating, attachments) {
-        const res = await fetch(`${API_URL}/requisicao`, {
+    async createfeedback(userEmail, category, message, rating, attachments) {
+        const res = await fetch(`${API_URL}/feedback`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_email: userEmail, category, message, rating, attachments: attachments || [] })
         });
-        if (!res.ok) throw new Error('Erro ao enviar requisicao');
+        if (!res.ok) throw new Error('Erro ao enviar feedback');
         return await res.json();
     },
-    async deleterequisicaoApi(id) {
-        const res = await fetch(`${API_URL}/requisicao/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao excluir requisicao');
+    async deletefeedbackApi(id) {
+        const res = await fetch(`${API_URL}/feedback/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Erro ao excluir feedback');
         return true;
     },
-    async getDirectrequisicao(recipient) {
-        const url = recipient ? `${API_URL}/direct-requisicaos?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/direct-requisicaos`;
+    async getDirectfeedback(recipient) {
+        const url = recipient ? `${API_URL}/direct-feedbacks?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/direct-feedbacks`;
         const res = await fetch(url);
-        if (!res.ok) throw new Error('Erro ao buscar requisicao direcionados');
+        if (!res.ok) throw new Error('Erro ao buscar feedback direcionados');
         return await res.json();
     },
-    async createDirectrequisicao(recipient, message, attachments) {
-        const res = await fetch(`${API_URL}/direct-requisicaos`, {
+    async createDirectfeedback(recipient, message, attachments) {
+        const res = await fetch(`${API_URL}/direct-feedbacks`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ recipient, message, attachments: attachments || [] })
         });
-        if (!res.ok) throw new Error('Erro ao enviar requisicao direcionado');
+        if (!res.ok) throw new Error('Erro ao enviar feedback direcionado');
         return await res.json();
     },
-    async deleteDirectrequisicaoApi(id) {
-        const res = await fetch(`${API_URL}/direct-requisicaos/${id}`, { method: 'DELETE' });
+    async deleteDirectfeedbackApi(id) {
+        const res = await fetch(`${API_URL}/direct-feedbacks/${id}`, { method: 'DELETE' });
         if (!res.ok) throw new Error('Erro ao excluir feedback direto');
         return true;
     },
@@ -865,11 +865,11 @@ const Database = {
 };
 
 let VALID_USERS = {};
-let directrequisicaoData = [];
+let directfeedbackData = [];
 let payslipsData = [];
 let postsData = [];
 let eventsData = {};
-let requisicaoData = [];
+let feedbackData = [];
 
 // Reconstrói o mapa { "YYYY-MM-DD": [{id,title,color}, ...] } a partir da lista plana vinda da API,
 // preservando o id de cada evento (necessário pra excluir depois).
@@ -900,7 +900,7 @@ function normalizePayslip(p) {
   };
 }
 
-// Idem para requisicao geral: mapeia user_email/category (nomes reais das colunas) e formata a data.
+// Idem para feedback geral: mapeia user_email/category (nomes reais das colunas) e formata a data.
 // Converte os arquivos escolhidos num input[type=file] em anexos base64 (data URI).
 // Limita o tamanho total pra não travar o envio (Render/Supabase não aguentam payload gigante).
 const MAX_ATTACHMENTS_BYTES = 30 * 1024 * 1024; // 30MB somados
@@ -946,7 +946,7 @@ function downloadAttachment(dataUri, fileName) {
   }
 }
 
-// Renderiza os anexos de uma requisicao/feedback: imagem inline, vídeo com player, ou link de download pra documentos.
+// Renderiza os anexos de uma feedback/feedback: imagem inline, vídeo com player, ou link de download pra documentos.
 function renderAttachments(atts) {
   if (!atts || atts.length === 0) return '';
   const items = atts.map((a, i) => {
@@ -975,7 +975,7 @@ function showFilePreview(input, previewId) {
     `<br><strong style="color:${overLimit ? '#c0392b' : 'inherit'}">Total: ${formatSize(totalSize)} / ${formatSize(MAX_ATTACHMENTS_BYTES)}</strong>`;
 }
 
-function normalizerequisicao(f) {
+function normalizefeedback(f) {
   return {
     id: f.id,
     subject: f.category,
@@ -987,8 +987,8 @@ function normalizerequisicao(f) {
   };
 }
 
-// Idem para requisicao direcionado.
-function normalizeDirectrequisicao(f) {
+// Idem para feedback direcionado.
+function normalizeDirectfeedback(f) {
   return {
     id: f.id,
     recipient: f.recipient,
@@ -1007,21 +1007,21 @@ function rebuildEventsMap(list) {
   return map;
 }
 
-// Busca tudo que hoje é compartilhado entre usuários (comunicados, agenda, requisicao, holerites)
+// Busca tudo que hoje é compartilhado entre usuários (comunicados, agenda, feedback, holerites)
 // direto do backend/Supabase, em vez de depender do localStorage do navegador.
 async function loadSharedData(currentUserEmail, currentUserRole) {
   try {
-    const [posts, events, requisicao, directrequisicao, payslips] = await Promise.all([
+    const [posts, events, feedback, directfeedback, payslips] = await Promise.all([
       Database.getPosts(),
       Database.getEvents(),
-      Database.getrequisicao(),
-      currentUserRole === 'admin' ? Database.getDirectrequisicao() : (currentUserEmail ? Database.getDirectrequisicao(currentUserEmail) : Promise.resolve([])),
+      Database.getfeedback(),
+      currentUserRole === 'admin' ? Database.getDirectfeedback() : (currentUserEmail ? Database.getDirectfeedback(currentUserEmail) : Promise.resolve([])),
       currentUserRole === 'admin' ? Database.getPayslips() : (currentUserEmail ? Database.getPayslips(currentUserEmail) : Promise.resolve([]))
     ]);
     postsData = (posts || []).map(normalizePost);
     eventsData = rebuildEventsMap(events);
-    requisicaoData = (requisicao || []).map(normalizerequisicao);
-    directrequisicaoData = (directrequisicao || []).map(normalizeDirectrequisicao);
+    feedbackData = (feedback || []).map(normalizefeedback);
+    directfeedbackData = (directfeedback || []).map(normalizeDirectfeedback);
     payslipsData = (payslips || []).map(normalizePayslip);
   } catch (err) {
     console.error('Erro ao carregar dados compartilhados:', err);
@@ -1043,7 +1043,7 @@ async function initDatabase() {
 // ATUALIZAÇÃO AUTOMÁTICA (polling)
 // Em vez de esperar o usuário dar F5, o app busca os dados no backend
 // periodicamente e re-renderiza as telas sozinho. Assim, quando um admin
-// publica um comunicado, requisicao direcionado ou holerite novo, os outros
+// publica um comunicado, feedback direcionado ou holerite novo, os outros
 // usuários recebem sem precisar recarregar a página.
 // ---------------------------------------------------------------------------
 let autoRefreshTimer = null;
@@ -1059,15 +1059,15 @@ function refreshAllViews() {
   buildCalendar();
 
   if (email) {
-    renderDirectrequisicaoForUser(email);
+    renderDirectfeedbackForUser(email);
     renderUserPayslips(email);
   }
 
   if (role === 'admin') {
     renderAdminPosts();
     renderAdminEvents();
-    renderAdminrequisicao();
-    renderAdminDirectrequisicao();
+    renderAdminfeedback();
+    renderAdminDirectfeedback();
     renderAdminMetrics();
     renderAdminPayslips();
   }
@@ -1081,7 +1081,7 @@ async function autoRefreshData() {
   // Guarda o que já existia antes de buscar, pra saber se chegou algo novo.
   const prevPostIds = new Set(postsData.map(p => p.id));
   const prevPayslipIds = new Set(payslipsData.map(p => p.id));
-  const prevDirectIds = new Set(directrequisicaoData.map(d => d.id));
+  const prevDirectIds = new Set(directfeedbackData.map(d => d.id));
 
   try {
     await loadSharedData(email, role);
@@ -1092,7 +1092,7 @@ async function autoRefreshData() {
 
   const hasNewPost = postsData.some(p => !prevPostIds.has(p.id));
   const hasNewPayslip = role !== 'admin' && payslipsData.some(p => p.recipient === email && !prevPayslipIds.has(p.id));
-  const hasNewDirect = role !== 'admin' && directrequisicaoData.some(d => d.recipient === email && !prevDirectIds.has(d.id));
+  const hasNewDirect = role !== 'admin' && directfeedbackData.some(d => d.recipient === email && !prevDirectIds.has(d.id));
 
   if (hasNewPost || hasNewPayslip || hasNewDirect) {
     localStorage.setItem('alltak_new_notification', 'true');
@@ -1121,7 +1121,7 @@ function stopAutoRefresh() {
   window.removeEventListener('focus', handleVisibilityRefresh);
 }
 
-// Comunicados, agenda, requisicao e holerites agora vivem no Supabase (via API),
+// Comunicados, agenda, feedback e holerites agora vivem no Supabase (via API),
 // não mais no localStorage — por isso não há mais funções de "saveXToStorage" aqui.
 
 async function handleLogin() {
@@ -1143,7 +1143,7 @@ async function handleLogin() {
 
         document.getElementById('user-avatar').innerText = (VALID_USERS[user.email] && VALID_USERS[user.email].initial) || user.email.slice(0, 2).toUpperCase();
         applyRoleUI(user.role);
-        renderDirectrequisicaoForUser(user.email);
+        renderDirectfeedbackForUser(user.email);
         renderUserPayslips(user.email);
 
         document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'flex');
@@ -1173,7 +1173,7 @@ function handleLogout() {
 
         document.getElementById('login-email').value = '';
         document.getElementById('login-pass').value = '';
-        document.getElementById('direct-requisicao-box').style.display = 'none';
+        document.getElementById('direct-feedback-box').style.display = 'none';
         document.getElementById('user-payslips-list').innerHTML = '';
 
         document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -1194,8 +1194,8 @@ function applyRoleUI(role) {
     if(isAdmin) {
         renderAdminPosts();
         renderAdminEvents();
-        renderAdminrequisicao();
-        renderAdminDirectrequisicao();
+        renderAdminfeedback();
+        renderAdminDirectfeedback();
         renderAdminMetrics();
         populateRecipientDropdown();
         populatePayslipRecipientDropdown();
@@ -1203,12 +1203,12 @@ function applyRoleUI(role) {
     }
 }
 
-function renderDirectrequisicaoForUser(email) {
-  const box = document.getElementById('direct-requisicao-box');
-  const list = document.getElementById('direct-requisicao-received-list');
+function renderDirectfeedbackForUser(email) {
+  const box = document.getElementById('direct-feedback-box');
+  const list = document.getElementById('direct-feedback-received-list');
   if(!box || !list) return;
 
-  const userMessages = directrequisicaoData.filter(df => df.recipient === email);
+  const userMessages = directfeedbackData.filter(df => df.recipient === email);
 
   if(userMessages.length > 0 && localStorage.getItem('alltak_role') !== 'admin') {
     box.style.display = 'block';
@@ -1225,7 +1225,7 @@ function renderDirectrequisicaoForUser(email) {
 }
 
 function populateRecipientDropdown() {
-  const dropdown = document.getElementById('direct-requisicao-recipient');
+  const dropdown = document.getElementById('direct-feedback-recipient');
   if(!dropdown) return;
   dropdown.innerHTML = '';
   const nonAdmins = Object.keys(VALID_USERS).filter(email => VALID_USERS[email].role !== 'admin');
@@ -1238,25 +1238,25 @@ function populateRecipientDropdown() {
   });
 }
 
-async function submitDirectrequisicao(e) {
+async function submitDirectfeedback(e) {
   e.preventDefault();
-  const recipient = document.getElementById('direct-requisicao-recipient').value;
-  const message = document.getElementById('direct-requisicao-text').value.trim();
-  const fileInput = document.getElementById('direct-requisicao-attachments');
-  const submitBtn = document.getElementById('direct-requisicao-submit-btn');
+  const recipient = document.getElementById('direct-feedback-recipient').value;
+  const message = document.getElementById('direct-feedback-text').value.trim();
+  const fileInput = document.getElementById('direct-feedback-attachments');
+  const submitBtn = document.getElementById('direct-feedback-submit-btn');
   if(!recipient) return alert('Por favor, cadastre um funcionário primeiro!');
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'Enviando...';
   try {
     const attachments = await filesToAttachments(fileInput.files);
-    await Database.createDirectrequisicao(recipient, message, attachments);
-    directrequisicaoData = (await Database.getDirectrequisicao()).map(normalizeDirectrequisicao);
+    await Database.createDirectfeedback(recipient, message, attachments);
+    directfeedbackData = (await Database.getDirectfeedback()).map(normalizeDirectfeedback);
     alert(`Mensagem direcionada com sucesso para: ${recipient}`);
-    document.getElementById('direct-requisicao-text').value = '';
+    document.getElementById('direct-feedback-text').value = '';
     fileInput.value = '';
-    document.getElementById('direct-requisicao-attachments-preview').innerHTML = '';
-    renderAdminDirectrequisicao();
+    document.getElementById('direct-feedback-attachments-preview').innerHTML = '';
+    renderAdminDirectfeedback();
   } catch (err) {
     alert(err.message);
   } finally {
@@ -1265,14 +1265,14 @@ async function submitDirectrequisicao(e) {
   }
 }
 
-function renderAdminrequisicao() {
-    const container = document.getElementById('admin-requisicao-list');
+function renderAdminfeedback() {
+    const container = document.getElementById('admin-feedback-list');
     if(!container) return;
-    if(requisicaoData.length === 0) {
+    if(feedbackData.length === 0) {
         container.innerHTML = '<div class="admin-empty">Nenhum feedback recebido.</div>';
         return;
     }
-    container.innerHTML = requisicaoData.map((f) => `
+    container.innerHTML = feedbackData.map((f) => `
         <div class="admin-item">
             <div class="info">
                 <h4>${f.subject} <span style="color:var(--azul-claro)">★ ${f.rating}/5</span></h4>
@@ -1281,7 +1281,7 @@ function renderAdminrequisicao() {
                 <span class="meta">Enviado por ${f.userEmail} · ${f.date}</span>
             </div>
             <div class="admin-actions">
-                <button class="danger" onclick="deleterequisicao('${f.id}')">
+                <button class="danger" onclick="deletefeedback('${f.id}')">
                     <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                 </button>
             </div>
@@ -1289,12 +1289,12 @@ function renderAdminrequisicao() {
     `).join('');
 }
 
-async function deleterequisicao(requisicaoId) {
+async function deletefeedback(feedbackId) {
     if(confirm("Excluir este feedback permanentemente?")) {
         try {
-            await Database.deleterequisicaoApi(requisicaoId);
-            requisicaoData = (await Database.getrequisicao()).map(normalizerequisicao);
-            renderAdminrequisicao();
+            await Database.deletefeedbackApi(feedbackId);
+            feedbackData = (await Database.getfeedback()).map(normalizefeedback);
+            renderAdminfeedback();
             renderAdminMetrics();
         } catch (err) {
             alert(err.message);
@@ -1303,14 +1303,14 @@ async function deleterequisicao(requisicaoId) {
 }
 
 // Lista, no painel admin, os feedbacks diretos já enviados a funcionários — com opção de apagar.
-function renderAdminDirectrequisicao() {
-    const container = document.getElementById('admin-direct-requisicao-list');
+function renderAdminDirectfeedback() {
+    const container = document.getElementById('admin-direct-feedback-list');
     if (!container) return;
-    if (directrequisicaoData.length === 0) {
+    if (directfeedbackData.length === 0) {
         container.innerHTML = '<div class="admin-empty">Nenhum feedback enviado ainda.</div>';
         return;
     }
-    container.innerHTML = directrequisicaoData.map((m) => `
+    container.innerHTML = directfeedbackData.map((m) => `
         <div class="admin-item">
             <div class="info">
                 <h4>${m.recipient}</h4>
@@ -1319,7 +1319,7 @@ function renderAdminDirectrequisicao() {
                 <span class="meta">Enviado em ${m.date}</span>
             </div>
             <div class="admin-actions">
-                <button class="danger" onclick="deleteDirectrequisicao('${m.id}')">
+                <button class="danger" onclick="deleteDirectfeedback('${m.id}')">
                     <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                 </button>
             </div>
@@ -1327,14 +1327,14 @@ function renderAdminDirectrequisicao() {
     `).join('');
 }
 
-async function deleteDirectrequisicao(directRequisicaoId) {
+async function deleteDirectfeedback(directfeedbackId) {
     if (confirm("Excluir este feedback enviado permanentemente?")) {
         try {
-            await Database.deleteDirectrequisicaoApi(directRequisicaoId);
-            directrequisicaoData = (await Database.getDirectrequisicao()).map(normalizeDirectrequisicao);
-            renderAdminDirectrequisicao();
+            await Database.deleteDirectfeedbackApi(directfeedbackId);
+            directfeedbackData = (await Database.getDirectfeedback()).map(normalizeDirectfeedback);
+            renderAdminDirectfeedback();
             const email = localStorage.getItem('alltak_user_email');
-            if (email) renderDirectrequisicaoForUser(email);
+            if (email) renderDirectfeedbackForUser(email);
         } catch (err) {
             alert(err.message);
         }
@@ -1456,7 +1456,7 @@ function showDayEvents(dateStr, day) {
   }
 }
 
-async function submitrequisicao(e) {
+async function submitfeedback(e) {
   e.preventDefault();
   const subject = document.getElementById('fb-subject').value;
   const message = document.getElementById('fb-message').value;
@@ -1468,13 +1468,13 @@ async function submitrequisicao(e) {
   submitBtn.textContent = 'Enviando...';
   try {
     const attachments = await filesToAttachments(fileInput.files);
-    await Database.createrequisicao(userEmail, subject, message, selectedRating, attachments);
-    requisicaoData = (await Database.getrequisicao()).map(normalizerequisicao);
+    await Database.createfeedback(userEmail, subject, message, selectedRating, attachments);
+    feedbackData = (await Database.getfeedback()).map(normalizefeedback);
     alert('Requisição enviada!');
     document.getElementById('fb-message').value = '';
     fileInput.value = '';
     document.getElementById('fb-attachments-preview').innerHTML = '';
-    if(localStorage.getItem('alltak_role') === 'admin') { renderAdminrequisicao(); renderAdminMetrics(); }
+    if(localStorage.getItem('alltak_role') === 'admin') { renderAdminfeedback(); renderAdminMetrics(); }
   } catch (err) {
     alert(err.message);
   } finally {
@@ -1490,7 +1490,7 @@ function showAdminTab(tab) {
   document.getElementById('admin-' + tab).classList.add('active');
   
   if (tab === 'usuarios') renderAdminUsers();
-  if (tab === 'requisicao') { renderAdminrequisicao(); renderAdminDirectrequisicao(); }
+  if (tab === 'feedback') { renderAdminfeedback(); renderAdminDirectfeedback(); }
   if (tab === 'metricas') renderAdminMetrics();
   if (tab === 'holerites') { populatePayslipRecipientDropdown(); renderAdminPayslips(); }
 }
@@ -1789,7 +1789,7 @@ function renderAdminMetrics() {
     grid.innerHTML = `
       <div class="stat-card"><div class="n">${Object.keys(VALID_USERS).length}</div><div class="l">Usuários Ativos</div></div>
       <div class="stat-card"><div class="n">${postsData.length}</div><div class="l">Comunicados</div></div>
-      <div class="stat-card"><div class="n">${requisicaoData.length}</div><div class="l">Sugestões</div></div>
+      <div class="stat-card"><div class="n">${feedbackData.length}</div><div class="l">Sugestões</div></div>
       <div class="stat-card"><div class="n">${payslipsData.length}</div><div class="l">Holerites no Banco</div></div>
     `;
 }
@@ -1838,7 +1838,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         await loadSharedData(userEmail, userRole);
         document.getElementById('user-avatar').innerText = VALID_USERS[userEmail].initial;
         applyRoleUI(userRole);
-        renderDirectrequisicaoForUser(userEmail); renderUserPayslips(userEmail);
+        renderDirectfeedbackForUser(userEmail); renderUserPayslips(userEmail);
         document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'flex');
         document.getElementById('app-main-content').style.display = 'block';
         document.getElementById('acesso').classList.remove('active');
