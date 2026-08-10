@@ -68,7 +68,7 @@ class Attachment(BaseModel):
     file_data: str  # base64 no formato data URI (ex: "data:image/png;base64,....")
 
 
-class RequisicaoData(BaseModel):
+class FeddbackData(BaseModel):
     user_email: str
     category: str
     message: str
@@ -76,7 +76,7 @@ class RequisicaoData(BaseModel):
     attachments: Optional[List[Attachment]] = []
 
 
-class DirectRequisicaoData(BaseModel):
+class DirectFeedbackData(BaseModel):
     recipient: str
     message: str
     attachments: Optional[List[Attachment]] = []
@@ -259,12 +259,12 @@ async def delete_event(event_id: str):
 
 
 # ---------------------------------------------------------------------------
-# requisicao (GERAL / SUGESTÕES)
+# feedback (GERAL / SUGESTÕES)
 # ---------------------------------------------------------------------------
-@app.get("/api/requisicao")
-async def list_requisicao():
+@app.get("/api/feedback")
+async def list_feedback():
     res = (
-        supabase_admin.table("requisicao")
+        supabase_admin.table("feedback")
         .select("*")
         .order("created_at", desc=True)
         .execute()
@@ -272,9 +272,9 @@ async def list_requisicao():
     return res.data
 
 
-@app.post("/api/requisicao")
-async def create_requisicao(data: RequisicaoData):
-    res = supabase_admin.table("requisicao").insert(
+@app.post("/api/feedback")
+async def create_feedback(data: feedbackData):
+    res = supabase_admin.table("feedback").insert(
         {
             "user_email": data.user_email,
             "category": data.category,
@@ -286,27 +286,27 @@ async def create_requisicao(data: RequisicaoData):
     return res.data[0] if res.data else {}
 
 
-@app.delete("/api/requisicao/{requisicao_id}")
-async def delete_requisicao(requisicao_id: str):
-    supabase_admin.table("requisicao").delete().eq("id", requisicao_id).execute()
+@app.delete("/api/feedback/{feedback_id}")
+async def delete_feedback(feedback_id: str):
+    supabase_admin.table("feedback").delete().eq("id", feedback_id).execute()
     return {"status": "deleted"}
 
 
 # ---------------------------------------------------------------------------
-# requisicao DIRECIONADO (ADMIN -> FUNCIONÁRIO)
+# feedback DIRECIONADO (ADMIN -> FUNCIONÁRIO)
 # ---------------------------------------------------------------------------
-@app.get("/api/direct-requisicaos")
-async def list_direct_requisicaos(recipient: Optional[str] = None):
-    query = supabase_admin.table("direct_requisicaos").select("*").order("created_at", desc=True)
+@app.get("/api/direct-feedback")
+async def list_direct_feedback(recipient: Optional[str] = None):
+    query = supabase_admin.table("direct_feedback").select("*").order("created_at", desc=True)
     if recipient:
         query = query.eq("recipient", recipient)
     res = query.execute()
     return res.data
 
 
-@app.post("/api/direct-requisicaos")
-async def create_direct_requisicao(data: DirectRequisicaoData):
-    res = supabase_admin.table("direct_requisicaos").insert(
+@app.post("/api/direct-feedback")
+async def create_direct_feedback(data: DirectfeedbackData):
+    res = supabase_admin.table("direct_feedback").insert(
         {
             "recipient": data.recipient,
             "message": data.message,
@@ -316,9 +316,9 @@ async def create_direct_requisicao(data: DirectRequisicaoData):
     return res.data[0] if res.data else {}
 
 
-@app.delete("/api/direct-requisicaos/{direct_requisicao_id}")
-async def delete_direct_requisicao(direct_requisicao_id: str):
-    supabase_admin.table("direct_requisicaos").delete().eq("id", direct_requisicao_id).execute()
+@app.delete("/api/direct-feedback/{direct_feedback_id}")
+async def delete_direct_feedback(direct_feedback_id: str):
+    supabase_admin.table("direct_feedback").delete().eq("id", direct_feedback_id).execute()
     return {"status": "deleted"}
 
 
