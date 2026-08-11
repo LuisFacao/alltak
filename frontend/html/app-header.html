@@ -1,0 +1,23 @@
+        <div class="brand">
+          <div class="badge">
+            <img src="logo.jpg" alt="Logo Alltak" class="brand-logo-img">
+          </div>
+          <span>Alltak</span>
+        </div>
+        <div class="topbar-right">
+          <span class="role-pill" id="role-pill" style="display:none;">Admin</span>
+          <div class="notif-wrap">
+            <div class="icon-btn" onclick="toggleNotificationPanel(event)">
+              <span class="dot-alert" id="notification-dot" style="display: none;"></span>
+              <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+            </div>
+            <div class="notif-panel" id="notif-panel">
+              <div class="notif-panel-head">
+                <span>Notificações</span>
+                <span class="clear-link" onclick="clearAllNotifications(event)">Limpar</span>
+              </div>
+              <div id="notif-list"></div>
+            </div>
+          </div>
+          <div class="avatar-sm" id="user-avatar" onclick="handleLogout()">AT</div>
+        </div>

@@ -1,0 +1,151 @@
+          <div class="screen-title"><h2 class="display">Painel Admin</h2></div>
+
+          <div class="admin-tabs" id="admin-tabs">
+            <div class="chip on" data-admintab="conteudo" onclick="showAdminTab('conteudo')">Conteúdo</div>
+            <div class="chip" data-admintab="agenda" onclick="showAdminTab('agenda')">Agenda</div>
+            <div class="chip" data-admintab="feedback" onclick="showAdminTab('feedback')">Feedbacks</div>
+            <div class="chip" data-admintab="usuarios" onclick="showAdminTab('usuarios')">Usuários</div>
+            <div class="chip" data-admintab="holerites" onclick="showAdminTab('holerites')">Holerites</div>
+            <div class="chip" data-admintab="metricas" onclick="showAdminTab('metricas')">Métricas</div>
+          </div>
+
+          <div class="admin-panel active" id="admin-conteudo">
+            <div class="card-block" style="margin-top:14px;">
+              <h3 id="post-form-title">Novo comunicado</h3>
+              <form id="post-form" onsubmit="submitPostForm(event)">
+                <div class="form-field"><label>Título</label><input type="text" id="post-title" required></div>
+                <div class="form-field"><label>Descrição</label><textarea id="post-desc" required></textarea></div>
+                <div class="form-field"><label>Categoria</label>
+                  <select id="post-tag">
+                    <option>RH</option><option>TI</option><option>Financeiro</option><option>Eventos</option>
+                  </select>
+                </div>
+                <div class="form-field"><label>Autor</label><input type="text" id="post-author" placeholder="Ex: RH Alltak" required></div>
+                <div class="checkbox-field"><input type="checkbox" id="post-urgent"><label for="post-urgent">Marcar como urgente</label></div>
+                <button type="submit" class="btn block" id="post-submit-btn">Publicar comunicado</button>
+              </form>
+            </div>
+            <div class="admin-list" id="admin-posts-list"></div>
+          </div>
+
+          <div class="admin-panel" id="admin-agenda">
+            <div class="card-block" style="margin-top:14px;">
+              <h3>Novo evento</h3>
+              <form id="event-form" onsubmit="submitEventForm(event)">
+                <div class= "form-field"><label>Data</label><input type="date" id="event-date" required></div>
+                <div class="form-field"><label>Título</label><input type="text" id="event-title" required></div>
+                <div class="form-field"><label>Tipo</label>
+                  <select id="event-color">
+                    <option value="var(--azul-principal)">Campanha</option>
+                    <option value="var(--azul-claro)">Urgente</option>
+                    <option value="var(--ink)">Evento</option>
+                    <option value="var(--azul-suave)">Treinamento</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn block">Adicionar à agenda</button>
+              </form>
+            </div>
+            <div class="admin-list" id="admin-events-list"></div>
+          </div>
+
+          <div class="admin-panel" id="admin-feedback">
+            <div class="card-block" style="margin-top:14px;">
+              <h3>Enviar Mensagem Direta a Funcionário</h3>
+              <form id="direct-feedback-form" onsubmit="submitDirectfeedback(event)">
+                <div class="form-field">
+                  <label>Destinatário (Funcionário)</label>
+                  <select id="direct-feedback-recipient" required></select>
+                </div>
+                <div class="form-field">
+                  <label>Mensagem / Feedback</label>
+                  <textarea id="direct-feedback-text" placeholder="Escreva a avaliação ou orientação profissional direcionada..." required></textarea>
+                </div>
+                <div class="form-field">
+                  <label>Anexos (fotos, vídeos ou documentos — opcional)</label>
+                  <input type="file" id="direct-feedback-attachments" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="showFilePreview(this, 'direct-feedback-attachments-preview')">
+                  <div id="direct-feedback-attachments-preview" style="font-size:11px; color:#788e9e; margin-top:6px;"></div>
+                </div>
+                <button type="submit" class="btn block" id="direct-feedback-submit-btn">Enviar Feedback Direto</button>
+              </form>
+            </div>
+
+            <div class="section-head" style="margin-top:20px;"><h2 style="font-size:16px;">Feedbacks Enviados</h2></div>
+            <div class="admin-list" id="admin-direct-feedback-list"></div>
+
+            <div class="section-head" style="margin-top:20px;"><h2 style="font-size:16px;">Sugestões Recebidas (Geral)</h2></div>
+            <div class="admin-list" id="admin-feedback-list"></div>
+          </div>
+
+          <div class="admin-panel" id="admin-usuarios">
+            <div class="card-block" style="margin-top:14px;">
+              <h3>Cadastrar Novo Usuário</h3>
+              <form id="user-form" onsubmit="submitUserForm(event)">
+                <div class="form-field">
+                  <label>Email</label>
+                  <input type="email" id="user-email" placeholder="exemplo@alltak.com.br" required>
+                </div>
+                <div class="form-field">
+                  <label>Senha</label>
+                  <input type="password" id="user-password" placeholder="Digite a senha" required>
+                </div>
+                <div class="form-field">
+                  <label>Função (Cargo)</label>
+                  <select id="user-role">
+                    <option value="funcionario">Funcionário</option>
+                    <option value="admin">Administrador</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn block" style="margin-top:8px;">Cadastrar Usuário</button>
+              </form>
+            </div>
+
+            <div class="card-block" style="margin-top:16px;">
+              <h3>Lista de Usuários</h3>
+              <div class="admin-list" id="admin-users-list" style="margin-top:10px;"></div>
+            </div>
+          </div>
+
+          <div class="admin-panel" id="admin-holerites">
+            <div class="card-block" style="margin-top:14px;">
+              <h3>Enviar Holerite</h3>
+              <form id="payslip-form" onsubmit="submitPayslipForm(event)">
+                <div class="form-field">
+                  <label>Funcionário</label>
+                  <select id="payslip-recipient" required></select>
+                </div>
+                <div class="form-field">
+                  <label>Mês de referência</label>
+                  <input type="month" id="payslip-ref" required>
+                </div>
+                <div class="form-field">
+                  <label>Arquivo (PDF ou imagem)</label>
+                  <input type="file" id="payslip-file" accept="application/pdf,image/*" required>
+                </div>
+                <button type="submit" class="btn block">Enviar Holerite</button>
+              </form>
+            </div>
+
+            <div class="card-block" style="margin-top:16px;">
+              <h3>Envio em massa</h3>
+              <p style="font-size:11.5px; color:#506473; margin-bottom:14px; line-height:1.5;">Selecione vários arquivos de uma vez (um por funcionário). O sistema tenta identificar o destinatário pelo nome do arquivo — por exemplo, "joao.silva.pdf" é associado a joao.silva@alltak.com.br.</p>
+              <form id="payslip-bulk-form" onsubmit="submitBulkPayslips(event)">
+                <div class="form-field">
+                  <label>Mês de referência (aplicado a todos)</label>
+                  <input type="month" id="payslip-bulk-ref" required>
+                </div>
+                <div class="form-field">
+                  <label>Arquivos</label>
+                  <input type="file" id="payslip-bulk-files" accept="application/pdf,image/*" multiple onchange="handleBulkFilesSelected(this)">
+                </div>
+                <div class="admin-list" id="payslip-bulk-preview" style="margin-bottom:14px;"></div>
+                <button type="submit" class="btn block" id="payslip-bulk-submit" disabled>Enviar todos</button>
+              </form>
+            </div>
+
+            <div class="section-head" style="margin-top:20px;"><h2 style="font-size:16px;">Holerites Enviados</h2></div>
+            <div class="admin-list" id="admin-payslips-list"></div>
+          </div>
+
+          <div class="admin-panel" id="admin-metricas">
+            <div class="stat-grid" id="admin-stat-grid" style="margin-top:14px;"></div>
+          </div>

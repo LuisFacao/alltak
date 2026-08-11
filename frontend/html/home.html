@@ -1,0 +1,35 @@
+          <div class="hero">
+            <div class="hero-inner" id="featured-announcement"></div>
+          </div>
+
+          <div class="section-head"><h2 class="display">Acesso rápido</h2></div>
+          <div class="quicklinks">
+            <div class="qcard" onclick="go('mural')">
+              <div class="qicon" style="background:var(--azul-principal)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></div>
+              <h4>Mural</h4>
+              <p>Todos os avisos</p>
+            </div>
+            <div class="qcard" onclick="go('calendario')">
+              <div class="qicon" style="background:var(--azul-claro)"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+              <h4>Calendário</h4>
+              <p>Agenda integrada</p>
+            </div>
+            <div class="qcard" onclick="go('institucional')">
+              <div class="qicon" style="background:var(--ink)"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg></div>
+              <h4>Institucional</h4>
+              <p>Missão e arquivos</p>
+            </div>
+            <div class="qcard" onclick="go('feedback')">
+              <div class="qicon" style="background:var(--azul-escuro)"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.5A8.5 8.5 0 1119.5 6.5 8.38 8.38 0 0121 11.5z"/></svg></div>
+              <h4>Requisição</h4>
+              <p>Opine e vote</p>
+            </div>
+            <div class="qcard" onclick="go('holerites')">
+              <div class="qicon" style="background:var(--azul-claro)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg></div>
+              <h4>Holerites</h4>
+              <p>Seus contracheques</p>
+            </div>
+          </div>
+
+          <div class="section-head"><h2 class="display">Últimos informativos</h2><a onclick="go('mural')">Ver tudo →</a></div>
+          <div class="feed-list" id="home-feed-grid"></div>

@@ -1,3 +1,13 @@
+import { indexarHTML } from './js/indexador.js'
+  indexarHTML("acesso");
+  indexarHTML("admin");
+  indexarHTML("calendario");
+  indexarHTML("feedback");
+  indexarHTML("holerites");
+  indexarHTML("home");
+  indexarHTML("institucional");
+  indexarHTML("mural");
+
 const API_URL = "https://alltak.onrender.com";
 
 // Função para fazer Login
