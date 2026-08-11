@@ -1,0 +1,67 @@
+.doc-dl  {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 6px 10px;
+    background: var(--azul-suave);
+}
+
+.doc-ic  {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: var(--azul-principal);
+    border: 2px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+    .doc-ic svg  {
+        width: 15px;
+        height: 15px;
+        stroke: var(--paper);
+        fill: none;
+    }
+
+.doc-list  {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 16px 6px;
+}
+
+.doc-row  {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    padding: 13px 14px;
+    cursor: pointer;
+}
+    .doc-row .info  {
+        flex: 1;
+    }
+        .doc-row .info h4 {
+            font-size:13px;
+            font-weight:700;
+        }
+        .doc-row .info span {
+            font-family:'Space Mono';
+            font-size:10px; color:#788e9e;
+        }
+
+.mvv  {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+}
+    .mvv-card  {
+        border: 2.5px solid var(--ink);
+        border-radius: 16px;
+        padding: 20px;
+    }

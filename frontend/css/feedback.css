@@ -1,0 +1,66 @@
+/* ===== requisicao & ENQUETE ===== */
+.fb-stack  {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+}
+
+.card-block  {
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: var(--shadow-hard-sm);
+}
+
+.card-block h3  {
+    font-size: 16px;
+    margin-bottom: 14px;
+}
+
+.stars {
+    display:flex;
+    gap:8px;
+    margin-top:4px;
+}
+    .stars svg {
+        width:28px;
+        height:28px;
+        fill:none;
+        stroke:var(--ink);
+        stroke-width:1.6;
+        cursor:pointer;
+    }
+    .stars svg.filled {
+        fill:var(--azul-principal);
+    }
+
+/* não achei esses no html */
+.poll-bar  {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: var(--azul-principal);
+    z-index: 0;
+    opacity: .5;
+    transition: width 0.4s ease;
+}
+.poll-opt  {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+    .poll-opt span, .poll-opt b  {
+        position: relative;
+        z-index: 1;
+        font-size: 13px;
+    }

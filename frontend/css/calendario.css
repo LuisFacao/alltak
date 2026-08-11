@@ -1,0 +1,119 @@
+.cal-cell  {
+    min-height: 44px;
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    padding: 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    position: relative;
+    background: #fff;
+}
+    .cal-cell.muted  {
+        opacity: .3;
+    }
+
+    .cal-cell.today  {
+        border-color: var(--ink);
+        border-width: 2px;
+        background: var(--azul-suave);
+    }
+
+.cal-day-events  {
+    padding: 0 16px;
+}
+    .cal-day-events .evt-row  {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--paper);
+        border: 2px solid var(--ink);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+    .cal-day-events .evt-dot  {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 1.5px solid var(--ink);
+    }
+
+.cal-dow  {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    color: #788e9e;
+}
+
+.cal-evt  {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+    .cal-evt-wrap  {
+        display: flex;
+        gap: 2px;
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+
+.cal-grid  {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.cal-head  {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+    .cal-head h2 {
+        font-size:17px;
+    }
+.cal-nav  {
+    display: flex;
+    gap: 6px;
+}
+    .cal-nav button  {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        border: 2px solid var(--ink);
+        background: var(--azul-suave);
+        cursor: pointer;
+        font-weight: bold;
+    }
+.cal-wrap  {
+    margin: 16px;
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: var(--shadow-hard);
+}
+
+.legend  {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+    .legend div  {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-family: 'Space Mono', monospace;
+        font-size: 9px;
+        font-weight: 700;
+    }
+    .legend .sq  {
+        width: 9px;
+        height: 9px;
+        border-radius: 3px;
+        border: 1.5px solid var(--ink);
+    }
