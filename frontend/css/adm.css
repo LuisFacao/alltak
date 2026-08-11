@@ -171,6 +171,19 @@
         margin-bottom:0;
     }
 
+.post-body  {
+    padding: 13px 15px 15px;
+}
+    .post-body h3  {
+        font-size: 15px;
+        line-height: 1.28;
+        margin-bottom: 6px;
+    }
+    .post-body p  {
+        font-size: 12.5px;
+        color: #506473;
+        line-height: 1.48;
+    }
 .post-card  {
     background: var(--paper);
     border: 2.5px solid var(--ink);
@@ -178,6 +191,15 @@
     overflow: hidden;
     box-shadow: var(--shadow-hard-sm);
     cursor: pointer;
+}
+.post-foot  { /* hehe */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: #788e9e;
+    margin-top: 10px;
 }
 .post-media  {
     height: 76px;
@@ -195,28 +217,6 @@
     border-radius: 100px;
     border: 2px solid var(--ink);
     background: var(--paper);
-}
-.post-body  {
-    padding: 13px 15px 15px;
-}
-    .post-body h3  {
-        font-size: 15px;
-        line-height: 1.28;
-        margin-bottom: 6px;
-    }
-    .post-body p  {
-        font-size: 12.5px;
-        color: #506473;
-        line-height: 1.48;
-    }
-.post-foot  {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: #788e9e;
-    margin-top: 10px;
 }
 
 .role-pill {
@@ -236,9 +236,6 @@
     margin-right:8px;
 }
 
-.stat-grid {
-    display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:0 16px; margin-bottom:26px;
-}
 .stat-card {
     background:var(--ink);
     border-radius:14px;
@@ -257,3 +254,6 @@
         color:#8a9fae;
         margin-top:3px;
     }
+.stat-grid {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:0 16px; margin-bottom:26px;
+}

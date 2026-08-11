@@ -28,14 +28,6 @@
     overflow: hidden;
     padding: 3px;
 }
-    .brand span  {
-        color: #fff;
-        font-family: 'Space Mono', monospace;
-        font-weight: 700;
-        font-size: 13px;
-        letter-spacing: .03em;
-        text-transform: uppercase;
-    }
 
 .brand  {
     display: flex;
@@ -46,6 +38,14 @@
         width: 100%;
         height: 100%;
         object-fit: contain;
+    }
+    .brand span  {
+        color: #fff;
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: .03em;
+        text-transform: uppercase;
     }
 
 .dot-alert  {
