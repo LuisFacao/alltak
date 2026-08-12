@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+
+@import url('./calendario.css');
+@import url('./feedback.css');
+@import url('./header.css');
+@import url('./home.css');
+@import url('./institucional.css');
+@import url('./tela.css');
+
+:root  {
+    --azul-principal: #0056b3;
+    --azul-escuro: #002d62;
+    --azul-claro: #007bff;
+    --azul-suave: #e6f0fa;
+
+    --cream: #f4f8fc;
+    --ink: #0a1118;
+    --paper: #ffffff;
+
+    --line: rgba(10, 17, 24, 0.12);
+    --shadow-hard: 4px 4px 0 var(--ink);
+    --shadow-hard-sm: 3px 3px 0 var(--ink);
+
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-top: env(safe-area-inset-top, 0px);
+}
+    *  {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+html, body  {
+    height: 100%;
+    overscroll-behavior-y: none;
+}
+    body  {
+        font-family: 'Inter', sans-serif;
+        background: var(--cream);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        max-width: 480px;
+        margin: 0 auto;
+        position: relative;
+    }
+        a {
+            color:inherit
+        }
+        button {
+            font-family:inherit;
+        }
+        .mono {
+            font-family:'Space Mono', monospace;
+        }
+
+.app  {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.content  {
+    flex: 1;
+    padding-bottom: 28px;
+}
+
+.chip  {
+    font-family: 'Space Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 100px;
+    border: 2px solid var(--ink);
+    background: var(--paper);
+    cursor: pointer;
+    text-transform: uppercase;
+}
+    .chip.on  {
+        background: var(--ink);
+        color: var(--azul-suave);
+    }
+
+.display  {
+    font-family: 'Anton', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.form-field {
+    margin-bottom:14px;
+}
+    .form-field label {
+        display:block;
+        font-family:'Space Mono';
+        font-size:10px;
+        font-weight:700;
+        text-transform:uppercase;
+        letter-spacing:.03em; margin-bottom:7px;
+    }
+    .form-field select,
+    .form-field textarea,
+    .form-field input {
+    width:100%;
+    border:2px solid var(--ink);
+    border-radius:10px;
+    padding:11px 13px;
+    font-family:'Inter';
+    font-size:15px;
+    background:var(--azul-suave);
+    outline:none;
+    }
+    .form-field textarea {
+        resize:vertical;
+        min-height:90px;
+    }
+
+.section-head  {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 4px 16px 12px;
+}
+    .section-head a  {
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--azul-principal);
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .section-head h2  {
+        font-size: 19px;
+    }
+
+/* não sei o que isso faz */
+.eyebrow  {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 10.5px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: var(--azul-claro);
+    padding: 5px 11px;
+    border-radius: 100px;
+    border: 2px solid #fff;
+    margin-bottom: 12px;
+}
+
+.urgent-pill  {
+    background: var(--azul-claro);
+    color: #fff;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 9.5px;
+    padding: 3px 9px;
+    border-radius: 100px;
+}
