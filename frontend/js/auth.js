@@ -7,6 +7,9 @@ export async function handleLogin() {
     const emailInp = document.getElementById('login-email').value.trim().toLowerCase();
     const passInp = document.getElementById('login-pass').value;
     const errorEl = document.getElementById('login-error-msg');
+    const btn = document.getElementById('login-btn');
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
     try {
         const { token, user } = await API.Database.login(emailInp, passInp);
         await State.initDatabase();
@@ -17,7 +20,8 @@ export async function handleLogin() {
         localStorage.setItem('alltak_user_email', user.email);
         localStorage.setItem('alltak_logged', "true");
         
-        document.getElementById('user-avatar').innerText = (State.Store.VALID_USERS[user.email] && State.Store.VALID_USERS[user.email].initial) || user.email.slice(0, 2).toUpperCase();
+        const avatarEl = document.getElementById('user-avatar');
+        if (avatarEl) avatarEl.innerText = (State.Store.VALID_USERS[user.email] && State.Store.VALID_USERS[user.email].initial) || user.email.slice(0, 2).toUpperCase();
         
         applyRoleUI(user.role);
         UI.renderDirectfeedbackForUser(user.email);
@@ -32,6 +36,8 @@ export async function handleLogin() {
         State.startAutoRefresh();
     } catch (err) {
         if (errorEl) { errorEl.innerText = 'E-mail ou senha incorretos.'; errorEl.style.display = 'block'; }
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
     }
 }
 

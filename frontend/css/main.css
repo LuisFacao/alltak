@@ -31,6 +31,17 @@
         -webkit-tap-highlight-color: transparent;
     }
 
+::selection {
+    background:var(--azul-principal);
+    color: var(--paper);
+}
+
+.app-protected,
+#app-main-content,
+.admin-only-nav {
+    display: none;
+}
+
 html, body  {
     height: 100%;
     overscroll-behavior-y: none;
@@ -43,6 +54,7 @@ html, body  {
         max-width: 480px;
         margin: 0 auto;
         position: relative;
+        min-height: 100vh;
     }
         a {
             color:inherit

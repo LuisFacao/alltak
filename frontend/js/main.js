@@ -5,16 +5,18 @@ import * as Admin from './admin.js';
 import * as Auth from './auth.js';
 import * as Helpers from './helpers.js';
 
-UI.indexHTML("acesso");
-UI.indexHTML("admin");
-UI.indexHTML("app-bottomnav");
-UI.indexHTML("app-header");
-UI.indexHTML("calendario");
-UI.indexHTML("feedback");
-UI.indexHTML("holerites");
-UI.indexHTML("home");
-UI.indexHTML("institucional");
-UI.indexHTML("mural");
+const partialsReady = Promise.all([
+  UI.indexHTML("acesso"),
+  UI.indexHTML("admin"),
+  UI.indexHTML("app-bottomnav"),
+  UI.indexHTML("app-header"),
+  UI.indexHTML("calendario"),
+  UI.indexHTML("feedback"),
+  UI.indexHTML("holerites"),
+  UI.indexHTML("home"),
+  UI.indexHTML("institucional"),
+  UI.indexHTML("mural"),
+]);
 
 async function submitDirectfeedback(e) {
   e.preventDefault();
@@ -185,7 +187,7 @@ async function submitBulkPayslips(e) {
 
   try {
     for (const file of State.Store.selectedBulkFiles) {
-      if (Helpers.checkFileSize(file)) continue; // skip oversized files, already flagged in preview
+      if (Helpers.checkFileSize(file)) continue;
       const matchedEmail = Helpers.matchEmailForFile(file.name, emails);
       if (matchedEmail) {
         const dataUrl = await Helpers.readFileAsDataURL(file);
@@ -207,42 +209,54 @@ function handleNotificationClick() {
   localStorage.removeItem('alltak_new_notification'); UI.checkNotificationState(); UI.go('mural');
 }
 
-document.querySelectorAll('#stars-container svg').forEach(star => {
-    star.addEventListener('click', function() {
-        State.Store.selectedRating = parseInt(this.getAttribute('data-star'));
-        document.querySelectorAll('#stars-container svg').forEach(s => {
-            if(parseInt(s.getAttribute('data-star')) <= State.Store.selectedRating) { s.classList.add('filled'); } 
-            else { s.classList.remove('filled'); }
-        });
-    });
-});
+function bindPartialDependentListeners() {
+  document.querySelectorAll('#stars-container svg').forEach(star => {
+      star.addEventListener('click', function() {
+          State.Store.selectedRating = parseInt(this.getAttribute('data-star'));
+          document.querySelectorAll('#stars-container svg').forEach(s => {
+              if(parseInt(s.getAttribute('data-star')) <= State.Store.selectedRating) { s.classList.add('filled'); } 
+              else { s.classList.remove('filled'); }
+          });
+      });
+  });
 
-document.getElementById('search-input')?.addEventListener('input', function() {
-    const currentActiveChip = document.querySelector('#mural-filters .chip.on');
-    const activeTag = currentActiveChip ? currentActiveChip.getAttribute('data-filter') : 'Todos';
-    UI.renderMural(activeTag, this.value);
-});
+  document.getElementById('search-input')?.addEventListener('input', function() {
+      const currentActiveChip = document.querySelector('#mural-filters .chip.on');
+      const activeTag = currentActiveChip ? currentActiveChip.getAttribute('data-filter') : 'Todos';
+      UI.renderMural(activeTag, this.value);
+  });
 
-document.querySelectorAll('#mural-filters .chip').forEach(chip => {
-    chip.addEventListener('click', function() {
-        document.querySelectorAll('#mural-filters .chip').forEach(c => c.classList.remove('on'));
-        this.classList.add('on');
-        const searchVal = document.getElementById('search-input')?.value || '';
-        UI.renderMural(this.getAttribute('data-filter'), searchVal);
-    });
-});
+  document.querySelectorAll('#mural-filters .chip').forEach(chip => {
+      chip.addEventListener('click', function() {
+          document.querySelectorAll('#mural-filters .chip').forEach(c => c.classList.remove('on'));
+          this.classList.add('on');
+          const searchVal = document.getElementById('search-input')?.value || '';
+          UI.renderMural(this.getAttribute('data-filter'), searchVal);
+      });
+  });
+}
 
 window.addEventListener('DOMContentLoaded', async () => {
-    await State.initDatabase();
+    await partialsReady;
+    bindPartialDependentListeners();
+
+    try {
+      await State.initDatabase();
+    } catch (err) {
+      console.error("Falha ao inicializar o banco, mantendo dados padrão:", err);
+    }
+
     const isLogged = localStorage.getItem('alltak_logged') === "true";
     const userEmail = localStorage.getItem('alltak_user_email');
     const userRole = localStorage.getItem('alltak_role');
     
     if (isLogged && userEmail && State.Store.VALID_USERS[userEmail]) {
         await State.loadSharedData(userEmail, userRole);
-        document.getElementById('user-avatar').innerText = State.Store.VALID_USERS[userEmail].initial;
+        const avatarEl = document.getElementById('user-avatar');
+        if (avatarEl) avatarEl.innerText = State.Store.VALID_USERS[userEmail].initial;
         Auth.applyRoleUI(userRole);
-        UI.renderDirectfeedbackForUser(userEmail); UI.renderUserPayslips(userEmail);
+        UI.renderDirectfeedbackForUser(userEmail); 
+        UI.renderUserPayslips(userEmail);
         
         document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'flex');
         document.getElementById('app-main-content').style.display = 'block';
@@ -250,16 +264,14 @@ window.addEventListener('DOMContentLoaded', async () => {
         UI.go('home');
         State.startAutoRefresh();
     }
-    UI.renderFeaturedAnnouncement(); UI.renderHomeFeed(); UI.renderMural(); UI.buildCalendar(); UI.checkNotificationState();
+
+    UI.renderFeaturedAnnouncement(); 
+    UI.renderHomeFeed(); 
+    UI.renderMural(); 
+    UI.buildCalendar(); 
+    UI.checkNotificationState();
 });
 
-// --- Global bindings ---
-// Every function referenced by an inline onclick="..." (in the static HTML
-// partials, or generated dynamically inside admin.js/ui.js/helpers.js
-// template strings) MUST be attached to window. Inline handlers execute in
-// global scope and cannot see these ES module exports otherwise — that gap
-// was the actual cause of the login button (and many other buttons) doing
-// nothing with no console error.
 window.handleLogin = Auth.handleLogin;
 window.handleLogout = Auth.handleLogout;
 window.submitDirectfeedback = submitDirectfeedback;
@@ -273,8 +285,6 @@ window.submitBulkPayslips = submitBulkPayslips;
 window.handleNotificationClick = handleNotificationClick;
 window.go = UI.go;
 window.showAdminTab = Admin.showAdminTab;
-
-// Previously missing (buttons were silently dead):
 window.changeMonth = UI.changeMonth;
 window.showDayEvents = UI.showDayEvents;
 window.downloadPayslip = UI.downloadPayslip;

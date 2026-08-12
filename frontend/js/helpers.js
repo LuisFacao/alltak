@@ -1,8 +1,5 @@
 export const MAX_ATTACHMENTS_BYTES = 30 * 1024 * 1024;
 
-// Escapes text before it's inserted via innerHTML, to prevent stored XSS
-// from user-submitted content (post titles/descriptions, feedback messages,
-// event titles, etc).
 export function escapeHtml(str) {
   if (str === null || str === undefined) return '';
   return String(str)
@@ -13,10 +10,6 @@ export function escapeHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
-// Safely embeds a JS value inside a single-quoted inline HTML attribute
-// (e.g. onclick='fn(...)'). JSON.stringify alone doesn't escape single
-// quotes, so a filename containing an apostrophe could otherwise break
-// out of the attribute.
 function toAttrJson(value) {
   return JSON.stringify(value).replace(/'/g, '&#39;');
 }
@@ -48,8 +41,6 @@ export function filesToAttachments(fileList) {
   })));
 }
 
-// Checks a single file (or array of files) against a byte cap.
-// Returns an Error to show the user, or null if within limits.
 export function checkFileSize(fileOrFiles, maxBytes = MAX_ATTACHMENTS_BYTES) {
   const files = Array.isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
   const totalSize = files.reduce((sum, f) => sum + (f ? f.size : 0), 0);
@@ -128,12 +119,6 @@ export function readFileAsDataURL(file) {
   });
 }
 
-// Matches a payslip filename to a recipient email more safely than a raw
-// substring check. Tries, in order: exact local-part match ("joao.silva"
-// === "joao.silva"), then the local-part appearing as a delimited token in
-// the filename (separated by '.', '_', '-', or a boundary). This avoids a
-// short local-part like "ana" incorrectly matching a filename/employee like
-// "mariana.pdf", which a plain `includes()` check would allow.
 export function matchEmailForFile(fileName, emails) {
   const nameNoExt = fileName.toLowerCase().replace(/\.[^/.]+$/, '');
 

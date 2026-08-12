@@ -40,6 +40,7 @@
         height: 10px;
         border-radius: 50%;
         border: 1.5px solid var(--ink);
+        flex-shrink: 0;
     }
 
 .cal-dow  {
@@ -61,6 +62,7 @@
     .cal-evt-wrap  {
         display: flex;
         gap: 2px;
+        flex-wrap: wrap;
         position: absolute;
         bottom: 4px;
         left: 4px;
@@ -94,7 +96,11 @@
         border: 2px solid var(--ink);
         background: var(--azul-suave);
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-weight: bold;
+        font-size: 15px;
     }
 .cal-wrap  {
     margin: 16px;

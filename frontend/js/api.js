@@ -1,140 +1,98 @@
 export const API_URL = 'https://alltak.onrender.com/api';
 
+async function request(path, options = {}, errorMessage = 'Erro na requisição', { extractDetail = false, parseJson = true } = {}) {
+    try {
+        const res = await fetch(`${API_URL}${path}`, options);
+        if (!res.ok) {
+            if (extractDetail) {
+                const body = await res.json().catch(() => ({}));
+                throw new Error(body.detail || errorMessage);
+            }
+            throw new Error(errorMessage);
+        }
+        return parseJson ? await res.json() : true;
+    } catch (error) {
+        console.warn(`[API Helper] Falha ao conectar em ${path}:`, error.message);
+        throw error;
+    }
+}
+
+function jsonOptions(method, body) {
+    return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
+}
+
 export const Database = {
     async login(email, password) {
-        const res = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        if (!res.ok) throw new Error('Credenciais inválidas');
-        return await res.json();
+        return request('/auth/login', jsonOptions('POST', { email, password }), 'Credenciais inválidas');
     },
     async getUsersRaw() {
-        const res = await fetch(`${API_URL}/users`);
-        if (!res.ok) throw new Error('Erro ao buscar usuários');
-        return await res.json();
+        return request('/users', {}, 'Erro ao buscar usuários').catch(() => []);
     },
     async getUsers() {
-        const list = await this.getUsersRaw();
-        const map = {};
-        list.forEach(u => {
-            map[u.email] = { id: u.id, role: u.role, initial: u.initial || u.email.slice(0, 2).toUpperCase() };
-        });
-        return map;
+        try {
+            const list = await this.getUsersRaw();
+            const map = {};
+            if (Array.isArray(list)) {
+                list.forEach(u => {
+                    map[u.email] = { id: u.id, role: u.role, initial: u.initial || u.email.slice(0, 2).toUpperCase() };
+                });
+            }
+            return map;
+        } catch {
+            return {};
+        }
     },
     async saveUser(email, data) {
-        const res = await fetch(`${API_URL}/users`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password: data.password, role: data.role })
-        });
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.detail || 'Erro ao cadastrar usuário');
-        }
-        return true;
+        return request('/users', jsonOptions('POST', { email, password: data.password, role: data.role }), 'Erro ao cadastrar usuário', { extractDetail: true, parseJson: false });
     },
     async deleteUser(userId) {
-        const res = await fetch(`${API_URL}/users/${userId}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao remover usuário');
-        return true;
+        return request(`/users/${userId}`, { method: 'DELETE' }, 'Erro ao remover usuário', { parseJson: false });
     },
     async getPosts() {
-        const res = await fetch(`${API_URL}/posts`);
-        if (!res.ok) throw new Error('Erro ao buscar comunicados');
-        return await res.json();
+        return request('/posts', {}, 'Erro ao buscar comunicados').catch(() => []);
     },
     async createPost(title, content, author, tag, urgent) {
-        const res = await fetch(`${API_URL}/posts`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, content, author, tag, urgent })
-        });
-        if (!res.ok) throw new Error('Erro ao salvar comunicado');
-        return await res.json();
+        return request('/posts', jsonOptions('POST', { title, content, author, tag, urgent }), 'Erro ao salvar comunicado');
     },
     async deletePost(id) {
-        const res = await fetch(`${API_URL}/posts/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao excluir comunicado');
-        return true;
+        return request(`/posts/${id}`, { method: 'DELETE' }, 'Erro ao excluir comunicado', { parseJson: false });
     },
     async getEvents() {
-        const res = await fetch(`${API_URL}/events`);
-        if (!res.ok) throw new Error('Erro ao buscar agenda');
-        return await res.json();
+        return request('/events', {}, 'Erro ao buscar agenda').catch(() => []);
     },
     async createEvent(date, title, color) {
-        const res = await fetch(`${API_URL}/events`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date, title, color })
-        });
-        if (!res.ok) throw new Error('Erro ao salvar evento');
-        return await res.json();
+        return request('/events', jsonOptions('POST', { date, title, color }), 'Erro ao salvar evento');
     },
     async deleteEvent(id) {
-        const res = await fetch(`${API_URL}/events/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao excluir evento');
-        return true;
+        return request(`/events/${id}`, { method: 'DELETE' }, 'Erro ao excluir evento', { parseJson: false });
     },
     async getfeedback() {
-        const res = await fetch(`${API_URL}/feedback`);
-        if (!res.ok) throw new Error('Erro ao buscar feedback');
-        return await res.json();
+        return request('/feedback', {}, 'Erro ao buscar feedback').catch(() => []);
     },
     async createfeedback(userEmail, category, message, rating, attachments) {
-        const res = await fetch(`${API_URL}/feedback`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_email: userEmail, category, message, rating, attachments: attachments || [] })
-        });
-        if (!res.ok) throw new Error('Erro ao enviar feedback');
-        return await res.json();
+        return request('/feedback', jsonOptions('POST', { user_email: userEmail, category, message, rating, attachments: attachments || [] }), 'Erro ao enviar feedback');
     },
     async deletefeedbackApi(id) {
-        const res = await fetch(`${API_URL}/feedback/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao excluir feedback');
-        return true;
+        return request(`/feedback/${id}`, { method: 'DELETE' }, 'Erro ao excluir feedback', { parseJson: false });
     },
     async getDirectfeedback(recipient) {
-        const url = recipient ? `${API_URL}/direct-feedbacks?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/direct-feedbacks`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Erro ao buscar feedback direcionados');
-        return await res.json();
+        const path = recipient ? `/direct-feedbacks?recipient=${encodeURIComponent(recipient)}` : '/direct-feedbacks';
+        return request(path, {}, 'Erro ao buscar feedback direcionados').catch(() => []);
     },
     async createDirectfeedback(recipient, message, attachments) {
-        const res = await fetch(`${API_URL}/direct-feedbacks`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ recipient, message, attachments: attachments || [] })
-        });
-        if (!res.ok) throw new Error('Erro ao enviar feedback direcionado');
-        return await res.json();
+        return request('/direct-feedbacks', jsonOptions('POST', { recipient, message, attachments: attachments || [] }), 'Erro ao enviar feedback direcionado');
     },
     async deleteDirectfeedbackApi(id) {
-        const res = await fetch(`${API_URL}/direct-feedbacks/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao excluir feedback direto');
-        return true;
+        return request(`/direct-feedbacks/${id}`, { method: 'DELETE' }, 'Erro ao excluir feedback direto', { parseJson: false });
     },
     async getPayslips(recipient) {
-        const url = recipient ? `${API_URL}/payslips?recipient=${encodeURIComponent(recipient)}` : `${API_URL}/payslips`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Erro ao buscar holerites');
-        return await res.json();
+        const path = recipient ? `/payslips?recipient=${encodeURIComponent(recipient)}` : '/payslips';
+        return request(path, {}, 'Erro ao buscar holerites').catch(() => []);
     },
     async createPayslip(recipient, ref, fileName, fileData) {
-        const res = await fetch(`${API_URL}/payslips`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ recipient, ref, file_name: fileName, file_data: fileData })
-        });
-        if (!res.ok) throw new Error('Erro ao enviar holerite');
-        return await res.json();
+        return request('/payslips', jsonOptions('POST', { recipient, ref, file_name: fileName, file_data: fileData }), 'Erro ao enviar holerite');
     },
     async deletePayslipApi(id) {
-        const res = await fetch(`${API_URL}/payslips/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao excluir holerite');
-        return true;
+        return request(`/payslips/${id}`, { method: 'DELETE' }, 'Erro ao excluir holerite', { parseJson: false });
     }
 };

@@ -1,4 +1,4 @@
-.bottomnav  {
+.bottomnav {
     position: sticky;
     bottom: 0;
     left: 0;
@@ -7,7 +7,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 20px calc(12px + var(--safe-bottom));
+    padding: 10px 16px calc(10px + var(--safe-bottom));
     border-top: 3px solid var(--ink);
     z-index: 30;
     max-width: 480px;
@@ -60,7 +60,7 @@
         z-index:1;
     }
 
-.navitem  {
+.navitem {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -68,27 +68,37 @@
     cursor: pointer;
     color: #8a9fae;
     flex: 1;
-    padding: 6px 0;
+    padding: 6px 0px;
+    transition: color .15s ease;
+    border-radius: 12px;
+    min-width: 0;
+    margin: 0 6px;
 }
-    .navitem span  {
-        font-size: 9px;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-    .navitem svg  {
+    .navitem svg {
         width: 20px;
         height: 20px;
         stroke: #8a9fae;
         fill: none;
         stroke-width: 2;
+        transition: stroke .15s ease;
     }
-        .navitem.active  {
-            color: var(--paper);
-        }
-        .navitem.active svg,
-        .navitem.active span  {
-            color: var(--azul-claro);
-        }
+    .navitem span {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .02em;
+        line-height: 1.2;
+        white-space: normal;
+    }
+    .navitem.active {
+        color: var(--paper);
+    }
+    .navitem.active svg {
+        stroke: var(--azul-claro);
+    }
+    .navitem.active span {
+        color: var(--azul-claro);
+    }
 
 .search-bar  {
     display: flex;

@@ -2,16 +2,19 @@ import * as State from './state.js';
 import * as Helpers from './helpers.js';
 
 export function indexHTML(arquivo) {
-  fetch(`./frontend/html/${arquivo}.html`)
+  const caminho = `./frontend/html/${arquivo}.html`;
+
+  return fetch(caminho)
       .then(response => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`Erro HTTP ${response.status} ao carregar ${caminho}`);
+        }
         return response.text();
       })
       .then(data => {
         const el = document.getElementById(arquivo);
         if (el) el.innerHTML = data;
       })
-      .catch(err => console.error(`Erro ao carregar partial "${arquivo}.html":`, err));
 }
 
 export function renderDirectfeedbackForUser(email) {
@@ -167,8 +170,6 @@ export function renderUserPayslips(email) {
 export function downloadPayslip(id) {
   const p = State.Store.payslipsData.find(p => p.id == id);
   if(!p) return;
-  // Reuses the same blob-based download path as regular attachments,
-  // instead of duplicating the data-URI-to-anchor logic here.
   Helpers.downloadAttachment(p.fileData, p.fileName);
 }
 
@@ -178,8 +179,6 @@ export function checkNotificationState() {
   if(dot) dot.style.display = hasNew ? 'block' : 'none';
 }
 
-// These two were referenced by app-header.html's inline onclick handlers
-// but were never implemented anywhere in the app.
 export function toggleNotificationPanel(event) {
   if (event) event.stopPropagation();
   const panel = document.getElementById('notif-panel');
@@ -195,7 +194,6 @@ export function clearAllNotifications(event) {
   if (list) list.innerHTML = '<div style="padding:12px; font-size:12px; color:#788e9e;">Nenhuma notificação.</div>';
 }
 
-// Close the notification panel when clicking outside of it.
 document.addEventListener('click', (e) => {
   const panel = document.getElementById('notif-panel');
   const wrap = document.querySelector('.notif-wrap');
