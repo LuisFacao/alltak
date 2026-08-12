@@ -5,10 +5,12 @@
       <div class="login-form">
         <h3 id="login-title">Bem-vindo de volta</h3>
         <p id="login-desc">Acesse com suas credenciais de e-mail corporativo cadastradas.</p>
-        <div id="login-fields">
-          <div class="form-field"><label>E-mail corporativo</label><input type="email" id="login-email" placeholder="nome@alltak.com.br"></div>
-          <div class="form-field"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
-        </div>
-        <div id="login-error-msg" style="color: #e63946; font-size: 13px; font-weight: 700; margin-top: -6px; margin-bottom: 14px; display: none; text-align: left;">E-mail ou senha incorretos.</div>
-        <button class="btn block" id="login-btn" onclick="handleLogin()">Entrar</button>
+        <form id="login-form" onsubmit="event.preventDefault(); handleLogin();">
+          <div id="login-fields">
+            <div class="form-field"><label>E-mail corporativo</label><input type="email" id="login-email" placeholder="nome@alltak.com.br" required></div>
+            <div class="form-field"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••" required></div>
+          </div>
+          <div id="login-error-msg" style="color: #e63946; font-size: 13px; font-weight: 700; margin-top: -6px; margin-bottom: 14px; display: none; text-align: left;">E-mail ou senha incorretos.</div>
+          <button class="btn block" id="login-btn" type="submit">Entrar</button>
+        </form>
       </div>

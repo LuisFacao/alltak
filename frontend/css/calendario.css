@@ -7,11 +7,12 @@
     font-weight: 700;
     position: relative;
     background: #fff;
+    overflow:hidden;
 }
     .cal-cell.muted  {
         opacity: .3;
+        background: #fafafa;
     }
-
     .cal-cell.today  {
         border-color: var(--ink);
         border-width: 2px;
@@ -20,6 +21,7 @@
 
 .cal-day-events  {
     padding: 0 16px;
+    margin-top:14px;
 }
     .cal-day-events .evt-row  {
         display: flex;
@@ -46,9 +48,12 @@
     font-size: 9px;
     font-weight: 700;
     color: #788e9e;
+    padding-bottom:4px;
+    text-transform:uppercase;
 }
 
 .cal-evt  {
+    margin-top:3px;
     width: 6px;
     height: 6px;
     border-radius: 50%;
@@ -76,7 +81,9 @@
     .cal-head h2 {
         font-size:17px;
     }
+
 .cal-nav  {
+    align-items:center; 
     display: flex;
     gap: 6px;
 }
@@ -102,6 +109,7 @@
     display: flex;
     gap: 10px;
     margin-bottom: 14px;
+    flex-wrap:wrap;
 }
     .legend div  {
         display: flex;
@@ -110,10 +118,12 @@
         font-family: 'Space Mono', monospace;
         font-size: 9px;
         font-weight: 700;
+        text-transform:uppercase;
     }
     .legend .sq  {
         width: 9px;
         height: 9px;
         border-radius: 3px;
         border: 1.5px solid var(--ink);
+        flex-shrink:0;
     }
