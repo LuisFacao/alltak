@@ -264,7 +264,7 @@ async def delete_event(event_id: str):
 @app.get("/api/feedback")
 async def list_feedback():
     res = (
-        supabase_admin.table("feedback")
+        supabase_admin.table("requisicao")
         .select("*")
         .order("created_at", desc=True)
         .execute()
@@ -273,8 +273,8 @@ async def list_feedback():
 
 
 @app.post("/api/feedback")
-async def create_feedback(data: feedbackData):
-    res = supabase_admin.table("feedback").insert(
+async def create_feedback(data: FeddbackData):
+    res = supabase_admin.table("requisicao").insert(
         {
             "user_email": data.user_email,
             "category": data.category,
@@ -288,7 +288,7 @@ async def create_feedback(data: feedbackData):
 
 @app.delete("/api/feedback/{feedback_id}")
 async def delete_feedback(feedback_id: str):
-    supabase_admin.table("feedback").delete().eq("id", feedback_id).execute()
+    supabase_admin.table("requisicao").delete().eq("id", feedback_id).execute()
     return {"status": "deleted"}
 
 
@@ -297,7 +297,7 @@ async def delete_feedback(feedback_id: str):
 # ---------------------------------------------------------------------------
 @app.get("/api/direct-feedback")
 async def list_direct_feedback(recipient: Optional[str] = None):
-    query = supabase_admin.table("direct_feedback").select("*").order("created_at", desc=True)
+    query = supabase_admin.table("direct_requisicaos").select("*").order("created_at", desc=True)
     if recipient:
         query = query.eq("recipient", recipient)
     res = query.execute()
@@ -305,8 +305,8 @@ async def list_direct_feedback(recipient: Optional[str] = None):
 
 
 @app.post("/api/direct-feedback")
-async def create_direct_feedback(data: DirectfeedbackData):
-    res = supabase_admin.table("direct_feedback").insert(
+async def create_direct_feedback(data: DirectFeedbackData):
+    res = supabase_admin.table("direct_requisicaos").insert(
         {
             "recipient": data.recipient,
             "message": data.message,
@@ -318,7 +318,7 @@ async def create_direct_feedback(data: DirectfeedbackData):
 
 @app.delete("/api/direct-feedback/{direct_feedback_id}")
 async def delete_direct_feedback(direct_feedback_id: str):
-    supabase_admin.table("direct_feedback").delete().eq("id", direct_feedback_id).execute()
+    supabase_admin.table("direct_requisicaos").delete().eq("id", direct_feedback_id).execute()
     return {"status": "deleted"}
 
 
