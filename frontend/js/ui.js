@@ -17,7 +17,7 @@ export function indexHTML(arquivo) {
       })
 }
 
-export function renderDirectfeedbackForUser(email) {
+export function renderDirectfeedbackForUser(email) { 
   const box = document.getElementById('direct-feedback-box');
   const list = document.getElementById('direct-feedback-received-list');
   if(!box || !list) return;

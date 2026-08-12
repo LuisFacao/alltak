@@ -2,7 +2,7 @@ import * as API from './api.js';
 import * as State from './state.js';
 import * as Helpers from './helpers.js';
 
-export function populateRecipientDropdown() {
+export function populateRecipientDropdown() { /* indentificação de usuario */
   const dropdown = document.getElementById('direct-feedback-recipient');
   if(!dropdown) return;
   dropdown.innerHTML = '';
@@ -16,7 +16,7 @@ export function populateRecipientDropdown() {
   });
 }
 
-export function renderAdminfeedback() {
+export function renderAdminfeedback() { /* lista do feedback recebidos */
     const container = document.getElementById('admin-feedback-list');
     if(!container) return;
     if(State.Store.feedbackData.length === 0) {
@@ -40,7 +40,7 @@ export function renderAdminfeedback() {
     `).join('');
 }
 
-export async function deletefeedback(feedbackId) {
+export async function deletefeedback(feedbackId) { /* Excluir o feedback permanentemente */
     if(confirm("Excluir este feedback permanentemente?")) {
         try {
             await API.Database.deletefeedbackApi(feedbackId);
@@ -53,7 +53,7 @@ export async function deletefeedback(feedbackId) {
     }
 }
 
-export function renderAdminDirectfeedback() {
+export function renderAdminDirectfeedback() { /* envio dos feedbacks */
     const container = document.getElementById('admin-direct-feedback-list');
     if (!container) return;
     if (State.Store.directfeedbackData.length === 0) {
@@ -77,7 +77,7 @@ export function renderAdminDirectfeedback() {
     `).join('');
 }
 
-export async function deleteDirectfeedback(directfeedbackId) {
+export async function deleteDirectfeedback(directfeedbackId) { /* exclusão do feedback no meio do envio */
     if (confirm("Excluir este feedback enviado permanentemente?")) {
         try {
             await API.Database.deleteDirectfeedbackApi(directfeedbackId);
@@ -89,19 +89,20 @@ export async function deleteDirectfeedback(directfeedbackId) {
     }
 }
 
-export function showAdminTab(tab) {
+export function showAdminTab(tab) { /* mostrar a parte dedicada ao admin */
   document.querySelectorAll('#admin-tabs .chip').forEach(c => c.classList.remove('on'));
   document.querySelector(`#admin-tabs .chip[data-admintab="${tab}"]`).classList.add('on');
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('admin-' + tab).classList.add('active');
   
-  if (tab === 'usuarios') renderAdminUsers();
-  if (tab === 'feedback') { renderAdminfeedback(); renderAdminDirectfeedback(); }
-  if (tab === 'metricas') renderAdminMetrics();
-  if (tab === 'holerites') { populatePayslipRecipientDropdown(); renderAdminPayslips(); }
+  switch (tab) { case 'usuarios' : renderAdminUsers() ; break ;
+                 case 'feedback' : renderAdminfeedback(); renderAdminDirectfeedback() ; break ;
+                 case 'metricas' : renderAdminMetrics() ; break ;
+                 case 'holerites' : populatePayslipRecipientDropdown(); renderAdminPayslips() ; break ;
+  }
 }
 
-export function renderAdminPosts() {
+export function renderAdminPosts() { /* renderização do comunicado dos admins */
   const container = document.getElementById('admin-posts-list');
   if(!container) return;
   if(State.Store.postsData.length === 0) { container.innerHTML = '<div class="admin-empty">Nenhum comunicado criado.</div>'; return; }
@@ -116,7 +117,7 @@ export function renderAdminPosts() {
     </div>`).join('');
 }
 
-export async function deletePost(index) {
+export async function deletePost(index) { /* excluir os comunicados permanentemente */
     if(confirm("Excluir este comunicado permanentemente?")) {
         const post = State.Store.postsData[index];
         try {
@@ -130,7 +131,7 @@ export async function deletePost(index) {
     }
 }
 
-export function renderAdminEvents() {
+export function renderAdminEvents() { /* eventos no calendario */
     const container = document.getElementById('admin-events-list');
     if(!container) return;
     let html = '';
@@ -152,7 +153,7 @@ export function renderAdminEvents() {
     container.innerHTML = count === 0 ? '<div class="admin-empty">Nenhum evento agendado.</div>' : html;
 }
 
-export async function deleteEvent(eventId) {
+export async function deleteEvent(eventId) {  /* excluir algum evento da agenda */
     if(confirm("Excluir este evento da agenda?")) {
         try {
             await API.Database.deleteEvent(eventId);
@@ -164,7 +165,7 @@ export async function deleteEvent(eventId) {
     }
 }
 
-export function renderAdminUsers() {
+export function renderAdminUsers() { 
   const container = document.getElementById('admin-users-list');
   if(!container) return;
   const keys = Object.keys(State.Store.VALID_USERS);
