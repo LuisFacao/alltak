@@ -165,7 +165,7 @@ export async function deleteEvent(eventId) {  /* excluir algum evento da agenda 
     }
 }
 
-export function renderAdminUsers() { 
+export function renderAdminUsers() { /* renderização dos usuários cadastrados */
   const container = document.getElementById('admin-users-list');
   if(!container) return;
   const keys = Object.keys(State.Store.VALID_USERS);
@@ -182,7 +182,7 @@ export function renderAdminUsers() {
     </div>`).join('');
 }
 
-export async function deleteUserSystem(email) {
+export async function deleteUserSystem(email) { /* exclusão do usuário do sistema */
     if(confirm(`Tem certeza que deseja excluir permanentemente o acesso de ${email}?`)) {
         const userId = State.Store.VALID_USERS[email] && State.Store.VALID_USERS[email].id;
         await API.Database.deleteUser(userId);
@@ -194,13 +194,13 @@ export async function deleteUserSystem(email) {
     }
 }
 
-export function populatePayslipRecipientDropdown() {
+export function populatePayslipRecipientDropdown() { /* dropdown de seleção do usuário para envio do holerite */
   const dropdown = document.getElementById('payslip-recipient');
   if(!dropdown) return;
   dropdown.innerHTML = Object.keys(State.Store.VALID_USERS).map(email => `<option value="${Helpers.escapeHtml(email)}">${Helpers.escapeHtml(email)}</option>`).join('');
 }
 
-export function renderAdminPayslips() {
+export function renderAdminPayslips() { /* renderização dos holerites enviados */
   const container = document.getElementById('admin-payslips-list');
   if(!container) return;
   if(State.Store.payslipsData.length === 0) { container.innerHTML = '<div class="admin-empty">Nenhum holerite enviado.</div>'; return; }
@@ -215,7 +215,7 @@ export function renderAdminPayslips() {
     </div>`).join('');
 }
 
-export async function deletePayslip(payslipId) {
+export async function deletePayslip(payslipId) { /* exclusão do holerite do servidor */
     if(confirm("Remover este holerite do servidor?")) {
         try {
             await API.Database.deletePayslipApi(payslipId);
@@ -228,7 +228,7 @@ export async function deletePayslip(payslipId) {
     }
 }
 
-export function renderAdminMetrics() {
+export function renderAdminMetrics() { /* renderização das métricas do sistema */
     const grid = document.getElementById('admin-stat-grid');
     if(!grid) return;
     grid.innerHTML = `

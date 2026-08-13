@@ -1,6 +1,6 @@
 export const MAX_ATTACHMENTS_BYTES = 30 * 1024 * 1024;
 
-export function escapeHtml(str) {
+export function escapeHtml(str) { /* função para escapar caracteres especiais em HTML */
   if (str === null || str === undefined) return '';
   return String(str)
     .replace(/&/g, '&amp;')
@@ -10,23 +10,23 @@ export function escapeHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
-function toAttrJson(value) {
+function toAttrJson(value) { /* função para converter um valor em JSON seguro para atributos HTML */
   return JSON.stringify(value).replace(/'/g, '&#39;');
 }
 
-export function normalizePost(p) {
+export function normalizePost(p) { /* função para normalizar os dados de um post */
   return {
     id: p.id, title: p.title, desc: p.content, author: p.author,
     tag: p.tag || 'Geral', bg: 'var(--azul-suave)', urgent: !!p.urgent,
     date: p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : 'Hoje' };
   }
-export function normalizePayslip(p) {
+export function normalizePayslip(p) {/* função para normalizar os dados de um contracheque */
   return {
     id: p.id, recipient: p.recipient, ref: p.ref, fileName: p.file_name,
     fileData: p.file_data, uploadDate: p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : '' };
   }
 
-export function filesToAttachments(fileList) {
+export function filesToAttachments(fileList) { /* função para converter uma lista de arquivos em anexos codificados em base64 */
   const files = Array.from(fileList || []);
   if (files.length === 0) return Promise.resolve([]);
   const totalSize = files.reduce((sum, f) => sum + f.size, 0);
@@ -41,7 +41,7 @@ export function filesToAttachments(fileList) {
   })));
 }
 
-export function checkFileSize(fileOrFiles, maxBytes = MAX_ATTACHMENTS_BYTES) {
+export function checkFileSize(fileOrFiles, maxBytes = MAX_ATTACHMENTS_BYTES) { /* função para verificar se o tamanho de um arquivo ou lista de arquivos excede o limite */
   const files = Array.isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
   const totalSize = files.reduce((sum, f) => sum + (f ? f.size : 0), 0);
   if (totalSize > maxBytes) {
@@ -50,7 +50,7 @@ export function checkFileSize(fileOrFiles, maxBytes = MAX_ATTACHMENTS_BYTES) {
   return null;
 }
 
-export function downloadAttachment(dataUri, fileName) {
+export function downloadAttachment(dataUri, fileName) { /* função para baixar um anexo codificado em base64 */
   try {
     const [header, base64] = dataUri.split(',');
     const mimeMatch = header.match(/data:(.*?);base64/);
@@ -69,7 +69,7 @@ export function downloadAttachment(dataUri, fileName) {
   }
 }
 
-export function renderAttachments(atts) {
+export function renderAttachments(atts) { /* função para renderizar uma lista de anexos como HTML */
   if (!atts || atts.length === 0) return '';
   const items = atts.map((a) => {
     const type = a.file_type || '';
@@ -81,7 +81,7 @@ export function renderAttachments(atts) {
   return `<div class="attach-list" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">${items}</div>`;
 }
 
-export function showFilePreview(input, previewId) {
+export function showFilePreview(input, previewId) { /* função para mostrar uma pré-visualização dos arquivos selecionados em um input */
   const preview = document.getElementById(previewId);
   if (!preview) return;
   const files = Array.from(input.files || []);
@@ -93,15 +93,15 @@ export function showFilePreview(input, previewId) {
     `<br><strong style="color:${overLimit ? '#c0392b' : 'inherit'}">Total: ${formatSize(totalSize)} / ${formatSize(MAX_ATTACHMENTS_BYTES)}</strong>`;
 }
 
-export function normalizefeedback(f) {
+export function normalizefeedback(f) { /* função para normalizar os dados de um feedback */
   return { id: f.id, subject: f.category, message: f.message, rating: f.rating, userEmail: f.user_email, attachments: f.attachments || [], date: f.created_at ? new Date(f.created_at).toLocaleDateString('pt-BR') : '' };
 }
 
-export function normalizeDirectfeedback(f) {
+export function normalizeDirectfeedback(f) { /* função para normalizar os dados de um feedback direto */
   return { id: f.id, recipient: f.recipient, message: f.message, attachments: f.attachments || [], date: f.created_at ? new Date(f.created_at).toLocaleDateString('pt-BR') : '' };
 }
 
-export function rebuildEventsMap(list) {
+export function rebuildEventsMap(list) { /* função para reconstruir um mapa de eventos a partir de uma lista de eventos */
   const map = {};
   (list || []).forEach(ev => {
     if (!map[ev.date]) map[ev.date] = [];
@@ -110,7 +110,7 @@ export function rebuildEventsMap(list) {
   return map;
 }
 
-export function readFileAsDataURL(file) {
+export function readFileAsDataURL(file) { /* função para ler um arquivo como Data URL (base64) */
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
@@ -119,7 +119,7 @@ export function readFileAsDataURL(file) {
   });
 }
 
-export function matchEmailForFile(fileName, emails) {
+export function matchEmailForFile(fileName, emails) { /* função para encontrar um e-mail correspondente a um nome de arquivo */
   const nameNoExt = fileName.toLowerCase().replace(/\.[^/.]+$/, '');
 
   const exact = emails.find(email => email.split('@')[0].toLowerCase() === nameNoExt);
