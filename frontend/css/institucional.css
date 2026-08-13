@@ -1,0 +1,69 @@
+.doc-dl {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    border: var(--border-width) solid var(--ink);
+    border-radius: 8px;
+    padding: 6px 10px;
+    background: var(--corSuave);
+    flex-shrink: 0;
+}
+
+.doc-ic {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: var(--corPrincipal);
+    border: var(--border-width) solid var(--ink);
+    flex-shrink: 0;
+}
+    .doc-ic svg {
+        width: 15px;
+        height: 15px;
+        stroke: var(--paper);
+        fill: none;
+    }
+
+.doc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 16px 6px;
+}
+
+.doc-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--paper);
+    border: var(--border-width) solid var(--ink);
+    padding: 13px 14px;
+    cursor: pointer;
+}
+    .doc-row:active {
+        background:var(--corSuave);
+    }
+    .doc-row .info {
+        min-width: 0;
+        flex: 1;
+    }
+        .doc-row .info h4 {
+            font-size:13px;
+            font-weight:700;
+        }
+        .doc-row .info span {
+            font-family:'Space Mono';
+            font-size:10px; color:#788e9e;
+        }
+
+.mvv {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+}
+    .mvv-card {
+        border: var(--border-width) solid var(--ink);
+        border-radius: 16px;
+        padding: 20px;
+    }

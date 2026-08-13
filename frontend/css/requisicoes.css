@@ -1,0 +1,23 @@
+.fb-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+}
+
+.stars {
+    display:flex;
+    gap:8px;
+    margin-top:4px;
+}
+    .stars svg {
+        width:28px;
+        height:28px;
+        fill:none;
+        stroke:var(--ink);
+        stroke-width:1.6;
+        cursor:pointer;
+    }
+    .stars svg.filled {
+        fill:var(--corPrincipal);
+    }

@@ -91,13 +91,13 @@ export function renderMural(filter = 'Todos', search = '') {
     return matchFilter && matchSearch;
   });
 
-  container.innerHTML = filtered.length === 0 ? '<div style="padding:32px; color:#788e9e;">Nenhum informativo.</div>' : filtered.map(p => createPostCard(p)).join('');
+  container.innerHTML = filtered.length === 0 ? '<div style="padding:32px; color:var(--corEscura);">Nenhum informativo.</div>' : filtered.map(p => createPostCard(p)).join('');
 }
 
 export function createPostCard(p) {
   const safeTitle = Helpers.escapeHtml(p.title);
   return `
-    <div class="post-card" onclick="alert('Post: ${safeTitle}')">
+    <div class="post-card card" onclick="alert('Post: ${safeTitle}')">
       <div class="post-media" style="background:${p.bg}"><span class="post-tag">${Helpers.escapeHtml(p.tag)}</span></div>
       <div class="post-body">
         <h3>${p.urgent ? '<span class="urgent-pill">Urgente</span> ' : ''}${safeTitle}</h3>
@@ -156,7 +156,7 @@ export function renderUserPayslips(email) {
   if(!container) return;
   const filtered = State.Store.payslipsData.filter(p => p.recipient === email);
   if(filtered.length === 0) {
-      container.innerHTML = '<p style="font-size:12px; color:#788e9e; text-align:center; padding:20px;">Nenhum contracheque disponível para sua conta até o momento.</p>';
+      container.innerHTML = '<p style="font-size:12px; color:var(--corEscura); text-align:center; padding:20px;">Nenhum contracheque disponível para sua conta até o momento.</p>';
       return;
   }
   container.innerHTML = filtered.map(p => `
@@ -191,7 +191,7 @@ export function clearAllNotifications(event) {
   localStorage.removeItem('alltak_new_notification');
   checkNotificationState();
   const list = document.getElementById('notif-list');
-  if (list) list.innerHTML = '<div style="padding:12px; font-size:12px; color:#788e9e;">Nenhuma notificação.</div>';
+  if (list) list.innerHTML = '<div style="padding:12px; font-size:12px; color:var(--corEscura);">Nenhuma notificação.</div>';
 }
 
 document.addEventListener('click', (e) => {

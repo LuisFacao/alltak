@@ -44,11 +44,10 @@ export async function loadSharedData(currentUserEmail, currentUserRole) {
 export const AUTO_REFRESH_MS = 6000;
 
 export function refreshAllViews() {
-  const role = localStorage.getItem('alltak_role');
   const email = localStorage.getItem('alltak_user_email');
   UI.renderFeaturedAnnouncement(); UI.renderHomeFeed(); UI.renderMural(); UI.buildCalendar();
   if (email) { UI.renderDirectfeedbackForUser(email); UI.renderUserPayslips(email); }
-  if (role === 'admin') {
+  if (localStorage.getItem('alltak_role') === 'admin') {
     Admin.renderAdminPosts(); Admin.renderAdminEvents(); Admin.renderAdminfeedback();
     Admin.renderAdminDirectfeedback(); Admin.renderAdminMetrics(); Admin.renderAdminPayslips();
   }

@@ -1,0 +1,56 @@
+.bottomnav {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px calc(10px + var(--safe-bottom));
+    border-top: var(--border-width-strong) solid var(--ink);
+    z-index: 30;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.navitem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    color: var(--corSuave);
+    flex: 1;
+    padding: 6px 0px;
+    transition: color .15s ease;
+    border-radius: 12px;
+    min-width: 0;
+    margin: 0 6px;
+}
+    .navitem svg {
+        width: 20px;
+        height: 20px;
+        stroke: var(--corSuave);;
+        fill: none;
+        stroke-width: 2;
+        transition: stroke .15s ease;
+    }
+    .navitem span {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .02em;
+        line-height: 1.2;
+        user-select: none;
+        white-space: normal;
+    }
+    .navitem.active {
+        color: var(--paper);
+    }
+    .navitem.active svg {
+        stroke: var(--corClara);
+    }
+    .navitem.active span {
+        color: var(--corClara);
+    }

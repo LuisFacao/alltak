@@ -172,7 +172,7 @@ function handleBulkFilesSelected(input) {
      const status = tooBig
         ? `<small style="color:#c0392b">Arquivo muito grande (será ignorado)</small>`
         : matchedEmail
-          ? `<small style="color:var(--azul-principal)">Destinatário: ${Helpers.escapeHtml(matchedEmail)}</small>`
+          ? `<small style="color:var(--corPrincipal)">Destinatário: ${Helpers.escapeHtml(matchedEmail)}</small>`
           : `<small style="color:#c0392b">Não identificado (será ignorado)</small>`;
      return `<div class="admin-item"><div><strong>Arquivo:</strong> ${Helpers.escapeHtml(file.name)}<br>${status}</div></div>`;
   }).join('');

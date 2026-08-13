@@ -17,7 +17,7 @@ function toAttrJson(value) {
 export function normalizePost(p) {
   return {
     id: p.id, title: p.title, desc: p.content, author: p.author,
-    tag: p.tag || 'Geral', bg: 'var(--azul-suave)', urgent: !!p.urgent,
+    tag: p.tag || 'Geral', bg: 'var(--corSuave)', urgent: !!p.urgent,
     date: p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : 'Hoje' };
   }
 export function normalizePayslip(p) {
@@ -76,7 +76,7 @@ export function renderAttachments(atts) {
     const safeName = escapeHtml(a.file_name);
     if (type.startsWith('image/')) return `<a href="${a.file_data}" target="_blank"><img src="${a.file_data}" alt="${safeName}" style="width:64px;height:64px;object-fit:cover;border-radius:6px;border:1.5px solid var(--line);"></a>`;
     if (type.startsWith('video/')) return `<video src="${a.file_data}" controls style="width:140px;height:64px;border-radius:6px;border:1.5px solid var(--line);"></video>`;
-    return `<button type="button" onclick='downloadAttachment(${toAttrJson(a.file_data)}, ${toAttrJson(a.file_name)})' style="display:inline-flex;align-items:center;gap:4px;font-size:11px;background:var(--azul-suave);padding:6px 10px;border-radius:6px;border:none;cursor:pointer;color:var(--ink);">📎 ${safeName}</button>`;
+    return `<button type="button" onclick='downloadAttachment(${toAttrJson(a.file_data)}, ${toAttrJson(a.file_name)})' style="display:inline-flex;align-items:center;gap:4px;font-size:11px;background:var(--corSuave);padding:6px 10px;border-radius:6px;border:none;cursor:pointer;color:var(--ink);">📎 ${safeName}</button>`;
   }).join('');
   return `<div class="attach-list" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">${items}</div>`;
 }

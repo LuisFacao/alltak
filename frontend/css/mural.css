@@ -1,0 +1,42 @@
+.filters {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 14px 16px 4px;
+    scrollbar-width: none;
+}
+    .filters::-webkit-scrollbar {
+        display: none;
+    }
+
+#mural-grid {
+    margin-top:16px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--paper);
+    border: var(--border-width) solid var(--ink);
+    border-radius: 12px;
+    padding: 11px 14px;
+    margin: 14px 16px 2px;
+}
+    .search-bar input {
+        border: none;
+        background: none;
+        outline: none;
+        font-family: 'Inter';
+        font-size: 14px;
+        width: 100%;
+        color: var(--ink);
+    }
+    .search-bar svg {
+        width: 16px;
+        height: 16px;
+        stroke: var(--ink);
+        fill: none;
+        stroke-width: 2.4;
+        flex-shrink: 0;
+    }

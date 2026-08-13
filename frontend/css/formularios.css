@@ -1,0 +1,47 @@
+.checkbox-field {
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-bottom:14px;
+}
+    .checkbox-field input {
+        width:18px;
+        height:18px;
+        accent-color: var(--corPrincipal);
+        flex-shrink:0;
+    }
+    .checkbox-field label {
+        font-family:'Inter';
+        font-size:13px;
+        font-weight:600;
+        text-transform:none;
+        letter-spacing:0;
+        margin-bottom:0;
+    }
+
+.form-field {
+    margin-bottom:14px;
+}
+    .form-field label {
+        display:block;
+        font-family:'Space Mono';
+        font-size:10px;
+        font-weight:700;
+        text-transform:uppercase;
+        letter-spacing:.03em; margin-bottom:7px;
+    }
+    .form-field select,
+    .form-field textarea,
+    .form-field input {
+    width:100%;
+    border:var(--border-width) solid var(--ink);
+    padding:11px 13px;
+    font-family:'Inter';
+    font-size:15px;
+    background:var(--corSuave);
+    outline:none;
+    }
+    .form-field textarea {
+        resize:vertical;
+        min-height:90px;
+    }

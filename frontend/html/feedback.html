@@ -1,0 +1,72 @@
+<div class="screen-title"><h2 class="display">Requisição</h2></div>
+  <div class="fb-stack">
+    <div class="card-block" id="direct-feedback-box" style="display: none; background: #FFFEE0;">
+      <h3 style="color: var(--corEscura)">
+        ✉ Mensagens da Administração
+      </h3>
+      <div id="direct-feedback-received-list"></div>
+    </div>
+
+  <div class="card-block">
+    <h3>Enviar sugestão ou comentário</h3>
+    <form id="feedback-form" onsubmit="submitfeedback(event)">
+      <div class="form-field">
+        <label>
+          Assunto
+        </label>
+        <select id="fb-subject">
+          <option>
+            Sobre um comunicado
+          </option><option>
+            Sugestão geral
+          </option><option>
+            Dúvida
+          </option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>
+          Sua mensagem
+        </label>
+        <textarea id="fb-message" placeholder="Conte pra gente o que você pensa..." required></textarea>
+      </div>
+
+      <div class="form-field">
+        <label>
+          Avaliação geral
+        </label>
+
+        <div class="stars" id="stars-container">
+          <svg data-star="1" class="filled" viewBox="0 0 24 24">
+            <polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/>
+          </svg>
+          <svg data-star="2" class="filled" viewBox="0 0 24 24">
+            <polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/>
+          </svg>
+          <svg data-star="3" class="filled" viewBox="0 0 24 24">
+            <polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/>
+          </svg>
+          <svg data-star="4" class="filled" viewBox="0 0 24 24">
+            <polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/>
+          </svg>
+          <svg data-star="5" viewBox="0 0 24 24">
+            <polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/>
+          </svg>
+        </div>
+
+      </div>
+
+      <div class="form-field">
+        <label>
+          Anexos (fotos, vídeos ou documentos — opcional)
+        </label>
+        <input type="file" id="fb-attachments" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="showFilePreview(this, 'fb-attachments-preview')">
+        <div id="fb-attachments-preview" class="attach-preview"></div>
+      </div>
+      <button type="submit" class="btn block" id="fb-submit-btn">
+        Enviar Requisição
+      </button>
+    </form>
+  </div>
+</div>

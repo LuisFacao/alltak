@@ -1,0 +1,260 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+@import url('acesso.css');
+@import url('admin.css');
+@import url('calendario.css');
+@import url('formularios.css');
+@import url('header.css');
+@import url('home.css');
+@import url('institucional.css');
+@import url('mural.css');
+@import url('nav.css');
+@import url('requisicoes.css');
+
+:root {
+  --corPrincipal: #0056b3;
+    --corEscura: color-mix(in srgb, var(--corPrincipal), black 25%);
+    --corClara:  color-mix(in srgb, var(--corPrincipal), white 20%);
+    --corSuave:  color-mix(in srgb, var(--corPrincipal) 10%, white);
+
+    --cream: #f4f8fc;
+    --ink: #0a1118;
+    --paper: #ffffff;
+
+    --line: rgba(10, 17, 24, 0.12);
+    --shadow-hard: 4px 4px 0 var(--ink);
+    --shadow-hard-sm: 3px 3px 0 var(--ink);
+
+    --border-width: 2px;
+    --border-width-strong: 3px;
+
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-top: env(safe-area-inset-top, 0px);
+}
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+::selection {
+    background:var(--corPrincipal);
+    color: var(--paper);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+    min-height: 100vh;
+}
+    html, body {
+        height: 100%;
+        overscroll-behavior-y: none;
+    }
+
+a {
+    color:inherit
+}
+button {
+    font-family:inherit;
+}
+.mono {
+    font-family:'Space Mono', monospace;
+}
+
+.avatar-sm,
+.badge,
+.icon-btn,
+.notif-ic,
+.doc-ic,
+.qcard .qicon,
+.admin-actions button,
+.cal-nav button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.topbar,
+.notif-panel-head,
+.cal-head,
+.poll-opt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+body .app-protected,
+body #app-main-content,
+body .admin-only-nav {
+    display: none;
+}
+
+input,
+div.chip {
+    border-radius: 16px;
+}
+
+.btn,
+.cal-wrap,
+.card-block,
+.login-form,
+.notif-panel,
+.post-card,
+.qcard {
+    box-shadow: var(--shadow-hard-sm);
+}
+
+.admin-actions button,
+.cal-nav button {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: var(--border-width) solid var(--ink);
+    background: var(--corSuave);
+    cursor: pointer;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.attach-preview {
+    font-size: 11px;
+    color: var(--corSuave);
+    margin-top: 6px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: var(--border-width) solid var(--ink);
+    background: var(--corPrincipal);
+    color: var(--paper);
+    font-weight: 800;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform .1s ease;
+}
+    .btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0 var(--ink);
+    }
+    .btn.block {
+        width: 100%;
+    }
+    .btn.ghost {
+        background: transparent;
+        color: var(--paper);
+        border-color: rgba(255,255,255,.5);
+        box-shadow: none;
+    }
+
+.card-block {
+    background: var(--paper);
+    border: var(--border-width) solid var(--ink);
+    border-radius: 16px;
+    color: var(--corEscura);
+    font-size:11.5px;
+    line-height:1.5;
+    margin-bottom:14px; 
+    padding: 18px;
+}
+    .card-block h3 {
+        font-size: 16px;
+        margin-bottom: 14px;
+    }
+
+.content {
+    flex: 1;
+    padding-bottom: 28px;
+}
+
+.chip {
+    font-family: 'Space Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border: var(--border-width) solid var(--ink);
+    background: var(--paper);
+    cursor: pointer;
+    text-transform: uppercase;
+}
+    .chip.on {
+        background: var(--ink);
+        color: var(--corSuave);
+    }
+
+.display {
+    font-family: 'Anton', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 0 16px 6px;
+}
+
+.screen {
+    display: none;
+    animation: fade .2s ease;
+}
+    .screen.active {
+        display: block;
+    }
+    @keyframes fade {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+.screen-title {
+    padding: 16px 16px 0;
+}
+    .screen-title h2 {
+        font-size: 22px;
+    }
+
+.section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 4px 16px 12px;
+}
+    .section-head a {
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--corPrincipal);
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .section-head.compact {
+        margin-top: 20px;
+    }
+    .section-head.compact h2 {
+        font-size: 16px;
+    }
+    .section-head h2 {
+        font-size: 19px;
+    }

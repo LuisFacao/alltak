@@ -1,0 +1,199 @@
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 10.5px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: var(--corClara);
+    padding: 5px 11px;
+    border-radius: 100px;
+    border: 2px solid #fff;
+    margin-bottom: 12px;
+}
+
+.hero {
+    background: var(--ink);
+    border-radius: 0 0 26px 26px;
+    padding: 20px 18px 26px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 22px;
+}
+    .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+        radial-gradient(circle at 90% 8%, rgba(0, 86, 179, 0.4), transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(0, 123, 255, 0.3), transparent 50%);
+    }
+    .hero h1 {
+        font-size: 30px;
+        line-height: 1.0;
+        color: var(--corSuave);
+        margin-bottom: 12px;
+    }
+        .hero h1 span {
+            color: var(--paper);
+            display: block;
+            margin-top: 2px;
+        }
+    .hero p {
+        color: var(--corClara);
+        font-size: 13.5px;
+        line-height: 1.55;
+        margin-bottom: 18px;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 10px;
+    }
+    .hero-inner {
+        position: relative;
+        z-index: 1;
+    }
+    .hero-meta {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+        .hero-meta div {
+            display: flex;
+            flex-direction: column;
+        }
+        .hero-meta .k {
+            font-family: 'Space Mono', monospace;
+            color: var(--corSuave);
+            font-size: 9.5px;
+            text-transform: uppercase;
+            opacity: .75;
+        }
+        .hero-meta .v {
+            color: var(--paper);
+            font-weight: 800;
+            font-size: 12.5px;
+        }
+
+.qcard {
+    background: var(--paper);
+    border: var(--border-width) solid var(--ink);
+    border-radius: 16px;
+    padding: 14px;
+    cursor: pointer;
+}
+    .qcard h4 {
+        font-size: 12.5px;
+        font-weight: 800;
+        margin-bottom: 2px;
+    }
+    .qcard p {
+        font-size: 10.5px;
+        color: var(--corEscura);
+    }
+    .qcard .qicon {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        margin-bottom: 10px;
+    }
+        .qcard .qicon svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--paper);;
+            fill: none;
+            stroke-width: 2.2;
+        }
+
+.quicklinks {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 0 16px;
+    margin-bottom: 26px;
+}
+
+.poll-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: var(--corPrincipal);
+    z-index: 0;
+    opacity: .5;
+    transition: width 0.4s ease;
+}
+.poll-opt {
+    border: var(--border-width) solid var(--ink);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+    .poll-opt span, .poll-opt b {
+        position: relative;
+        z-index: 1;
+        font-size: 13px;
+    }
+
+.post-body {
+    padding: 13px 15px 15px;
+}
+    .post-body h3 {
+        font-size: 15px;
+        line-height: 1.28;
+        margin-bottom: 6px;
+    }
+    .post-body p {
+        font-size: 12.5px;
+        color: var(--corEscura);
+        line-height: 1.48;
+    }
+.post-card {
+    background: var(--paper);
+    border: var(--border-width) solid var(--ink);
+    overflow: hidden;
+    cursor: pointer;
+}
+.post-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--corSuave);
+    margin-top: 10px;
+}
+.post-media {
+    height: 76px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+}
+.post-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 100px;
+    border: var(--border-width) solid var(--ink);
+    background: var(--paper);
+}
+
+.urgent-pill {
+    background: var(--corClara);
+    color: var(--paper);
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 9.5px;
+    padding: 3px 9px;
+    border-radius: 100px;
+}

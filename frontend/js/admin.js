@@ -26,7 +26,7 @@ export function renderAdminfeedback() {
     container.innerHTML = State.Store.feedbackData.map((f) => `
         <div class="admin-item">
             <div class="info">
-                <h4>${Helpers.escapeHtml(f.subject)} <span style="color:var(--azul-claro)">★ ${f.rating}/5</span></h4>
+                <h4>${Helpers.escapeHtml(f.subject)} <span style="color:var(--corClara)">★ ${f.rating}/5</span></h4>
                 <p>"${Helpers.escapeHtml(f.message)}"</p>
                 ${Helpers.renderAttachments(f.attachments)}
                 <span class="meta">Enviado por ${Helpers.escapeHtml(f.userEmail)} · ${f.date}</span>
@@ -89,7 +89,7 @@ export async function deleteDirectfeedback(directfeedbackId) {
     }
 }
 
-export function showAdminTab(tab) {
+export function showAdminTab(tab) {;
   document.querySelectorAll('#admin-tabs .chip').forEach(c => c.classList.remove('on'));
   document.querySelector(`#admin-tabs .chip[data-admintab="${tab}"]`).classList.add('on');
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
