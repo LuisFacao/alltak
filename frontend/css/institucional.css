@@ -47,10 +47,6 @@
         min-width: 0;
         flex: 1;
     }
-        .doc-row .info h4 {
-            font-size:13px;
-            font-weight:700;
-        }
         .doc-row .info span {
             font-family:'Space Mono';
             font-size:10px; color:#788e9e;
@@ -66,4 +62,7 @@
         border: var(--border-width) solid var(--ink);
         border-radius: 16px;
         padding: 20px;
+    }
+    .mvv-card h1 {
+        font-size: 1em;
     }

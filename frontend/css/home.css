@@ -22,6 +22,7 @@
     position: relative;
     overflow: hidden;
     margin-bottom: 22px;
+    font-size: 1.2em;
 }
     .hero::before {
         content: "";
@@ -31,13 +32,12 @@
         radial-gradient(circle at 90% 8%, rgba(0, 86, 179, 0.4), transparent 45%),
         radial-gradient(circle at 85% 75%, rgba(0, 123, 255, 0.3), transparent 50%);
     }
-    .hero h1 {
-        font-size: 30px;
+    .hero h2 {
         line-height: 1.0;
         color: var(--corSuave);
         margin-bottom: 12px;
     }
-        .hero h1 span {
+        .hero h2 span {
             color: var(--paper);
             display: block;
             margin-top: 2px;
@@ -54,6 +54,7 @@
         gap: 10px;
     }
     .hero-inner {
+        color: var(--corClara);
         position: relative;
         z-index: 1;
     }
@@ -66,12 +67,8 @@
             display: flex;
             flex-direction: column;
         }
-        .hero-meta .k {
-            font-family: 'Space Mono', monospace;
+        .hero-meta h4 {
             color: var(--corSuave);
-            font-size: 9.5px;
-            text-transform: uppercase;
-            opacity: .75;
         }
         .hero-meta .v {
             color: var(--paper);
@@ -86,14 +83,11 @@
     padding: 14px;
     cursor: pointer;
 }
-    .qcard h4 {
-        font-size: 12.5px;
-        font-weight: 800;
-        margin-bottom: 2px;
+    .qcard * {
+        color: var(--corEscura);
     }
     .qcard p {
         font-size: 10.5px;
-        color: var(--corEscura);
     }
     .qcard .qicon {
         width: 32px;
@@ -104,7 +98,7 @@
         .qcard .qicon svg {
             width: 16px;
             height: 16px;
-            stroke: var(--paper);;
+            stroke: var(--paper);
             fill: none;
             stroke-width: 2.2;
         }

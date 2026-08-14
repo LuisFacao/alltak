@@ -44,8 +44,7 @@
         min-width:0;
     }
     .admin-item .info h4 {
-        font-size:13px;
-        font-weight:800;
+        font-size:0.75em;
         margin-bottom:3px;
         line-height:1.3;
     }

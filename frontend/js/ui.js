@@ -55,11 +55,11 @@ export function renderFeaturedAnnouncement() {
   const latestPost = State.Store.postsData[0];
   container.innerHTML = `
     <span class="eyebrow">Comunicado em destaque</span>
-    <h1>${Helpers.escapeHtml(latestPost.title)}</h1>
+    <h2>${Helpers.escapeHtml(latestPost.title)}</h2>
     <p>${Helpers.escapeHtml(latestPost.desc)}</p>
     <div class="hero-meta">
-      <div><span class="k">Publicado</span><span class="v">${latestPost.date}</span></div>
-      <div><span class="k">Categoria</span><span class="v">${Helpers.escapeHtml(latestPost.tag)}</span></div>
+      <div><h4>Publicado</h4><span class="v">${latestPost.date}</span></div>
+      <div><h4>Categoria</h4><span class="v">${Helpers.escapeHtml(latestPost.tag)}</span></div>
     </div>
     <div class="hero-actions">
       <button class="btn" onclick="openFeaturedPost('${latestPost.id}')">Ler comunicado</button>
