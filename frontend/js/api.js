@@ -1,4 +1,4 @@
-export const API_URL = 'https://alltak.onrender.com/api';
+export const API_URL = 'http://127.0.0.1:8000/api';
 
 async function request(path, options = {}, errorMessage = 'Erro na requisição', { extractDetail = false, parseJson = true } = {}) {
     try {
@@ -76,14 +76,14 @@ export const Database = {
         return request(`/feedback/${id}`, { method: 'DELETE' }, 'Erro ao excluir feedback', { parseJson: false });
     },
     async getDirectfeedback(recipient) {
-        const path = recipient ? `/direct-feedbacks?recipient=${encodeURIComponent(recipient)}` : '/direct-feedbacks';
+        const path = recipient ? `/direct-feedback?recipient=${encodeURIComponent(recipient)}` : '/direct-feedback';
         return request(path, {}, 'Erro ao buscar feedback direcionados').catch(() => []);
     },
     async createDirectfeedback(recipient, message, attachments) {
-        return request('/direct-feedbacks', jsonOptions('POST', { recipient, message, attachments: attachments || [] }), 'Erro ao enviar feedback direcionado');
+        return request('/direct-feedback', jsonOptions('POST', { recipient, message, attachments: attachments || [] }), 'Erro ao enviar feedback direcionado');
     },
     async deleteDirectfeedbackApi(id) {
-        return request(`/direct-feedbacks/${id}`, { method: 'DELETE' }, 'Erro ao excluir feedback direto', { parseJson: false });
+        return request(`/direct-feedback/${id}`, { method: 'DELETE' }, 'Erro ao excluir feedback direto', { parseJson: false });
     },
     async getPayslips(recipient) {
         const path = recipient ? `/payslips?recipient=${encodeURIComponent(recipient)}` : '/payslips';

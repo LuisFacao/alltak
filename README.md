@@ -64,7 +64,6 @@ Este repositório contém o código-fonte completo da **Intranet Alltak**, uma p
 ```
 
 > ⚠️ O arquivo `main_cpython-313.pyc` é bytecode compilado do Python (gerado automaticamente) e **não deve ser versionado** — adicione `__pycache__/` e `*.pyc` ao `.gitignore`.
-> ⚠️ O arquivo de dependências está com o nome `requirementes.txt` (erro de digitação). Renomeie para **`requirements.txt`** antes do deploy, pois é esse o nome que o Render espera.
 
 ---
 
