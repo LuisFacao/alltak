@@ -1,6 +1,9 @@
-export const API_URL = 'http://127.0.0.1:8000/api';
+// Usa a mesma origem (host:porta) de onde a página foi carregada.
+// Assim o front e o back rodam juntos, no mesmo processo/porta, sem CORS
+// e sem depender de nenhum serviço externo (Render, Supabase, etc).
+export const API_URL = `${window.location.origin}/api`;
 
-async function request(path, options = {}, errorMessage = 'Erro na requisição', { extractDetail = false, parseJson = true } = {}) {
+async function request(path, options = {}, errorMessage = 'Erro na requisição', { extractDetail = false, parseJson = true } = {}) { /* função para requisições à API */
     try {
         const res = await fetch(`${API_URL}${path}`, options);
         if (!res.ok) {
@@ -17,11 +20,11 @@ async function request(path, options = {}, errorMessage = 'Erro na requisição'
     }
 }
 
-function jsonOptions(method, body) {
+function jsonOptions(method, body) { /* função para criar opções de requisição com corpo JSON */
     return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
 }
 
-export const Database = {
+export const Database = { /* funções para interagir com a API do backend */
     async login(email, password) {
         return request('/auth/login', jsonOptions('POST', { email, password }), 'Credenciais inválidas');
     },

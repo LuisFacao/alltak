@@ -1,7 +1,7 @@
 import * as State from './state.js';
 import * as Helpers from './helpers.js';
 
-export function indexHTML(arquivo) {
+export function indexHTML(arquivo) { /* função para carregar o conteúdo HTML de um arquivo e inseri-lo em um elemento com o mesmo ID */
   const caminho = `./frontend/html/${arquivo}.html`;
 
   return fetch(caminho)
@@ -17,7 +17,7 @@ export function indexHTML(arquivo) {
       })
 }
 
-export function renderDirectfeedbackForUser(email) {
+export function renderDirectfeedbackForUser(email) { /* função para renderizar os feedbacks diretos recebidos por um usuário específico */
   const box = document.getElementById('direct-feedback-box');
   const list = document.getElementById('direct-feedback-received-list');
   if(!box || !list) return;
@@ -36,10 +36,15 @@ export function renderDirectfeedbackForUser(email) {
   }
 }
 
-export function go(id){
-  if(!localStorage.getItem('alltak_logged') && id !== 'acesso') id = 'acesso';
-  if(id === 'admin' && localStorage.getItem('alltak_role') !== 'admin') id = 'home';
-
+export function go(id){ /* função para navegar entre as telas da aplicação, mostrando a tela correspondente ao ID fornecido e ocultando as outras */
+ switch (true) {
+    case !localStorage.getItem('alltak_logged') && id !== 'acesso':
+      id = 'acesso';
+      break;
+    case id === 'admin' && localStorage.getItem('alltak_role') !== 'admin':
+      id = 'home';
+      break;
+  }
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const targetScreen = document.getElementById(id);
   if(targetScreen) targetScreen.classList.add('active');
@@ -49,17 +54,17 @@ export function go(id){
   if(targetNav) targetNav.classList.add('active');
 }
 
-export function renderFeaturedAnnouncement() {
+export function renderFeaturedAnnouncement() { /* função para renderizar o comunicado em destaque na tela inicial */
   const container = document.getElementById('featured-announcement');
   if(!container || State.Store.postsData.length === 0) return;
   const latestPost = State.Store.postsData[0];
   container.innerHTML = `
     <span class="eyebrow">Comunicado em destaque</span>
-    <h2>${Helpers.escapeHtml(latestPost.title)}</h2>
+    <h1>${Helpers.escapeHtml(latestPost.title)}</h1>
     <p>${Helpers.escapeHtml(latestPost.desc)}</p>
     <div class="hero-meta">
-      <div><h4>Publicado</h4><span class="v">${latestPost.date}</span></div>
-      <div><h4>Categoria</h4><span class="v">${Helpers.escapeHtml(latestPost.tag)}</span></div>
+      <div><span class="k">Publicado</span><span class="v">${latestPost.date}</span></div>
+      <div><span class="k">Categoria</span><span class="v">${Helpers.escapeHtml(latestPost.tag)}</span></div>
     </div>
     <div class="hero-actions">
       <button class="btn" onclick="openFeaturedPost('${latestPost.id}')">Ler comunicado</button>
@@ -67,7 +72,7 @@ export function renderFeaturedAnnouncement() {
   `;
 }
 
-export function openFeaturedPost(id) {
+export function openFeaturedPost(id) { /* função para abrir o comunicado em destaque na tela do mural, filtrando pelo título do comunicado */
   const post = State.Store.postsData.find(p => p.id == id);
   if(!post) return;
   go('mural');
@@ -75,7 +80,7 @@ export function openFeaturedPost(id) {
   if (searchInput) { searchInput.value = post.title; renderMural('Todos', post.title); }
 }
 
-export function renderHomeFeed() {
+export function renderHomeFeed() { /* função para renderizar o feed da tela inicial */
   const container = document.getElementById('home-feed-grid');
   if(!container) return;
   container.innerHTML = State.Store.postsData.slice(0, 2).map(p => createPostCard(p)).join('');
@@ -91,13 +96,13 @@ export function renderMural(filter = 'Todos', search = '') {
     return matchFilter && matchSearch;
   });
 
-  container.innerHTML = filtered.length === 0 ? '<div style="padding:32px; color:var(--corEscura);">Nenhum informativo.</div>' : filtered.map(p => createPostCard(p)).join('');
+  container.innerHTML = filtered.length === 0 ? '<div style="padding:32px; color:#788e9e;">Nenhum informativo.</div>' : filtered.map(p => createPostCard(p)).join('');
 }
 
-export function createPostCard(p) {
+export function createPostCard(p) { /* função para criar o HTML de um cartão de comunicado, incluindo título, descrição, autor, data e categoria */
   const safeTitle = Helpers.escapeHtml(p.title);
   return `
-    <div class="post-card card" onclick="alert('Post: ${safeTitle}')">
+    <div class="post-card" onclick="alert('Post: ${safeTitle}')">
       <div class="post-media" style="background:${p.bg}"><span class="post-tag">${Helpers.escapeHtml(p.tag)}</span></div>
       <div class="post-body">
         <h3>${p.urgent ? '<span class="urgent-pill">Urgente</span> ' : ''}${safeTitle}</h3>
@@ -108,7 +113,7 @@ export function createPostCard(p) {
   `;
 }
 
-export function buildCalendar() {
+export function buildCalendar() { /* função para construir o calendário na tela inicial, exibindo os dias do mês atual e os eventos correspondentes */
   const grid = document.getElementById('cal-grid');
   const monthYearLabel = document.getElementById('calendar-month-year');
   if(!grid) return;
@@ -131,14 +136,14 @@ export function buildCalendar() {
   }
 }
 
-export function changeMonth(dir) {
+export function changeMonth(dir) { /* função para mudar o mês exibido no calendário, incrementando ou decrementando o mês atual e reconstruindo o calendário */
   State.Store.currentMonth += dir;
   if(State.Store.currentMonth > 11) { State.Store.currentMonth = 0; State.Store.currentYear++; }
   if(State.Store.currentMonth < 0) { State.Store.currentMonth = 11; State.Store.currentYear--; }
   buildCalendar();
 }
 
-export function showDayEvents(dateStr, day) {
+export function showDayEvents(dateStr, day) { /* função para exibir os eventos de um dia específico no calendário, mostrando o título e a cor de cada evento */
   const container = document.getElementById('cal-day-events');
   if(!container) return;
   container.innerHTML = `<h4 style="margin-bottom:8px;">Dia ${day}</h4>`;
@@ -151,12 +156,12 @@ export function showDayEvents(dateStr, day) {
   }
 }
 
-export function renderUserPayslips(email) {
+export function renderUserPayslips(email) { /* função para renderizar os contracheques do usuário */
   const container = document.getElementById('user-payslips-list');
   if(!container) return;
   const filtered = State.Store.payslipsData.filter(p => p.recipient === email);
   if(filtered.length === 0) {
-      container.innerHTML = '<p style="font-size:12px; color:var(--corEscura); text-align:center; padding:20px;">Nenhum contracheque disponível para sua conta até o momento.</p>';
+      container.innerHTML = '<p style="font-size:12px; color:#788e9e; text-align:center; padding:20px;">Nenhum contracheque disponível para sua conta até o momento.</p>';
       return;
   }
   container.innerHTML = filtered.map(p => `
@@ -167,34 +172,34 @@ export function renderUserPayslips(email) {
     </div>`).join('');
 }
 
-export function downloadPayslip(id) {
+export function downloadPayslip(id) { /*  função para baixar o contracheque do usuário */
   const p = State.Store.payslipsData.find(p => p.id == id);
   if(!p) return;
   Helpers.downloadAttachment(p.fileData, p.fileName);
 }
 
-export function checkNotificationState() {
+export function checkNotificationState() { /* função para verificar se há novas notificações e atualizar o estado do indicador de notificação */
   const hasNew = localStorage.getItem('alltak_new_notification') === 'true';
   const dot = document.getElementById('notification-dot');
   if(dot) dot.style.display = hasNew ? 'block' : 'none';
 }
 
-export function toggleNotificationPanel(event) {
+export function toggleNotificationPanel(event) { /* função para alternar a exibição do painel de notificações, mostrando ou ocultando-o */
   if (event) event.stopPropagation();
   const panel = document.getElementById('notif-panel');
   if (!panel) return;
   panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
 }
 
-export function clearAllNotifications(event) {
+export function clearAllNotifications(event) { /* função para limpar todas as notificações, removendo o indicador de nova notificação e esvaziando a lista de notificações */
   if (event) event.stopPropagation();
   localStorage.removeItem('alltak_new_notification');
   checkNotificationState();
   const list = document.getElementById('notif-list');
-  if (list) list.innerHTML = '<div style="padding:12px; font-size:12px; color:var(--corEscura);">Nenhuma notificação.</div>';
+  if (list) list.innerHTML = '<div style="padding:12px; font-size:12px; color:#788e9e;">Nenhuma notificação.</div>';
 }
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', (e) => { /* função para fechar o painel de notificações quando o usuário clicar fora dele */
   const panel = document.getElementById('notif-panel');
   const wrap = document.querySelector('.notif-wrap');
   if (panel && panel.style.display === 'block' && wrap && !wrap.contains(e.target)) {
