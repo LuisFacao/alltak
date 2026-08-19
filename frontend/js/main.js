@@ -5,7 +5,7 @@ import * as Admin from './admin.js';
 import * as Auth from './auth.js';
 import * as Helpers from './helpers.js';
 
-const partialsReady = Promise.all([
+const partialsReady = Promise.all([ /* Carrega os arquivos HTML parciais para a aplicação */
   UI.indexHTML("acesso"),
   UI.indexHTML("admin"),
   UI.indexHTML("app-bottomnav"),
@@ -18,7 +18,7 @@ const partialsReady = Promise.all([
   UI.indexHTML("mural"),
 ]);
 
-async function submitDirectfeedback(e) {
+async function submitDirectfeedback(e) { /* função para enviar feedback direto para um usuário específico */
   e.preventDefault();
   const recipient = document.getElementById('direct-feedback-recipient').value;
   const message = document.getElementById('direct-feedback-text').value.trim();
@@ -45,7 +45,7 @@ async function submitDirectfeedback(e) {
   }
 }
 
-async function submitfeedback(e) {
+async function submitfeedback(e) { /* função para enviar feedback geral */
   e.preventDefault();
   const subject = document.getElementById('fb-subject').value;
   const message = document.getElementById('fb-message').value;
@@ -72,7 +72,7 @@ async function submitfeedback(e) {
   }
 }
 
-async function submitPostForm(e) {
+async function submitPostForm(e) { /* função para enviar um novo comunicado */
   e.preventDefault();
   const title = document.getElementById('post-title').value.trim();
   const desc = document.getElementById('post-desc').value.trim();
@@ -92,7 +92,7 @@ async function submitPostForm(e) {
   }
 }
 
-async function submitEventForm(e) {
+async function submitEventForm(e) { /* função para enviar um novo evento para o calendário */
   e.preventDefault();
   const date = document.getElementById('event-date').value;
   const title = document.getElementById('event-title').value.trim();
@@ -108,7 +108,7 @@ async function submitEventForm(e) {
   }
 }
 
-async function submitUserForm(e) {
+async function submitUserForm(e) { /* função para cadastrar um novo usuário */
   e.preventDefault();
   const email = document.getElementById('user-email').value.trim().toLowerCase();
   const pass = document.getElementById('user-password').value;
@@ -126,7 +126,7 @@ async function submitUserForm(e) {
   Admin.renderAdminMetrics();
 }
 
-function submitPayslipForm(e) {
+function submitPayslipForm(e) { /* função para enviar um novo contracheque */
   e.preventDefault();
   const recipient = document.getElementById('payslip-recipient').value;
   const ref = document.getElementById('payslip-ref').value;
@@ -151,7 +151,7 @@ function submitPayslipForm(e) {
   reader.readAsDataURL(file);
 }
 
-function handleBulkFilesSelected(input) {
+function handleBulkFilesSelected(input) { /* função para lidar com a seleção de múltiplos arquivos para envio em massa de contracheques */
   State.Store.selectedBulkFiles = Array.from(input.files);
   const preview = document.getElementById('payslip-bulk-preview');
   const btn = document.getElementById('payslip-bulk-submit');
@@ -172,7 +172,7 @@ function handleBulkFilesSelected(input) {
      const status = tooBig
         ? `<small style="color:#c0392b">Arquivo muito grande (será ignorado)</small>`
         : matchedEmail
-          ? `<small style="color:var(--corPrincipal)">Destinatário: ${Helpers.escapeHtml(matchedEmail)}</small>`
+          ? `<small style="color:var(--azul-principal)">Destinatário: ${Helpers.escapeHtml(matchedEmail)}</small>`
           : `<small style="color:#c0392b">Não identificado (será ignorado)</small>`;
      return `<div class="admin-item"><div><strong>Arquivo:</strong> ${Helpers.escapeHtml(file.name)}<br>${status}</div></div>`;
   }).join('');
@@ -180,7 +180,7 @@ function handleBulkFilesSelected(input) {
   btn.disabled = oversized.length === State.Store.selectedBulkFiles.length;
 }
 
-async function submitBulkPayslips(e) {
+async function submitBulkPayslips(e) { /* função para enviar múltiplos contracheques em massa */
   e.preventDefault();
   const ref = document.getElementById('payslip-bulk-ref').value;
   const emails = Object.keys(State.Store.VALID_USERS);
@@ -205,11 +205,11 @@ async function submitBulkPayslips(e) {
   }
 }
 
-function handleNotificationClick() {
+function handleNotificationClick() { /* função para lidar com o clique na notificação de novo comunicado */
   localStorage.removeItem('alltak_new_notification'); UI.checkNotificationState(); UI.go('mural');
 }
 
-function bindPartialDependentListeners() {
+function bindPartialDependentListeners() { /*função para vincular os ouvintes de eventos que dependem dos elementos carregados nos parciais HTML */
   document.querySelectorAll('#stars-container svg').forEach(star => {
       star.addEventListener('click', function() {
           State.Store.selectedRating = parseInt(this.getAttribute('data-star'));

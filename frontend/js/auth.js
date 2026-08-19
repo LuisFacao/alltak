@@ -3,7 +3,7 @@ import * as State from './state.js';
 import * as UI from './ui.js';
 import * as Admin from './admin.js';
 
-export async function handleLogin() {
+export async function handleLogin() { /* função para lidar com o login do usuário */
     const emailInp = document.getElementById('login-email').value.trim().toLowerCase();
     const passInp = document.getElementById('login-pass').value;
     const errorEl = document.getElementById('login-error-msg');
@@ -41,7 +41,7 @@ export async function handleLogin() {
     }
 }
 
-export function handleLogout() {
+export function handleLogout() { /* função para o usuario sair da sua conta */
     if(confirm("Deseja sair da sua conta?")) {
         State.stopAutoRefresh();
         localStorage.removeItem('alltak_role'); localStorage.removeItem('alltak_user_email'); localStorage.removeItem('alltak_logged');
@@ -56,7 +56,7 @@ export function handleLogout() {
     }
 }
 
-export function applyRoleUI(role) {
+export function applyRoleUI(role) { /* função para aplicar a interface de acordo com o papel do usuário */
     const isAdmin = role === 'admin';
     document.querySelectorAll('.admin-only-nav').forEach(el => el.style.display = isAdmin ? 'flex' : 'none');
     const pill = document.getElementById('role-pill');
