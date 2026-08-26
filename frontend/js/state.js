@@ -56,6 +56,7 @@ export function refreshAllViews() {
 
 export async function autoRefreshData() { /* função para atualizar automaticamente os dados compartilhados e verificar se há novos comunicados, contracheques ou feedbacks diretos */
   const role = localStorage.getItem('alltak_role');
+  const email = localStorage.getItem('alltak_user_email');
   if (!email || localStorage.getItem('alltak_logged') !== 'true') return;
   const prevPostIds = new Set(Store.postsData.map(p => p.id));
   const prevPayslipIds = new Set(Store.payslipsData.map(p => p.id));

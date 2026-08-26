@@ -265,7 +265,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         State.startAutoRefresh();
     }
 
-    UI.renderFeaturedAnnouncement(); 
+    UI.renderFeaturedAnnouncement();
     UI.renderHomeFeed(); 
     UI.renderMural(); 
     UI.buildCalendar(); 

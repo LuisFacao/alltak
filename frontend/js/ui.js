@@ -56,7 +56,17 @@ export function go(id){ /* função para navegar entre as telas da aplicação, 
 
 export function renderFeaturedAnnouncement() { /* função para renderizar o comunicado em destaque na tela inicial */
   const container = document.getElementById('featured-announcement');
-  if(!container || State.Store.postsData.length === 0) return;
+  if(!container) return;
+
+  if(State.Store.postsData.length === 0) {
+    container.innerHTML = `
+      <span class="eyebrow">Comunicado em destaque</span>
+      <h1>Nenhum comunicado publicado ainda</h1>
+      <p>Assim que um novo comunicado for criado, ele aparecerá aqui.</p>
+    `;
+    return;
+  }
+
   const latestPost = State.Store.postsData[0];
   container.innerHTML = `
     <span class="eyebrow">Comunicado em destaque</span>
