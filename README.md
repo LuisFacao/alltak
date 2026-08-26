@@ -1,3 +1,8 @@
+# Próximos passos
+
+- https://trello.com/invite/b/6a725d8c2ef82323aeacb548/ATTI39395fb7be8daf30efbab4951407a96c2D2D8C15/alltak
+- refatorar código
+
 # 📱 Projeto Alltak
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
