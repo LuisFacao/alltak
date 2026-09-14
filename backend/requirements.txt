@@ -6,3 +6,4 @@ python-jose[cryptography]>=3.3.0
 pydantic>=2.9
 pydantic-settings>=2.5
 python-multipart>=0.0.9
+request>=2.34.2
