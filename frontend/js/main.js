@@ -9,6 +9,7 @@ import { Home } from "./secoes/home.js";
 import { Post } from "./secoes/post.js";
 import { Notificacao } from "./secoes/notificacao.js";
 
+export const API_URL = `${window.location.origin}/api`;
 export const AUTO_REFRESH_MS = 6000;
 const agora = new Date();
 

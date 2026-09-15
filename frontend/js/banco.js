@@ -1,3 +1,5 @@
+import { API_URL } from "./main.js";
+
 export const Database = {
   async _apiRequest(path, options = {}, errorMessage = 'Erro na requisição', { extractDetail = false, parseJson = true } = {}) {
     try {
