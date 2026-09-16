@@ -1,10 +1,13 @@
-
-
 import requests
+from fastapi import APIRouter, FastAPI
 
+app = FastAPI()
+nomedaclassedeuploadnopython = APIRouter()
+
+@nomedaclassedeuploadnopython.get("/nomequetánodoc/", tags=["users"])
 def BancoUploadarquivo(file_path: str):
     url = "Caminho relativo" 
-    
+
     try:
         # Abre o arquivo local em modo binário
         with open(file_path, "rb") as f:
