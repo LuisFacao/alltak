@@ -36,19 +36,15 @@ export const Holerite = {
     const sizeErr = Formata.checkFileSize(file);
     if (sizeErr) return alert(sizeErr.message);
 
-    const reader = new FileReader();
-    reader.onload = async function() {
-      try {
-        await Database.createHolerite(recipient, ref, file.name, reader.result);
+    Database.uploadHolerite(recipient, ref, file)
+      .then(async () => {
         Memoria.holeriteData = (await Database.getHolerite()).map(Normalizers.holerite);
-        Admin.holeriteRender(); alert('Holerite enviado com sucesso!');
+        Admin.holeriteRender();
+        alert('Holerite enviado com sucesso!');
         document.getElementById('payslip-form').reset();
         Admin.metricsRender();
-      } catch (err) {
-        alert(err.message);
-      }
-    };
-    reader.readAsDataURL(file);
+      })
+      .catch(err => alert(err.message));
   },
 
   handleBulkFilesSelected(input) {
@@ -90,8 +86,7 @@ export const Holerite = {
         if (Formata.checkFileSize(file)) continue;
         const matchedEmail = Formata.matchEmailForFile(file.name, emails);
         if (matchedEmail) {
-          const dataUrl = await Formata.readFileAsDataURL(file);
-          await Database.createHolerite(matchedEmail, ref, file.name, dataUrl);
+          await Database.uploadHolerite(matchedEmail, ref, file);
         }
       }
       Memoria.holeriteData = (await Database.getHolerite()).map(Normalizers.holerite);

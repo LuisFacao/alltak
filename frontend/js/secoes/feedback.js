@@ -34,8 +34,7 @@ export const Feedback = {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enviando...';
     try {
-      const attachments = await Formata.filesToAttachments(fileInput.files);
-      await Database.createfeedback(userEmail, subject, message, Memoria.selectedRating, attachments);
+      await Database.uploadFeedback(userEmail, subject, message, Memoria.selectedRating, fileInput.files);
       Memoria.feedbackData = (await Database.getfeedback()).map(Normalizers.feedback);
       alert('Requisição enviada!');
       document.getElementById('fb-message').value = '';
@@ -98,8 +97,7 @@ export const Feedback = {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enviando...';
     try {
-      const attachments = await Formata.filesToAttachments(fileInput.files);
-      await Database.createDirectfeedback(recipient, message, attachments);
+      await Database.uploadDirectFeedback(recipient, message, fileInput.files);
       Memoria.directfeedbackData = (await Database.getDirectfeedback()).map(Normalizers.directFeedback);
       alert(`Mensagem direcionada com sucesso para: ${recipient}`);
       document.getElementById('direct-feedback-text').value = '';

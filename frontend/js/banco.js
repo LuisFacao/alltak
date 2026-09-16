@@ -76,6 +76,15 @@ export const Database = {
   async createfeedback(userEmail, category, message, rating, attachments) {
     return this._apiRequest('/feedback', this._apiJsonOptions('POST', { user_email: userEmail, category, message, rating, attachments: attachments || [] }), 'Erro ao enviar feedback');
   },
+    async uploadFeedback(userEmail, category, message, rating, fileList) {
+      const formData = new FormData();
+      formData.append('user_email', userEmail);
+      formData.append('category', category);
+      formData.append('message', message);
+      formData.append('rating', rating);
+      Array.from(fileList || []).forEach(f => formData.append('files', f));
+      return this._apiRequest('/feedback/upload', { method: 'POST', body: formData }, 'Erro ao enviar feedback', { extractDetail: true });
+    },
   async deletefeedbackApi(id) {
     return this._apiRequest(`/feedback/${id}`, { method: 'DELETE' }, 'Erro ao excluir feedback', { parseJson: false });
   },
@@ -87,6 +96,13 @@ export const Database = {
   async createDirectfeedback(recipient, message, attachments) {
     return this._apiRequest('/direct-feedback', this._apiJsonOptions('POST', { recipient, message, attachments: attachments || [] }), 'Erro ao enviar feedback direcionado');
   },
+    async uploadDirectFeedback(recipient, message, fileList) {
+      const formData = new FormData();
+      formData.append('recipient', recipient);
+      formData.append('message', message);
+      Array.from(fileList || []).forEach(f => formData.append('files', f));
+      return this._apiRequest('/direct-feedback/upload', { method: 'POST', body: formData }, 'Erro ao enviar feedback direcionado', { extractDetail: true });
+    },
   async deleteDirectfeedbackApi(id) {
     return this._apiRequest(`/direct-feedback/${id}`, { method: 'DELETE' }, 'Erro ao excluir feedback direto', { parseJson: false });
   },
@@ -95,9 +111,30 @@ export const Database = {
     const path = recipient ? `/payslips?recipient=${encodeURIComponent(recipient)}` : '/payslips';
     return this._apiRequest(path, {}, 'Erro ao buscar holerites').catch(() => []);
   },
+    async getHoleriteFile(id) {
+      return this._apiRequest(`/payslips/${id}/file`, {}, 'Erro ao buscar arquivo do holerite', { parseJson: false });
+    },
+    async downloadHolerite(id) {
+      return this._apiRequest(`/payslips/${id}/download`, {}, 'Erro ao baixar holerite', { parseJson: false });
+    },
   async createHolerite(recipient, ref, fileName, fileData) {
     return this._apiRequest('/payslips', this._apiJsonOptions('POST', { recipient, ref, file_name: fileName, file_data: fileData }), 'Erro ao enviar holerite');
   },
+    async uploadHolerite(recipient, ref, file) {
+      const formData = new FormData();
+      formData.append('recipient', recipient);
+      formData.append('ref', ref);
+      formData.append('file', file);
+      return this._apiRequest(
+        '/payslips/upload',
+        { method: 'POST', body: formData },
+        'Erro ao enviar holerite',
+        { extractDetail: true }
+      );
+    },
+    async updateHolerite(id, recipient, ref) {
+      return this._apiRequest(`/payslips/${id}`, this._apiJsonOptions('PUT', { recipient, ref }), 'Erro ao atualizar holerite');
+    },
   async deleteHoleriteApi(id) {
     return this._apiRequest(`/payslips/${id}`, { method: 'DELETE' }, 'Erro ao excluir holerite', { parseJson: false });
   }
