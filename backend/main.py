@@ -8,7 +8,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Optional, List
 
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse

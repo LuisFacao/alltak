@@ -205,6 +205,7 @@ window.toggleNotificationPanel = Notificacao.togglePanel;
 window.clearAllNotifications = Notificacao.clearAll;
 window.showFilePreview = Formata.showFilePreview;
 window.downloadAttachment = Formata.downloadAttachment;
+window.openAttachment = Formata.openAttachment;
 window.deletefeedback = Feedback.delete;
 window.deleteDirectfeedback = Feedback.directDelete;
 window.deletePost = Post.deletePost;

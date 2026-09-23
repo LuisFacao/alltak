@@ -134,12 +134,51 @@ export const Formata = {
     }
   },
 
+  openAttachment(data) {
+    try {
+      if (!data) throw new Error('Arquivo não encontrado.');
+
+      let blob;
+      if (data instanceof Blob) {
+        blob = data;
+      } else if (typeof data === 'string' && data.startsWith('data:')) {
+        const commaIndex = data.indexOf(',');
+        if (commaIndex === -1) throw new Error('Formato de arquivo inválido.');
+        const header = data.substring(0, commaIndex);
+        const base64 = data.substring(commaIndex + 1);
+        const mimeMatch = header.match(/data:(.*?);base64/);
+        const mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+        blob = new Blob([bytes], { type: mime });
+      } else {
+        throw new Error('Formato de arquivo não suportado.');
+      }
+
+      // Navegadores baseados em Chromium bloqueiam navegação direta
+      // para data: URLs em nova aba. Um Blob URL (blob:...) não sofre
+      // essa restrição, então convertemos antes de abrir.
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, '_blank');
+      if (!win) {
+        alert('O navegador bloqueou a abertura da aba. Permita pop-ups para este site.');
+      }
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (err) {
+      console.error('Erro ao abrir anexo:', err);
+      alert('Erro ao abrir o arquivo: ' + (err?.message || 'Erro desconhecido'));
+    }
+  },
+
   renderAttachments(atts) {
     if (!atts || atts.length === 0) return '';
     const items = atts.map((a) => {
       const type = a.file_type || '';
       const safeName = Formata.escapeHtml(a.file_name);
-      if (type.startsWith('image/')) return `<a href="${a.file_data}" target="_blank"><img src="${a.file_data}" alt="${safeName}" style="width:64px;height:64px;object-fit:cover;border-radius:6px;border:1.5px solid var(--line);"></a>`;
+      if (type.startsWith('image/')) return `<button type="button" onclick='openAttachment(${Formata.toAttrJson(a.file_data)})' style="padding:0;border:none;background:none;cursor:pointer;"><img src="${a.file_data}" alt="${safeName}" style="width:64px;height:64px;object-fit:cover;border-radius:6px;border:1.5px solid var(--line);"></button>`;
       if (type.startsWith('video/')) return `<video src="${a.file_data}" controls style="width:140px;height:64px;border-radius:6px;border:1.5px solid var(--line);"></video>`;
       return `<button type="button" onclick='downloadAttachment(${Formata.toAttrJson(a.file_data)}, ${Formata.toAttrJson(a.file_name)})' style="display:inline-flex;align-items:center;gap:4px;font-size:11px;background:var(--azul-suave);padding:6px 10px;border-radius:6px;border:none;cursor:pointer;color:var(--ink);">📎 ${safeName}</button>`;
     }).join('');
