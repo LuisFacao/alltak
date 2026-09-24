@@ -20,11 +20,38 @@ export const Holerite = {
       </div>`).join('');
   },
 
-  download(id) {
+async download(id) {
+  try {
     const p = Memoria.holeriteData.find(p => p.id == id);
-    if(!p) return;
-    Formata.downloadAttachment(p.fileData, p.fileName);
-  },
+
+    if (!p) {
+      alert('Holerite não encontrado.');
+      return;
+    }
+
+    const blob = await Database.downloadHolerite(id);
+
+    if (!(blob instanceof Blob)) {
+      throw new Error('O servidor não retornou um arquivo válido.');
+    }
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = p.fileName || `holerite-${p.ref || id}.pdf`;
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+  } catch (err) {
+    console.error('Erro ao baixar o holerite:', err);
+    alert(`Erro ao baixar o arquivo: ${err.message}`);
+  }
+},
 
   submitForm(e) {
     e.preventDefault();

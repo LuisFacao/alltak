@@ -1,35 +1,21 @@
 import { Memoria } from "../main.js";
-import { Formata } from "../util.js";
 import { App } from "../secoes.js";
 import { Post } from "./post.js";
 
 export const Home = {
-  renderFeaturedAnnouncement() {
-    const container = document.getElementById('featured-announcement');
+  renderUser() {
+    const container = document.getElementById('user-area');
     if(!container) return;
 
+    const email = localStorage.getItem('alltak_user_email')
     if(Memoria.postsData.length === 0) {
       container.innerHTML = `
-        <span class="eyebrow">Comunicado em destaque</span>
-        <h1>Nenhum comunicado publicado ainda</h1>
-        <p>Assim que um novo comunicado for criado, ele aparecerá aqui.</p>
+      ${email}
+      <br>
+      aaa
       `;
       return;
     }
-
-    const latestPost = Memoria.postsData[0];
-    container.innerHTML = `
-      <span class="eyebrow">Comunicado em destaque</span>
-      <h1>${Formata.escapeHtml(latestPost.title)}</h1>
-      <p>${Formata.escapeHtml(latestPost.desc)}</p>
-      <div class="hero-meta">
-        <div><span class="k">Publicado</span><span class="v">${latestPost.date}</span></div>
-        <div><span class="k">Categoria</span><span class="v">${Formata.escapeHtml(latestPost.tag)}</span></div>
-      </div>
-      <div class="hero-actions">
-        <button class="btn" onclick="openFeaturedPost('${latestPost.id}')">Ler comunicado</button>
-      </div>
-    `;
   },
 
   openFeaturedPost(id) {

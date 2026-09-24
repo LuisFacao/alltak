@@ -1,6 +1,6 @@
 import { Database } from "./banco.js";
 import { Formata, Normalizers } from "./util.js";
-import { Auth, App } from "./secoes.js";
+import { Auth, App, partialsReady } from "./secoes.js";
 import { Admin } from "./secoes/admin.js";
 import { Calendario } from "./secoes/calendario.js";
 import { Feedback } from "./secoes/feedback.js";
@@ -36,8 +36,8 @@ export const Estado = {
   async loadSharedData(currentUserEmail, currentUserRole) {
     try {
       const [posts, events, feedback, directfeedback, payslips] = await Promise.all([
-        Database.getPosts(), 
-        Database.getEvents(), 
+        Database.getPosts(),
+        Database.getEvents(),
         Database.getfeedback(),
         currentUserRole === 'admin' ? Database.getDirectfeedback() : (currentUserEmail ? Database.getDirectfeedback(currentUserEmail) : Promise.resolve([])),
         currentUserRole === 'admin' ? Database.getHolerite() : (currentUserEmail ? Database.getHolerite(currentUserEmail) : Promise.resolve([]))
@@ -55,20 +55,20 @@ export const Estado = {
   refreshAllViews() {
     const role = localStorage.getItem('alltak_role');
     const email = localStorage.getItem('alltak_user_email');
-    Home.renderFeaturedAnnouncement(); 
-    Home.renderFeed(); 
-    Post.render(); 
+    Home.renderUser();
+    Home.renderFeed();
+    Post.render();
     Calendario.build();
-    if (email) { 
-      Feedback.render(email); 
-      Holerite.renderUser(email); 
+    if (email) {
+      Feedback.render(email);
+      Holerite.renderUser(email);
     }
     if (role === 'admin') {
-      Admin.postsRender(); 
-      Admin.eventsRender(); 
+      Admin.postsRender();
+      Admin.eventsRender();
       Feedback.renderAdm();
-      Feedback.renderAdmDireto(); 
-      Admin.metricsRender(); 
+      Feedback.renderAdmDireto();
+      Admin.metricsRender();
       Admin.holeriteRender();
     }
   },
@@ -77,17 +77,17 @@ export const Estado = {
     const role = localStorage.getItem('alltak_role');
     const email = localStorage.getItem('alltak_user_email');
     if (!email || localStorage.getItem('alltak_logged') !== 'true') return;
-    
+
     const prevPostIds = new Set(Memoria.postsData.map(p => p.id));
     const prevHoleriteIds = new Set(Memoria.holeriteData.map(p => p.id));
     const prevDirectIds = new Set(Memoria.directfeedbackData.map(d => d.id));
-    
+
     try { await Estado.loadSharedData(email, role); } catch (err) { return; }
 
     const hasNewPost = Memoria.postsData.some(p => !prevPostIds.has(p.id));
     const hasNewHolerite = role !== 'admin' && Memoria.holeriteData.some(p => p.recipient === email && !prevHoleriteIds.has(p.id));
     const hasNewDirect = role !== 'admin' && Memoria.directfeedbackData.some(d => d.recipient === email && !prevDirectIds.has(d.id));
-    
+
     if (hasNewPost || hasNewHolerite || hasNewDirect) {
       localStorage.setItem('alltak_new_notification', 'true');
       Notificacao.checkState();
@@ -114,29 +114,33 @@ export const Estado = {
 };
 
 function bindPartialDependentListeners() {
-  document.querySelectorAll('#stars-container svg').forEach(star => {
-    star.addEventListener('click', function() {
-      Memoria.selectedRating = parseInt(this.getAttribute('data-star'));
+
+  document.addEventListener('click', function(e) {
+    const star = e.target.closest('#stars-container svg');
+    if (star) {
+      Memoria.selectedRating = parseInt(star.getAttribute('data-star'));
       document.querySelectorAll('#stars-container svg').forEach(s => {
-        if(parseInt(s.getAttribute('data-star')) <= Memoria.selectedRating) { s.classList.add('filled'); } 
+        if(parseInt(s.getAttribute('data-star')) <= Memoria.selectedRating) { s.classList.add('filled'); }
         else { s.classList.remove('filled'); }
       });
-    });
-  });
+      return;
+    }
 
-  document.getElementById('search-input')?.addEventListener('input', function() {
-    const currentActiveChip = document.querySelector('#mural-filters .chip.on');
-    const activeTag = currentActiveChip ? currentActiveChip.getAttribute('data-filter') : 'Todos';
-    Post.render(activeTag, this.value);
-  });
-
-  document.querySelectorAll('#mural-filters .chip').forEach(chip => {
-    chip.addEventListener('click', function() {
+    const chip = e.target.closest('#mural-filters .chip');
+    if (chip) {
       document.querySelectorAll('#mural-filters .chip').forEach(c => c.classList.remove('on'));
-      this.classList.add('on');
+      chip.classList.add('on');
       const searchVal = document.getElementById('search-input')?.value || '';
-      Post.render(this.getAttribute('data-filter'), searchVal);
-    });
+      Post.render(chip.getAttribute('data-filter'), searchVal);
+    }
+  });
+
+  document.addEventListener('input', function(e) {
+    if (e.target && e.target.id === 'search-input') {
+      const currentActiveChip = document.querySelector('#mural-filters .chip.on');
+      const activeTag = currentActiveChip ? currentActiveChip.getAttribute('data-filter') : 'Todos';
+      Post.render(activeTag, e.target.value);
+    }
   });
 }
 
@@ -162,14 +166,16 @@ window.addEventListener('DOMContentLoaded', async () => {
   const userEmail = localStorage.getItem('alltak_user_email');
   const userRole = localStorage.getItem('alltak_role');
 
-  if (isLogged && userEmail && Memoria.VALID_USERS[userEmail]) {
+  if (isLogged && userEmail) {
     await Estado.loadSharedData(userEmail, userRole);
     const avatarEl = document.getElementById('user-avatar');
-    if (avatarEl) avatarEl.innerText = Memoria.VALID_USERS[userEmail].initial;
+    if (avatarEl) {
+      avatarEl.innerText = Memoria.VALID_USERS[userEmail]?.initial || userEmail.slice(0, 2).toUpperCase();
+    }
     Auth.adminVisualLogin(userRole);
-    Feedback.render(userEmail); 
+    Feedback.render(userEmail);
     Holerite.renderUser(userEmail);
-    
+
     document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'flex');
     document.getElementById('app-main-content').style.display = 'block';
     document.getElementById('acesso').classList.remove('active');
@@ -177,10 +183,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     Estado.startAutoRefresh();
   }
 
-  Home.renderFeaturedAnnouncement();
-  Home.renderFeed(); 
-  Post.render(); 
-  Calendario.build(); 
+  Home.renderUser();
+  Home.renderFeed();
+  Post.render();
+  Calendario.build();
   Notificacao.checkState();
 });
 
@@ -205,6 +211,7 @@ window.toggleNotificationPanel = Notificacao.togglePanel;
 window.clearAllNotifications = Notificacao.clearAll;
 window.showFilePreview = Formata.showFilePreview;
 window.downloadAttachment = Formata.downloadAttachment;
+window.openAttachment = Formata.openAttachment;
 window.deletefeedback = Feedback.delete;
 window.deleteDirectfeedback = Feedback.directDelete;
 window.deletePost = Post.deletePost;

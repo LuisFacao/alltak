@@ -7,6 +7,7 @@
     padding: 6px 10px;
     background: var(--corSuave);
     flex-shrink: 0;
+    user-select: none;
 }
 
 .doc-ic {
@@ -50,19 +51,29 @@
         .doc-row .info span {
             font-family:'Space Mono';
             font-size:10px; color:#788e9e;
+            user-select: none;
         }
 
-.mvv {
+.fb-stack {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
     padding: 16px;
 }
-    .mvv-card {
-        border: var(--border-width) solid var(--ink);
-        border-radius: 16px;
-        padding: 20px;
+
+.stars {
+    display:flex;
+    gap:8px;
+    margin-top:4px;
+}
+    .stars svg {
+        width:28px;
+        height:28px;
+        fill:none;
+        stroke:var(--ink);
+        stroke-width:1.6;
+        cursor:pointer;
     }
-    .mvv-card h1 {
-        font-size: 1em;
+    .stars svg.filled {
+        fill:var(--corPrincipal);
     }

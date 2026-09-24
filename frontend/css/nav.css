@@ -37,8 +37,9 @@
         transition: stroke .15s ease;
     }
     .navitem span {
-        font-size: 9px;
+        font-size: 0.55em;
         font-weight: 700;
+        text-align: center;
         text-transform: uppercase;
         letter-spacing: .02em;
         line-height: 1.2;
