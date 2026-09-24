@@ -47,7 +47,7 @@ export const Post = {
       Notificacao.checkState();
       Memoria.postsData = (await Database.getPosts()).map(Normalizers.post);
       document.getElementById('post-form').reset();
-      Home.renderFeaturedAnnouncement(); Home.renderFeed(); Post.render(); Admin.postsRender(); Admin.metricsRender();
+      Home.renderUser(); Home.renderFeed(); Post.render(); Admin.postsRender(); Admin.metricsRender();
     } catch (err) {
       alert(err.message);
     }

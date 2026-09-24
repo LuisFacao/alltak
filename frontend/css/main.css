@@ -2,16 +2,16 @@
 @import url('acesso.css');
 @import url('admin.css');
 @import url('calendario.css');
+@import url('feedback.css');
 @import url('formularios.css');
 @import url('header.css');
 @import url('home.css');
 @import url('institucional.css');
 @import url('mural.css');
 @import url('nav.css');
-@import url('requisicoes.css');
 
 :root {
-  --corPrincipal: #0056b3;
+    --corPrincipal: #0056b3;
     --corEscura: color-mix(in srgb, var(--corPrincipal), black 25%);
     --corClara:  color-mix(in srgb, var(--corPrincipal), white 20%);
     --corSuave:  color-mix(in srgb, var(--corPrincipal) 10%, white);
@@ -46,16 +46,16 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: var(--cream);
+    background: #0056b3;
     color: var(--ink);
     -webkit-font-smoothing: antialiased;
     max-width: 480px;
-    margin: 0 auto;
     position: relative;
-    min-height: 100vh;
 }
     html, body {
         height: 100%;
+        margin: 0 auto;
+        padding: 0;
         overscroll-behavior-y: none;
     }
 
@@ -81,6 +81,7 @@ h4,
     font-weight: 700;
     text-transform: uppercase;
     opacity: .75;
+    user-select: none;
 }
 
 a {
@@ -147,6 +148,7 @@ div.chip {
 }
 
 .app {
+    background-color: var(--cream);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -195,7 +197,7 @@ div.chip {
     color: var(--corEscura);
     font-size:11.5px;
     line-height:1.5;
-    margin-bottom:14px; 
+    margin-bottom:14px;
     padding: 18px;
 }
     .card-block h3 {
@@ -205,6 +207,7 @@ div.chip {
 
 .content {
     flex: 1;
+    padding: 0 20px;
     padding-bottom: 28px;
 }
 

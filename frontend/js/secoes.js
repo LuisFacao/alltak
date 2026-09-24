@@ -28,7 +28,7 @@ export const Auth = {
 
       const avatarEl = document.getElementById('user-avatar');
       if (avatarEl) avatarEl.innerText = (Memoria.VALID_USERS[user.email] && Memoria.VALID_USERS[user.email].initial) || user.email.slice(0, 2).toUpperCase();
-      
+
       Auth.adminVisualLogin(user.role);
       Feedback.render(user.email);
       Holerite.renderUser(user.email);
@@ -36,8 +36,8 @@ export const Auth = {
       document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'flex');
       document.getElementById('app-main-content').style.display = 'block';
       document.getElementById('acesso').classList.remove('active');
-      
-      Home.renderFeaturedAnnouncement(); Home.renderFeed(); Post.render(); Calendario.build();
+
+      Home.renderUser(); Home.renderFeed(); Post.render(); Calendario.build();
       App.go('home');
       Estado.startAutoRefresh();
     } catch (err) {
@@ -70,13 +70,13 @@ export const Auth = {
     const avatar = document.getElementById('user-avatar');
     if(avatar) avatar.classList.toggle('is-admin', isAdmin);
     if(isAdmin) {
-      Admin.postsRender(); 
-      Admin.eventsRender(); 
+      Admin.postsRender();
+      Admin.eventsRender();
       Feedback.renderAdm();
-      Feedback.renderAdmDireto(); 
+      Feedback.renderAdmDireto();
       Admin.metricsRender();
-      Admin.recipentePopularDropdown(); 
-      Admin.holeriteDropdown(); 
+      Admin.recipentePopularDropdown();
+      Admin.holeriteDropdown();
       Admin.holeriteRender();
     }
   }
@@ -118,15 +118,21 @@ export const App = {
   }
 };
 
-const partialsReady = Promise.all([
-  App.loadPageContent("acesso"),
-  App.loadPageContent("admin"),
-  App.loadPageContent("app-bottomnav"),
-  App.loadPageContent("app-header"),
-  App.loadPageContent("calendario"),
-  App.loadPageContent("feedback"),
-  App.loadPageContent("holerites"),
-  App.loadPageContent("home"),
-  App.loadPageContent("institucional"),
-  App.loadPageContent("mural"),
+function loadPartialSafe(nome) {
+  return App.loadPageContent(nome).catch(err => {
+    console.error(`[Partials] Falha ao carregar "${nome}.html":`, err.message);
+  });
+}
+
+export const partialsReady = Promise.all([
+  loadPartialSafe("acesso"),
+  loadPartialSafe("admin"),
+  loadPartialSafe("app-bottomnav"),
+  loadPartialSafe("app-header"),
+  loadPartialSafe("calendario"),
+  loadPartialSafe("feedback"),
+  loadPartialSafe("holerites"),
+  loadPartialSafe("home"),
+  loadPartialSafe("institucional"),
+  loadPartialSafe("mural"),
 ]);

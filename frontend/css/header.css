@@ -9,6 +9,7 @@
     font-size: 11px;
     flex-shrink: 0;
     cursor: pointer;
+    user-select: none;
 }
     .avatar-sm.is-admin {
         background:#FFD166;
@@ -30,6 +31,7 @@
     display: flex;
     align-items: center;
     gap: 9px;
+    user-select: none;
 }
     .brand-logo-img {
         width: 100%;
@@ -84,7 +86,7 @@
     .notif-ic svg {
         width:14px;
         height:14px;
-        stroke: var(--paper)
+        stroke: var(--paper);
         fill:none;
         stroke-width:2.2;
     }
@@ -195,6 +197,7 @@
     border-radius:100px;
     border:var(--border-width) solid #fff;
     margin-right:8px;
+    user-select: none;
 }
 
 .topbar {

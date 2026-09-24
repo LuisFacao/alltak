@@ -94,6 +94,7 @@
     border: var(--border-width) solid var(--ink);
     border-radius: 16px;
     padding: 16px;
+    user-select: none;
 }
 
 .legend {

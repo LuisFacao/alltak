@@ -13,6 +13,11 @@
     margin-top:16px;
 }
 
+#mural button {
+    justify-self: center;
+    width: fit-content;
+}
+
 .search-bar {
     display: flex;
     align-items: center;

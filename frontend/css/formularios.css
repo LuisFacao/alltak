@@ -21,6 +21,7 @@
 
 .form-field {
     margin-bottom:14px;
+    user-select: none;
 }
     .form-field label {
         display:block;
@@ -37,9 +38,10 @@
     border:var(--border-width) solid var(--ink);
     padding:11px 13px;
     font-family:'Inter';
-    font-size:15px;
+    font-size: 1.1em;
     background:var(--corSuave);
     outline:none;
+    user-select: none;
     }
     .form-field textarea {
         resize:vertical;

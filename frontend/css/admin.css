@@ -74,26 +74,12 @@
         margin-top: 14px;
     }
 
-.admin-tabs { 
-    display:flex; 
-    gap:8px; 
-    overflow-x:auto; 
+.admin-tabs {
+    display:flex;
+    flex-wrap: wrap;
+    gap:8px;
     padding:14px 16px 12px;
-    scrollbar-width: auto; 
-    -ms-overflow-style: auto; 
-    -webkit-overflow-scrolling: touch; 
 }
-    .admin-tabs::-webkit-scrollbar {
-        height: 5px;
-        display: block;
-    }
-    .admin-tabs::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    .admin-tabs::-webkit-scrollbar-thumb {
-        background: var(--line);
-        border-radius: 10px;
-    }
 
 #admin-stat-grid {
     margin-top:14px;
@@ -109,10 +95,9 @@
 }
 
 .stat-card {
-    background:var(--ink);
+    border: 1px solid var(--ink);
     border-radius:14px;
     padding:16px;
-    color:#fff;
 }
     .stat-card .n {
         font-family:'Anton';
@@ -121,11 +106,15 @@
     }
     .stat-card .l {
         font-family:'Space Mono';
-        font-size:9.5px;
+        font-size:12px;
         text-transform:uppercase;
-        color:#8a9fae;
         margin-top:3px;
     }
 .stat-grid {
-    display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:0 16px; margin-bottom:26px;
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+
+    gap:12px;
+    padding:0 16px;
+    margin-bottom:26px;
 }
