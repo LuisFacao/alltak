@@ -12,6 +12,13 @@
     Admin
   </span>
 
+  <div class="icon-btn" id="perfil-btn" onclick="go('perfil')" title="Meu perfil">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/>
+    </svg>
+  </div>
+
   <div class="notif-wrap">
 
     <div class="icon-btn" onclick="toggleNotificationPanel(event)">
@@ -36,5 +43,5 @@
     </div>
   </div>
 
-  <div class="avatar-sm" id="user-avatar" onclick="handleLogout()">AT</div>
+  <div id="logout" onclick="handleLogout()">Sair</div>
 </div>

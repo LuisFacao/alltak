@@ -4,6 +4,7 @@ import { Feedback } from "./secoes/feedback.js";
 import { Holerite } from "./secoes/holerites.js";
 import { Home } from "./secoes/home.js";
 import { Post } from "./secoes/post.js";
+import { Perfil } from "./secoes/perfil.js";
 import { Memoria, Estado } from "./main.js";
 import { Database } from "./banco.js";
 
@@ -26,12 +27,10 @@ export const Auth = {
       localStorage.setItem('alltak_user_email', user.email);
       localStorage.setItem('alltak_logged', "true");
 
-      const avatarEl = document.getElementById('user-avatar');
-      if (avatarEl) avatarEl.innerText = (Memoria.VALID_USERS[user.email] && Memoria.VALID_USERS[user.email].initial) || user.email.slice(0, 2).toUpperCase();
-
       Auth.adminVisualLogin(user.role);
       Feedback.render(user.email);
       Holerite.renderUser(user.email);
+      Perfil.render(user.email);
 
       document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'flex');
       document.getElementById('app-main-content').style.display = 'block';
@@ -67,8 +66,8 @@ export const Auth = {
     document.querySelectorAll('.admin-only-nav').forEach(el => el.style.display = isAdmin ? 'flex' : 'none');
     const pill = document.getElementById('role-pill');
     if(pill) pill.style.display = isAdmin ? 'inline-flex' : 'none';
-    const avatar = document.getElementById('user-avatar');
-    if(avatar) avatar.classList.toggle('is-admin', isAdmin);
+    const logout = document.getElementById('logout');
+    if(logout) logout.classList.toggle('is-admin', isAdmin);
     if(isAdmin) {
       Admin.postsRender();
       Admin.eventsRender();
@@ -135,4 +134,5 @@ export const partialsReady = Promise.all([
   loadPartialSafe("home"),
   loadPartialSafe("institucional"),
   loadPartialSafe("mural"),
+  loadPartialSafe("perfil"),
 ]);

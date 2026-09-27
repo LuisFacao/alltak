@@ -1,20 +1,18 @@
-.avatar-sm {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--corClara);
-    border: var(--border-width) solid #fff;
-    color: var(--paper);
+#logout {
+    border-radius: 8px;
+    background: var(--ink);
+    border: 2px solid #fffd;
+    color: var(--cream);
     font-weight: 800;
     font-size: 11px;
     flex-shrink: 0;
+
     cursor: pointer;
     user-select: none;
+
+    padding: 0 8px;
+    height: 32px;
 }
-    .avatar-sm.is-admin {
-        background:#FFD166;
-        color:var(--ink);
-    }
 
 .badge {
     width: 32px;
@@ -58,34 +56,34 @@
 }
 
 .icon-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: var(--border-width) solid rgba(255,255,255,.25);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 2px solid #ffffffdd;
     cursor: pointer;
-    background: rgba(255,255,255,.06);
+    background: var(--corClara);
     position: relative;
     flex-shrink: 0;
 }
     .icon-btn svg {
         width: 16px;
         height: 16px;
-        stroke: var(--paper);;
+        stroke: var(--cream);
         fill: none;
-        stroke-width: 2.2;
+        stroke-width: 2;
     }
 
 .notif-ic {
-    width:28px;
-    height:28px;
+    width:24px;
+    height:24px;
     border-radius:8px;
     background:var(--corPrincipal);
-    border:var(--border-width) solid var(--ink);
+    border: var(--border-width) solid #fff;
     flex-shrink:0;
 }
     .notif-ic svg {
-        width:14px;
-        height:14px;
+        width:12px;
+        height:12px;
         stroke: var(--paper);
         fill:none;
         stroke-width:2.2;
@@ -178,26 +176,27 @@
         cursor:pointer;
         text-transform:none;
     }
+
 .notif-wrap {
     position:relative;
+    height: 32px;
 }
 
 .role-pill {
     display:inline-flex;
     align-items:center;
-    gap:5px;
     font-family:'Space Mono', monospace;
     font-weight:700;
-    font-size:9.5px;
+    font-size:9px;
     letter-spacing:.05em;
     text-transform:uppercase;
-    color:var(--ink);
-    background:#FFD166;
+    color: var(--cream);
+    background: #ffa94c;
     padding:5px 10px;
-    border-radius:100px;
+    border-radius: 8px;
     border:var(--border-width) solid #fff;
-    margin-right:8px;
     user-select: none;
+    height: 32px;
 }
 
 .topbar {
@@ -212,7 +211,7 @@
     border-bottom: var(--border-width-strong) solid var(--ink);
 }
     .topbar-right {
+        align-items: end;
         display: flex;
-        align-items: center;
         gap: 8px;
     }

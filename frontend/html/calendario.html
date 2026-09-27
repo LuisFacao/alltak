@@ -6,7 +6,7 @@
 
 <div class="cal-wrap">
   <div class="cal-head">
-    <h3 id="calendar-month-year"> <!-- mudar aqui -->
+    <h3 id="calendar-month-year">
       Julho 2026
     </h3>
     <div class="cal-nav">
@@ -35,3 +35,49 @@
 </div>
 
 <div class="cal-day-events" id="cal-day-events"></div>
+
+<button type="button" class="btn block admin-only-nav plus" id="cal-event-toggle-btn" onclick="toggleEventForm()">
+  +
+</button>
+
+  <div class="card-block" id="cal-event-form-wrap" style="display:none;">
+    <h3>
+      Novo evento
+    </h3>
+    <form id="event-form" onsubmit="submitEventForm(event)">
+      <div class="form-field">
+        <label>
+          Data
+        </label>
+        <input type="date" id="event-date" required>
+      </div>
+
+      <div class="form-field">
+        <label>
+          Título
+        </label>
+        <input type="text" id="event-title" required>
+      </div>
+
+      <div class="form-field">
+        <label>
+          Tipo
+        </label>
+        <select id="event-color">
+          <option value="var(--corPrincipal)">
+            Campanha
+          </option><option value="var(--corClara)">
+            Urgente
+          </option><option value="var(--ink)">
+            Evento
+          </option><option value="var(--corSuave)">
+            Treinamento
+          </option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn block">
+        Adicionar à agenda
+      </button>
+    </form>
+  </div>

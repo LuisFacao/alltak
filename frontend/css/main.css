@@ -94,7 +94,7 @@ button {
     font-family:'Space Mono', monospace;
 }
 
-.avatar-sm,
+#logout,
 .badge,
 .icon-btn,
 .notif-ic,
@@ -218,6 +218,10 @@ div.chip {
     cursor: pointer;
     text-transform: uppercase;
 }
+    .chip:hover {
+        background-color: var(--corPrincipal);
+        color: var(--cream);
+    }
     .chip.on {
         background: var(--ink);
         color: var(--corSuave);
@@ -228,6 +232,14 @@ div.chip {
     flex-direction: column;
     gap: 14px;
     padding: 0 16px 6px;
+}
+
+.plus {
+    display:none;
+    justify-self: center;
+    width: fit-content !important;
+
+    margin: 8px 0 16px;
 }
 
 .screen {

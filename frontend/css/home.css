@@ -101,7 +101,11 @@
     border-radius: 16px;
     padding: 14px;
     cursor: pointer;
+    height: fit-content;
 }
+    .qcard:hover {
+        background: #efffff00;
+    }
     .qcard * {
         color: var(--corEscura);
     }

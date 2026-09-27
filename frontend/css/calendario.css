@@ -10,6 +10,13 @@
     background: #fff;
     overflow:hidden;
 }
+    .cal-cell:not(.muted) {
+        cursor: pointer;
+    }
+        .cal-cell:not(.muted):hover {
+            background-color: var(--corPrincipal);
+            color: var(--cream)
+        }
     .cal-cell.muted {
         opacity: .3;
         background: #fafafa;
@@ -17,7 +24,7 @@
     .cal-cell.today {
         border-color: var(--ink);
         border-width: var(--border-width);
-        background: var(--corSuave);
+        background: var(--ink);
     }
 
 .cal-day-events {
@@ -88,6 +95,11 @@
         font-weight: bold;
         font-size: 15px;
     }
+        .cal-nav button:hover {
+            border: none;
+            background-color: var(--corPrincipal);
+            color: var(--cream)
+        }
 .cal-wrap {
     margin: 16px;
     background: var(--paper);

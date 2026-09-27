@@ -20,6 +20,19 @@ export const Post = {
     `;
   },
 
+  toggleForm() {
+    const wrap = document.getElementById('mural-post-form-wrap');
+    const btn = document.getElementById('mural-post-toggle-btn');
+    if(!wrap) return;
+    const isOpen = wrap.style.display !== 'none';
+    wrap.style.display = isOpen ? 'none' : 'block';
+    if(btn) btn.textContent = isOpen ? '+' : '–';
+    if(!isOpen) {
+      const titleInput = document.getElementById('post-title');
+      if(titleInput) titleInput.focus();
+    }
+  },
+
   render(filter = 'Todos', search = '') {
     const container = document.getElementById('mural-grid');
     if(!container) return;
@@ -47,6 +60,10 @@ export const Post = {
       Notificacao.checkState();
       Memoria.postsData = (await Database.getPosts()).map(Normalizers.post);
       document.getElementById('post-form').reset();
+      const wrap = document.getElementById('mural-post-form-wrap');
+      const toggleBtn = document.getElementById('mural-post-toggle-btn');
+      if(wrap) wrap.style.display = 'none';
+      if(toggleBtn) toggleBtn.textContent = '+';
       Home.renderUser(); Home.renderFeed(); Post.render(); Admin.postsRender(); Admin.metricsRender();
     } catch (err) {
       alert(err.message);

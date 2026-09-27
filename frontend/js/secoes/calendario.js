@@ -36,6 +36,19 @@ export const Calendario = {
     }
   },
 
+  toggleForm() {
+    const wrap = document.getElementById('cal-event-form-wrap');
+    const btn = document.getElementById('cal-event-toggle-btn');
+    if(!wrap) return;
+    const isOpen = wrap.style.display !== 'none';
+    wrap.style.display = isOpen ? 'none' : 'block';
+    if(btn) btn.textContent = isOpen ? '+' : '–';
+    if(!isOpen) {
+      const dateInput = document.getElementById('event-date');
+      if(dateInput) dateInput.focus();
+    }
+  },
+
   changeMonth(dir) {
     Memoria.currentMonth += dir;
     if(Memoria.currentMonth > 11) { Memoria.currentMonth = 0; Memoria.currentYear++; }
@@ -66,6 +79,10 @@ export const Calendario = {
       await Database.createEvent(date, title, color);
       Memoria.eventsData = Calendario.criarEventos(await Database.getEvents());
       document.getElementById('event-form').reset();
+      const wrap = document.getElementById('cal-event-form-wrap');
+      const toggleBtn = document.getElementById('cal-event-toggle-btn');
+      if(wrap) wrap.style.display = 'none';
+      if(toggleBtn) toggleBtn.textContent = '+';
       Calendario.build(); Admin.eventsRender();
     } catch (err) {
       alert(err.message);

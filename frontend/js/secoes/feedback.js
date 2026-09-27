@@ -23,6 +23,21 @@ export const Feedback = {
     }
   },
 
+  toggleDirectForm() {
+    const wrap = document.getElementById('fb-direct-form-wrap');
+    const btn = document.getElementById('fb-direct-toggle-btn');
+    if(!wrap) return;
+    const isOpen = wrap.style.display !== 'none';
+    if(isOpen) {
+      wrap.style.display = 'none';
+      if(btn) btn.textContent = '+';
+    } else {
+      Admin.recipentePopularDropdown();
+      wrap.style.display = 'block';
+      if(btn) btn.textContent = '–';
+    }
+  },
+
   async submit(e) {
     e.preventDefault();
     const subject = document.getElementById('fb-subject').value;
@@ -103,6 +118,10 @@ export const Feedback = {
       document.getElementById('direct-feedback-text').value = '';
       fileInput.value = '';
       document.getElementById('direct-feedback-attachments-preview').innerHTML = '';
+      const wrap = document.getElementById('fb-direct-form-wrap');
+      const toggleBtn = document.getElementById('fb-direct-toggle-btn');
+      if(wrap) wrap.style.display = 'none';
+      if(toggleBtn) toggleBtn.textContent = '+';
       Feedback.renderAdmDireto();
     } catch (err) {
       alert(err.message);

@@ -8,6 +8,7 @@ import { Holerite } from "./secoes/holerites.js";
 import { Home } from "./secoes/home.js";
 import { Post } from "./secoes/post.js";
 import { Notificacao } from "./secoes/notificacao.js";
+import { Perfil } from "./secoes/perfil.js";
 
 export const API_URL = `${window.location.origin}/api`;
 export const AUTO_REFRESH_MS = 6000;
@@ -62,6 +63,7 @@ export const Estado = {
     if (email) {
       Feedback.render(email);
       Holerite.renderUser(email);
+      Perfil.render(email);
     }
     if (role === 'admin') {
       Admin.postsRender();
@@ -168,13 +170,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   if (isLogged && userEmail) {
     await Estado.loadSharedData(userEmail, userRole);
-    const avatarEl = document.getElementById('user-avatar');
-    if (avatarEl) {
-      avatarEl.innerText = Memoria.VALID_USERS[userEmail]?.initial || userEmail.slice(0, 2).toUpperCase();
-    }
     Auth.adminVisualLogin(userRole);
     Feedback.render(userEmail);
     Holerite.renderUser(userEmail);
+    Perfil.render(userEmail);
 
     document.querySelectorAll('.app-protected').forEach(el => el.style.display = 'flex');
     document.getElementById('app-main-content').style.display = 'block';
@@ -192,10 +191,13 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 window.handleLogin = Auth.login;
 window.handleLogout = Auth.logout;
-window.submitDirectfeedback = Feedback.directSubmit;
-window.submitfeedback = Feedback.submit;
 window.submitPostForm = Post.submitPostForm;
+window.togglePostForm = Post.toggleForm;
 window.submitEventForm = Calendario.submitForm;
+window.toggleEventForm = Calendario.toggleForm;
+window.submitDirectfeedback = Feedback.directSubmit;
+window.toggleDirectFeedbackForm = Feedback.toggleDirectForm;
+window.submitfeedback = Feedback.submit;
 window.submitUserForm = Admin.userSubmitForm;
 window.submitPayslipForm = Holerite.submitForm;
 window.handleBulkFilesSelected = Holerite.handleBulkFilesSelected;

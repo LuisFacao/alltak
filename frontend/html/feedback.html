@@ -4,14 +4,6 @@
   </h1>
 </div>
 
-  <div class="fb-stack">
-    <div class="card-block" id="direct-feedback-box" style="display: none; background: #FFFEE0;">
-      <h3 style="color: var(--corEscura)">
-        ✉ Mensagens da Administração
-      </h3>
-      <div id="direct-feedback-received-list"></div>
-    </div>
-
   <div class="card-block">
     <h3>Enviar sugestão ou comentário</h3>
     <form id="feedback-form" onsubmit="submitfeedback(event)">
@@ -75,6 +67,52 @@
     </form>
   </div>
 </div>
+
+<button type="button" class="btn block admin-only-nav plus" id="fb-direct-toggle-btn" onclick="toggleDirectFeedbackForm()">
+  +
+</button>
+
+
+<div class="card-block" id="fb-direct-form-wrap" style="display:none;">
+  <h3>
+    Enviar Mensagem Direta a Funcionário
+  </h3>
+  <form id="direct-feedback-form" onsubmit="submitDirectfeedback(event)">
+    <div class="form-field">
+      <label>
+        Destinatário (Funcionário)
+      </label>
+      <select id="direct-feedback-recipient" required></select>
+    </div>
+
+    <div class="form-field">
+      <label>
+        Mensagem / Feedback
+      </label>
+      <textarea id="direct-feedback-text" placeholder="Escreva a avaliação ou orientação profissional direcionada..." required></textarea>
+    </div>
+
+    <div class="form-field">
+      <label>
+        Anexos (fotos, vídeos ou documentos — opcional)
+      </label>
+      <input type="file" id="direct-feedback-attachments" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="showFilePreview(this, 'direct-feedback-attachments-preview')">
+      <div id="direct-feedback-attachments-preview" class="attach-preview"></div>
+    </div>
+
+    <button type="submit" class="btn block" id="direct-feedback-submit-btn">
+      Enviar Feedback Direto
+    </button>
+  </form>
+</div>
+
+  <div class="fb-stack">
+    <div class="card-block" id="direct-feedback-box" style="display: none; background: #FFFEE0;">
+      <h3 style="color: var(--corEscura)">
+        ✉ Mensagens da Administração
+      </h3>
+      <div id="direct-feedback-received-list"></div>
+    </div>
 
 <div class="section-head">
   <h1 style="font-size:16px;"> <!-- mudar aqui -->

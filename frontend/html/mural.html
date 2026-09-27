@@ -34,8 +34,64 @@
   <input type="text" id="search-input" placeholder="Buscar por título...">
 </div>
 
-<button type="button" class="btn block admin-only-nav" style="display:none; margin: 8px 0 16px;" onclick="go('admin'); showAdminTab('conteudo')">
-  + Criar novo comunicado
+<div class="feed-list" id="mural-grid"></div>
+
+<button type="button" class="btn block admin-only-nav plus" id="mural-post-toggle-btn" onclick="togglePostForm()">
+  +
 </button>
 
-<div class="feed-list" id="mural-grid"></div>
+<div class="card-block" id="mural-post-form-wrap" style="display:none;">
+  <h3>
+    Novo comunicado
+  </h3>
+  <form id="post-form" onsubmit="submitPostForm(event)">
+    <div class="form-field">
+      <label>
+        Título
+      </label>
+      <input type="text" id="post-title" required>
+    </div>
+
+    <div class="form-field">
+      <label>
+        Descrição
+      </label>
+      <textarea id="post-desc" required></textarea>
+    </div>
+
+    <div class="form-field">
+      <label>
+        Categoria
+      </label>
+      <select id="post-tag">
+        <option>
+          RH
+        </option><option>
+          TI
+        </option><option>
+          Financeiro
+        </option><option>
+          Eventos
+        </option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label>
+        Autor
+      </label>
+      <input type="text" id="post-author" placeholder="Ex: RH Alltak" required>
+    </div>
+
+    <div class="checkbox-field">
+      <input type="checkbox" id="post-urgent">
+      <label for="post-urgent">
+        Marcar como urgente
+      </label>
+    </div>
+
+    <button type="submit" class="btn block" id="post-submit-btn">
+      Publicar comunicado
+    </button>
+  </form>
+</div>

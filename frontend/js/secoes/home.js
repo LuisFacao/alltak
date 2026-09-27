@@ -7,7 +7,13 @@ export const Home = {
     const container = document.getElementById('user-area');
     if(!container) return;
 
-    const email = localStorage.getItem('alltak_user_email')
+    const email = localStorage.getItem('alltak_user_email');
+    const role = localStorage.getItem('alltak_role');
+
+    document.querySelectorAll('.adminMenu').forEach(menu => {
+      menu.style.display = role === 'admin' ? 'block' : 'none';
+    });
+
     if(Memoria.postsData.length === 0) {
       container.innerHTML = `
       ${email}
