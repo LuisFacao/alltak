@@ -65,7 +65,7 @@ export const Calendario = {
         container.innerHTML += `<div class="evt-row"><span class="evt-dot" style="background:${e.color}"></span><span>${Formata.escapeHtml(e.title)}</span></div>`;
       });
     } else {
-      container.innerHTML += '<p style="font-size:12px; color:#788e9e;">Nenhum evento.</p>';
+      container.innerHTML += '<p style="color:#788e9e;">Nenhum evento.</p>';
     }
   },
 
