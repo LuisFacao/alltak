@@ -135,6 +135,27 @@ export const Database = {
     );
   },
 
+  async uploadPost(title, content, author, tag, urgent, fileList) {
+    const formData = new FormData();
+
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("author", author);
+    formData.append("tag", tag);
+    formData.append("urgent", urgent ? "true" : "false");
+
+    Array.from(fileList || []).forEach(file => {
+      formData.append("files", file);
+    });
+
+    return this._apiRequest(
+      "/posts/upload",
+      { method: "POST", body: formData },
+      "Erro ao salvar comunicado",
+      { extractDetail: true }
+    );
+  },
+
   async deletePost(id) {
     return this._apiRequest(
       `/posts/${id}`,

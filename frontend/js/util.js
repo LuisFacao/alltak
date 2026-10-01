@@ -217,6 +217,7 @@ export const Normalizers = {
     return {
       id: p.id, title: p.title, desc: p.content, author: p.author,
       tag: p.tag || 'Geral', bg: 'var(--azul-suave)', urgent: !!p.urgent,
+      attachments: p.attachments || [],
       date: p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : 'Hoje' 
     };
   },

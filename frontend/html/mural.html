@@ -90,6 +90,14 @@
       </label>
     </div>
 
+    <div class="form-field">
+      <label>
+        Anexos (fotos, vídeos ou documentos — opcional)
+      </label>
+      <input type="file" id="mural-post-attachments" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="showFilePreview(this, 'mural-post-attachments-preview')">
+      <div id="mural-post-attachments-preview" class="attach-preview"></div>
+    </div>
+
     <button type="submit" class="btn block" id="post-submit-btn">
       Publicar comunicado
     </button>

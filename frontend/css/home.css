@@ -176,7 +176,6 @@
     background: var(--paper);
     border: var(--border-width) solid var(--ink);
     overflow: hidden;
-    cursor: pointer;
 }
 .post-foot {
     display: flex;
@@ -184,15 +183,16 @@
     justify-content: space-between;
     font-family: 'Space Mono', monospace;
     font-size: 10px;
-    color: var(--corSuave);
     margin-top: 10px;
 }
 .post-media {
-    height: 76px;
     position: relative;
     display: flex;
     align-items: center;
-    padding: 0 14px;
+    padding-left: 14px;
+    padding-top: 14px;
+    margin: 0;
+    margin-bottom: 2px;
 }
 .post-tag {
     font-family: 'Space Mono', monospace;

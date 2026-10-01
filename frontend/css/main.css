@@ -197,9 +197,14 @@ div.chip {
     color: var(--corEscura);
     font-size:11.5px;
     line-height:1.5;
-    margin-bottom:14px;
+    margin:14px 0;
     padding: 18px;
 }
+    .card-block div p,
+    .card-block div div,
+    #perfil-user-email {
+        font-size: 14px !important;
+    }
     .card-block h3 {
         font-size: 16px;
         margin-bottom: 14px;
@@ -231,8 +236,10 @@ div.chip {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    padding: 0 16px 6px;
 }
+    .feed-list span {
+        font-size: 14px;
+    }
 
 .plus {
     display:none;
@@ -268,7 +275,7 @@ div.chip {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin: 4px 16px 12px;
+    margin: 16px;
 
     font-size: 0.8em;;
 }
@@ -282,4 +289,8 @@ div.chip {
     }
     .section-head.compact {
         margin-top: 20px;
+    }
+
+    .section-title {
+        margin-bottom: 16px;
     }

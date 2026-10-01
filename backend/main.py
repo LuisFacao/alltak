@@ -24,6 +24,8 @@ from sqlalchemy import (
     DateTime,
     Text,
     LargeBinary,
+    inspect,
+    text,
 )
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 
@@ -113,6 +115,7 @@ class PostModel(Base):
     author = Column(String, nullable=False)
     tag = Column(String, default="Geral")
     urgent = Column(Boolean, default=False)
+    attachments = Column(Text, default="[]")
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
@@ -167,6 +170,23 @@ class PayslipModel(Base):
 Base.metadata.create_all(bind=engine)
 
 
+def _ensure_post_attachments_column():
+    """
+    create_all não altera tabelas existentes. Se o banco já tinha a
+    tabela posts sem a coluna attachments, adiciona automaticamente.
+    """
+    columns = [c["name"] for c in inspect(engine).get_columns("posts")]
+
+    if "attachments" not in columns:
+        with engine.begin() as conn:
+            conn.execute(
+                text("ALTER TABLE posts ADD COLUMN attachments TEXT DEFAULT '[]'")
+            )
+
+
+_ensure_post_attachments_column()
+
+
 class LoginData(BaseModel):
     email: str
     password: str
@@ -178,24 +198,25 @@ class UserData(BaseModel):
     role: str = "user"
 
 
+class Attachment(BaseModel):
+    file_name: str
+    file_type: str
+    file_data: str
+
+
 class PostData(BaseModel):
     title: str
     content: str
     author: str
     tag: str = "Geral"
     urgent: bool = False
+    attachments: Optional[List[Attachment]] = []
 
 
 class EventData(BaseModel):
     date: str
     title: str
     color: str
-
-
-class Attachment(BaseModel):
-    file_name: str
-    file_type: str
-    file_data: str
 
 
 class FeedbackData(BaseModel):
@@ -309,6 +330,9 @@ def serialize_post(p):
         "author": p.author,
         "tag": p.tag,
         "urgent": p.urgent,
+        "attachments": json.loads(
+            p.attachments or "[]"
+        ),
         "created_at": (
             p.created_at.isoformat()
             if p.created_at

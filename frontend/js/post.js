@@ -14,6 +14,7 @@ export const Post = {
         <div class="post-body">
           <h3>${p.urgent ? '<span class="urgent-pill">Urgente</span> ' : ''}${safeTitle}</h3>
           <p>${Formata.escapeHtml(p.desc)}</p>
+          ${Formata.renderAttachments(p.attachments)}
           <div class="post-foot"><span>Por ${Formata.escapeHtml(p.author)}</span><span class="post-dia">${p.date}</span></div>
         </div>
       </div>
@@ -36,7 +37,7 @@ export const Post = {
   render(filter = 'Todos', search = '') {
     const container = document.getElementById('mural-grid');
     if(!container) return;
-    
+
     const filtered = Memoria.postsData.filter(p => {
       const matchFilter = filter === 'Todos' || p.tag === filter;
       const matchSearch = p.title.toLowerCase().includes(search.toLowerCase());
@@ -48,18 +49,36 @@ export const Post = {
 
   async submitPostForm(e) {
     e.preventDefault();
-    const title = document.getElementById('post-title').value.trim();
-    const desc = document.getElementById('post-desc').value.trim();
-    const tag = document.getElementById('post-tag').value;
-    const author = document.getElementById('post-author').value.trim();
-    const urgent = document.getElementById('post-urgent').checked;
+    const form = e.target;
+    // Lê os campos a partir do próprio form: mural.html e admin.html
+    // usam os mesmos ids, e getElementById pegaria sempre o primeiro.
+    const title = form.querySelector('#post-title').value.trim();
+    const desc = form.querySelector('#post-desc').value.trim();
+    const tag = form.querySelector('#post-tag').value;
+    const author = form.querySelector('#post-author').value.trim();
+    const urgent = form.querySelector('#post-urgent').checked;
+    const fileInput = form.querySelector('input[type="file"]');
+    const files = fileInput ? Array.from(fileInput.files) : [];
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    const sizeError = Formata.checkFileSize(files);
+    if (sizeError) return alert(sizeError.message);
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Publicando...';
+    }
 
     try {
-      await Database.createPost(title, desc, author, tag, urgent);
+      await Database.uploadPost(title, desc, author, tag, urgent, files);
       localStorage.setItem('alltak_new_notification', 'true');
       Notificacao.checkState();
       Memoria.postsData = (await Database.getPosts()).map(Normalizers.post);
-      document.getElementById('post-form').reset();
+
+      form.reset();
+      const preview = form.querySelector('.attach-preview');
+      if (preview) preview.innerHTML = '';
+
       const wrap = document.getElementById('mural-post-form-wrap');
       const toggleBtn = document.getElementById('mural-post-toggle-btn');
       if(wrap) wrap.style.display = 'none';
@@ -67,6 +86,11 @@ export const Post = {
       Home.renderUser(); Home.renderFeed(); Post.render(); Admin.postsRender(); Admin.metricsRender();
     } catch (err) {
       alert(err.message);
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Publicar comunicado';
+      }
     }
   },
 
